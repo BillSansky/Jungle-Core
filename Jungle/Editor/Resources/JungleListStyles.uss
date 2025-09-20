@@ -1,0 +1,56 @@
+﻿/* Each package card */
+.jungle-card {
+    background-color: #0F1512;
+    margin-bottom: 8px;
+    padding: 8px;
+
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: #1E7A4F;
+    border-right-color: #1E7A4F;
+    border-top-color: #1E7A4F;
+    border-bottom-color: #1E7A4F;
+
+    border-radius: 6px;
+}
+
+/* Horizontal row */
+.jungle-card__row {
+    display: flex;
+    flex-direction: row;
+}
+.jungle-card__row  {
+    margin-left: 10px;
+}
+
+/* Thumbnail */
+.jungle-card__thumb {
+    width: 96px;
+    height: 96px;
+    background-color: #16231E;
+    border-radius: 6px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Content */
+.jungle-card__main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.jungle-card__head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.jungle-card__actions {
+    display: flex;
+    flex-direction: row;
+    margin-top: 6px;
+}
+.jungle-card__actions  {
+    margin-left: 6px;
+}

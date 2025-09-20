@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns="UnityEngine.UIElements"
+      xmlns:uie="UnityEditor.UIElements">
+    <VisualElement class="jungle-card">
+        <VisualElement class="jungle-card__row">
+            <Image name="pkg-image" class="jungle-card__thumb" focusable="false" />
+            <VisualElement class="jungle-card__main">
+                <VisualElement class="jungle-card__head">
+                    <Label name="pkg-title" class="pkg-title" />
+                    <Label name="pkg-status" class="pkg-status" />
+                </VisualElement>
+
+                <Label name="pkg-desc" class="pkg-desc" />
+
+                <VisualElement class="jungle-card__actions">
+                    <Button name="btn-install" class="jungle-btn--primary" text="Install" />
+                    <Button name="btn-open"   class="jungle-btn--ghost"   text="Open Repo" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>
