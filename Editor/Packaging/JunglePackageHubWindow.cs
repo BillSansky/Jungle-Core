@@ -51,6 +51,7 @@ public class JunglePackageHubWindow : EditorWindow
     private Button refreshBtn;
     private Label footerMsg;
 
+    private const string PackageRoot = "Packages/com.jungle.core";
     private const string DefaultConfigAssetSearch = "upm-sources t:TextAsset";
 
     [MenuItem("Tools/Jungle/Package Hub")]
@@ -64,8 +65,8 @@ public class JunglePackageHubWindow : EditorWindow
     private void OnEnable()
     {
         // Load UXML/USS
-        windowUxml = Load<VisualTreeAsset>("Assets/Plugins/Jungle/Editor/Packaging/Resources/JunglePackageHub.uxml");
-        itemUxml   = Load<VisualTreeAsset>("Assets/Plugins/Jungle/Editor/Packaging/JunglePackageItem.uxml");
+        windowUxml = Load<VisualTreeAsset>($"{PackageRoot}/Editor/Packaging/Resources/JunglePackageHub.uxml");
+        itemUxml   = Load<VisualTreeAsset>($"{PackageRoot}/Editor/Packaging/Resources/JunglePackageItem.uxml");
 
         // Build root from UXML
         rootVisualElement.Clear();
@@ -73,8 +74,8 @@ public class JunglePackageHubWindow : EditorWindow
             windowUxml.CloneTree(rootVisualElement);
 
         // Attach USS styles
-        TryAddStyle(rootVisualElement, "Assets/Plugins/Jungle/Editor/Resources/JungleEditorStyles.uss");
-        TryAddStyle(rootVisualElement, "Assets/Plugins/Jungle/Editor/Resources/JungleListStyles.uss");
+        TryAddStyle(rootVisualElement, $"{PackageRoot}/Editor/Resources/JungleEditorStyles.uss");
+        TryAddStyle(rootVisualElement, $"{PackageRoot}/Editor/Resources/JungleListStyles.uss");
 
         // Query UI
         listView   = rootVisualElement.Q<ScrollView>("package-list");
