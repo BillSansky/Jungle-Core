@@ -1,7 +1,7 @@
 {
   "name": "com.jungle.core",
   "displayName": "Jungle Core",
-  "description": "Core editor tooling and shared assets for Jungle packages, including the Jungle Package Hub window.",
+  "description": "Core editor and runtime tools for Jungle Plugins and Game Development and shared assets for Jungle packages.",
   "version": "1.0.0",
   "unity": "2021.3",
   "unityRelease": "0f1",
@@ -12,14 +12,7 @@
     "editor"
   ],
   "author": {
-    "name": "Jungle Tools",
-    "url": "https://github.com/jungle-devs"
-  },
-  "samples": [
-    {
-      "displayName": "Jungle Package Bootstrapper",
-      "description": "Example bootstrapper that installs a list of Jungle git packages when the project loads.",
-      "path": "Samples~/Packaging"
-    }
-  ]
+    "name": "Shru",
+    "url": "https://github.com/BillSansky"
+  }
 }

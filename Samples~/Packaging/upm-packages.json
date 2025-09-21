@@ -1,7 +1,0 @@
-﻿{
-  "gitUrls": [
-    "https://github.com/username/repo.git#main"
-  ],
-  "deleteBootstrapperAfterInstall": false,
-  "runOnceKey": "UPMBootstrapper_v1"
-}
