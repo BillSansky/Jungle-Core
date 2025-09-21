@@ -1,5 +1,5 @@
 {
-  "name": "com.jungle.core",
+  "name": "jungle.core",
   "displayName": "Jungle Core",
   "description": "Core editor and runtime tools for Jungle Plugins and Game Development and shared assets for Jungle packages.",
   "version": "1.0.0",
