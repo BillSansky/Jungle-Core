@@ -4,12 +4,10 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Octoputs.Actions;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 
-namespace Octoputs.Editor
+namespace Jungle.Editor
 {
     public static class EditorUtils
     {

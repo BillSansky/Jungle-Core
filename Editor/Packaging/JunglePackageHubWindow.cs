@@ -9,7 +9,6 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 public class JunglePackageHubWindow : EditorWindow
 {

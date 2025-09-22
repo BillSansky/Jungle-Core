@@ -7,9 +7,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
-using Object = UnityEngine.Object;
 
-namespace Octoputs.Editor
+namespace Jungle.Editor
 {
     /// <summary>
     /// Custom drawer for lists of managed reference objects (non-Unity Objects)

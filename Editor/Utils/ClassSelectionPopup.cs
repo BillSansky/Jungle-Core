@@ -5,9 +5,9 @@ using UnityEngine.UIElements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Octoputs.Attributes;
+using Jungle.Attributes;
 
-namespace Octoputs.Editor
+namespace Jungle.Editor
 {
     public class ClassSelectionPopup : EditorWindow
     {
@@ -327,10 +327,8 @@ namespace Octoputs.Editor
 
         private (string description, string iconPath, string category) GetClassInfo(Type classType)
         {
-            var attribute = classType.GetCustomAttributes(typeof(OctoputsInfoAttribute), true)
-                                    .FirstOrDefault() as OctoputsInfoAttribute;
-
-            if (attribute != null)
+            if (classType.GetCustomAttributes(typeof(JungleInfoAttribute), true)
+                    .FirstOrDefault() is JungleInfoAttribute attribute)
             {
                 return (attribute.Description, attribute.IconPath, attribute.Category);
             }

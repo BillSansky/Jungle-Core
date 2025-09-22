@@ -2,17 +2,17 @@
 using System.Reflection;
 using UnityEditor;
 using UnityEngine.UIElements;
-using System.Linq;
+using Jungle.Attributes;
 
-namespace Octoputs.Editor
+namespace Jungle.Editor
 {
     /// <summary>
-    /// Processes OctoputsListAttribute annotations and automatically creates appropriate list UIs
+    /// Processes JungleListAttribute annotations and automatically creates appropriate list UIs
     /// </summary>
     public static class CustomListProcessor
     {
         /// <summary>
-        /// Automatically processes all OctoputsListAttribute fields on the target object and creates appropriate UIs
+        /// Automatically processes all JungleListAttribute fields on the target object and creates appropriate UIs
         /// </summary>
         /// <param name="root">Root UI element</param>
         /// <param name="serializedObject">Serialized object containing the fields</param>
@@ -23,7 +23,7 @@ namespace Octoputs.Editor
 
             foreach (var field in fields)
             {
-                var customListAttr = field.GetCustomAttribute<OctoputsListAttribute>();
+                var customListAttr = field.GetCustomAttribute<JungleListAttribute>();
                 if (customListAttr == null) continue;
 
                 // Get the serialized property
