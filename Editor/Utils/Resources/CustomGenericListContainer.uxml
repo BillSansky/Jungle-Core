@@ -1,0 +1,11 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsEditorStyles.uss" />
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsListStyles.uss" />
+    <ui:VisualElement class="octoputs-section octoputs-custom-list-container">
+        <ui:VisualElement name="list-header" class="octoputs-actions-inline-container">
+            <ui:Label name="list-title" text="List" class="octoputs-list-section-header" />
+            <ui:Button name="add-button" text="+" class="octoputs-actions-inline-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="list-content" class="octoputs-custom-list-content" />
+    </ui:VisualElement>
+</ui:UXML>

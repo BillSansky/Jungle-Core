@@ -1,0 +1,9 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsClassSelectionStyles.uss" />
+    <ui:VisualElement class="class-selection-root" name="root">
+        <ui:Label text="Select Class" class="class-selection-title" name="title" />
+        <ui:ScrollView class="class-selection-scroll" name="scrollView" mode="Vertical">
+            <ui:VisualElement name="contentContainer" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

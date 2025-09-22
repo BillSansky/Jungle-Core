@@ -1,0 +1,17 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsEditorStyles.uss" />
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsListStyles.uss" />
+    <ui:VisualElement class="octoputs-custom-list-item">
+        <ui:VisualElement name="item-header" class="octoputs-actions-inline-container">
+            <ui:Label name="item-title" text="Class Name" class="octoputs-custom-list-item-title" />
+            <ui:VisualElement name="button-group" class="octoputs-actions-inline-container">
+                <ui:Button name="move-up-button" class="octoputs-custom-list-button octoputs-custom-list-move-button" text="↑" />
+                <ui:Button name="move-down-button" class="octoputs-custom-list-button octoputs-custom-list-move-button" text="↓" />
+                <ui:Button name="remove-button" class="octoputs-custom-list-button octoputs-custom-list-remove-button" text="×" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="item-content" class="octoputs-custom-list-item-content">
+            <!-- Property field or null message will be added here dynamically -->
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

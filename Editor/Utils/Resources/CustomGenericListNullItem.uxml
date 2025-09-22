@@ -1,0 +1,14 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsEditorStyles.uss" />
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsListStyles.uss" />
+    <ui:VisualElement class="octoputs-custom-list-null-action-container">
+        <ui:VisualElement class="octoputs-actions-inline-container">
+            <ui:Label name="null-action-label" text="Null Action" class="octoputs-custom-list-null-action-label" />
+            <ui:VisualElement name="null-action-buttons" class="octoputs-custom-list-null-action-buttons octoputs-actions-inline-container">
+                <ui:Button name="move-up-button" text="▲" class="octoputs-custom-list-button octoputs-custom-list-move-button" />
+                <ui:Button name="move-down-button" text="▼" class="octoputs-custom-list-button octoputs-custom-list-move-button" />
+                <ui:Button name="remove-button" text="×" class="octoputs-custom-list-button octoputs-custom-list-null-action-remove-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
