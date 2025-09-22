@@ -196,7 +196,7 @@ namespace Jungle.Editor
             }
             
             // Apply stylesheet
-            AddOctoputsStyleSheet(listContainer);
+            AddJungleStyleSheet(listContainer);
 
             // Initial build
             RebuildList();
@@ -592,10 +592,10 @@ namespace Jungle.Editor
             }
         }
 
-        private static void AddOctoputsStyleSheet(VisualElement element)
+        private static void AddJungleStyleSheet(VisualElement element)
         {
             // Check if the list style sheet is already loaded
-            var listStyleSheet = Resources.Load<StyleSheet>("OctoputsListStyles");
+            var listStyleSheet = Resources.Load<StyleSheet>("JungleListStyles");
             if (listStyleSheet != null)
             {
                 // Only add if not already present
@@ -606,7 +606,7 @@ namespace Jungle.Editor
             }
             else
             {
-                Debug.LogWarning("Could not load OctoputsListStyles.uss from Resources folder");
+                Debug.LogWarning("Could not load JungleListStyles.uss from Resources folder");
             }
         }
     }
