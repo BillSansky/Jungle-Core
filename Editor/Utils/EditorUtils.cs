@@ -82,15 +82,17 @@ namespace Jungle.Editor
             return FormatTypeName(actionType, "Action");
         }
 
+        private const string JungleEditorStyleSheetResource = "JungleEditorStyles";
+
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
             if (propertyField == null) return;
 
-            // Create a container to hold both the PropertyField and the plus button
+            // Create a container to hold both the PropertyField and the selection controls
             var container = new VisualElement();
-            container.style.flexDirection = FlexDirection.Row;
-            container.style.alignItems = Align.Center;
+            AttachJungleEditorStyles(container);
+            container.AddToClassList("jungle-class-selector-container");
 
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
@@ -105,36 +107,115 @@ namespace Jungle.Editor
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
 
-            // Create the purple plus button
+            // Create the button column so that we can place the clear button above the selector
+            var buttonColumn = new VisualElement();
+            buttonColumn.AddToClassList("jungle-class-selector-button-column");
+
+            // Create the main jungle themed selection button
             var addButton = new Button();
             addButton.text = "+";
-            addButton.AddToClassList("octoputs-add-inline-button");
+            addButton.tooltip = "Select or change type";
+            addButton.AddToClassList("jungle-add-inline-button");
+
+            // Create the clear button which will reset the value to null
+            var clearButton = new Button();
+            clearButton.text = "✕";
+            clearButton.tooltip = "Clear selection";
+            clearButton.style.display = DisplayStyle.None;
+            clearButton.AddToClassList("jungle-custom-list-remove-button");
+            clearButton.AddToClassList("jungle-class-selector-clear-button");
 
             // Setup button click handler
-            addButton.clicked += () =>
+            void UpdateButtonState()
             {
-                // Calculate button position in screen coordinates
-                var buttonRect = addButton.worldBound;
-                var buttonPosition = new Vector2(buttonRect.x, buttonRect.y + buttonRect.height);
+                var serializedObject = property.serializedObject;
+                serializedObject.Update();
+
+                var hasValue = false;
 
                 if (supportsManagedReferences)
                 {
+                    hasValue = !string.IsNullOrEmpty(property.managedReferenceFullTypename);
+                }
+                else if (supportsComponentReferences)
+                {
+                    hasValue = property.objectReferenceValue != null;
+                }
+
+                addButton.text = hasValue ? "⇄" : "+";
+                addButton.EnableInClassList("jungle-class-selector-button--has-value", hasValue);
+
+                clearButton.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            addButton.clicked += () =>
+            {
+                if (supportsManagedReferences)
+                {
                     ShowAddManagedReferenceTypeMenuAndCreate(baseType, property);
+                    UpdateButtonState();
                     return;
                 }
 
                 if (supportsComponentReferences)
                 {
                     ShowAddComponentTypeMenuAndCreate(baseType, property);
+                    UpdateButtonState();
                 }
+            };
+
+            clearButton.clicked += () =>
+            {
+                var serializedObject = property.serializedObject;
+                Undo.RecordObjects(serializedObject.targetObjects, "Clear Selection");
+                serializedObject.Update();
+
+                if (supportsManagedReferences)
+                {
+                    property.managedReferenceValue = null;
+                }
+                else if (supportsComponentReferences)
+                {
+                    property.objectReferenceValue = null;
+                }
+
+                serializedObject.ApplyModifiedProperties();
+
+                foreach (var target in serializedObject.targetObjects)
+                {
+                    EditorUtility.SetDirty(target);
+                }
+
+                UpdateButtonState();
             };
 
             // Add both elements to the container
             container.Add(propertyField);
-            container.Add(addButton);
+            buttonColumn.Add(clearButton);
+            buttonColumn.Add(addButton);
+            container.Add(buttonColumn);
+
+            propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
+            UpdateButtonState();
 
             // Insert the container at the original PropertyField's position
             parent.Insert(index, container);
+        }
+
+        private static void AttachJungleEditorStyles(VisualElement element)
+        {
+            if (element == null)
+            {
+                return;
+            }
+
+            var styleSheet = Resources.Load<StyleSheet>(JungleEditorStyleSheetResource);
+            if (styleSheet == null || element.styleSheets.Contains(styleSheet))
+            {
+                return;
+            }
+
+            element.styleSheets.Add(styleSheet);
         }
 
 
