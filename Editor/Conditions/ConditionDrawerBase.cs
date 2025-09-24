@@ -13,7 +13,7 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor.Conditions
 {
-    internal abstract class ConditionDrawerBase : PropertyDrawer
+    public abstract class ConditionDrawerBase : PropertyDrawer
     {
         private const string BaseTemplatePath = "ConditionDrawer";
         private const string EditorStyleSheetPath = "JungleEditorStyles";

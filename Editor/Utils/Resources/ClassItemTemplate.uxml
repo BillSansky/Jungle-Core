@@ -1,0 +1,15 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsClassSelectionStyles.uss" />
+    <ui:VisualElement class="class-item-container" name="itemContainer">
+        <ui:VisualElement class="class-item-horizontal" name="horizontalContainer">
+            <ui:VisualElement class="class-item-icon-container" name="iconContainer">
+                <!-- Icon will be added dynamically -->
+            </ui:VisualElement>
+            <ui:VisualElement class="class-item-text-container" name="textContainer">
+                <ui:Label class="class-item-title" name="titleLabel" />
+                <ui:Label class="class-item-description" name="descriptionLabel" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="class-item-separator" name="separator" />
+    </ui:VisualElement>
+</ui:UXML>
