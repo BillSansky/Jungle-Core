@@ -99,9 +99,6 @@ namespace Jungle.Editor
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
 
-            // Remove the PropertyField from its current parent
-            parent.Remove(propertyField);
-
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
 
