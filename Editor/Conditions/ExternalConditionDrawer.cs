@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Octoputs.Conditions;
+using Jungle.Conditions;
 
 namespace Octoputs.Editor.Conditions
 {
