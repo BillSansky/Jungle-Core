@@ -261,3 +261,38 @@
 }
 .status-installed { color: #8ADAB2; }
 .status-missing   { color: #E88A8A; }
+
+/* Class selector field layout */
+.jungle-class-selector-container {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.jungle-class-selector-button-column {
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 2px;
+    margin-left: 4px;
+    flex-shrink: 0;
+}
+
+.jungle-class-selector-button-column > .jungle-add-inline-button,
+.jungle-class-selector-button-column > .jungle-custom-list-remove-button {
+    margin-left: 0;
+}
+
+.jungle-add-inline-button.jungle-class-selector-button--has-value {
+    background-color: #155C3A;
+    border-color: #8ADAB2;
+}
+
+.jungle-class-selector-clear-button {
+    background-color: rgba(232, 138, 138, 0.9);
+    border-color: #E88A8A;
+    color: white;
+}
+
+.jungle-class-selector-clear-button:hover {
+    background-color: rgba(232, 138, 138, 1.0);
+    border-color: #F2B3B3;
+}
