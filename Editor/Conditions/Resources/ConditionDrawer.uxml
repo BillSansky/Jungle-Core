@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="condition-root" class="jungle-section">
+        <ui:VisualElement name="condition-header" class="jungle-section-content">
+            <ui:Label name="condition-title" class="jungle-section-header" text="Condition" />
+            <uie:PropertyField name="negate-condition-field" binding-path="negateCondition" label="Negate Condition" class="jungle-marginfield" />
+            <ui:VisualElement name="condition-info" class="jungle-runtime-info" style="display: none;">
+                <ui:Label name="condition-description" class="pkg-desc" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="condition-content" class="jungle-section-content" />
+    </ui:VisualElement>
+</ui:UXML>
