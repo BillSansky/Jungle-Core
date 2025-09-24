@@ -90,6 +90,15 @@ namespace Jungle.Editor
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
 
+
+            // Get the parent and index of the original PropertyField
+            var parent = propertyField.parent;
+            var index = parent.IndexOf(propertyField);
+
+            // Configure the PropertyField to grow and fill available space
+            propertyField.style.flexGrow = 1;
+
+
             // Create the purple plus button
             var addButton = new Button();
             addButton.text = "+";
