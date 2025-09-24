@@ -146,7 +146,7 @@ namespace Jungle.Editor
                 // Check for empty message in header container instead of content container
                 var headerContainer = listContainer.Q<VisualElement>("list-header");
                 var emptyMessageLabel = headerContainer.Children().FirstOrDefault(child =>
-                    child is Label label && label.ClassListContains("octoputs-custom-list-empty-message")) as Label;
+                    child is Label label && label.ClassListContains("jungle-custom-list-empty-message")) as Label;
                 var hasEmptyMessage = emptyMessageLabel != null;
 
                 if (hasEmptyMessage)
@@ -171,10 +171,10 @@ namespace Jungle.Editor
                     contentContainer.Clear();
 
                     var emptyLabel = new Label(emptyListMessage);
-                    emptyLabel.AddToClassList("octoputs-custom-list-empty-message");
+                    emptyLabel.AddToClassList("jungle-custom-list-empty-message");
 
                     // Ensure the header container aligns all children to center
-                    headerContainer.AddToClassList("octoputs-custom-list-header-centered");
+                    headerContainer.AddToClassList("jungle-custom-list-header-centered");
 
                     headerContainer.Insert(headerContainer.IndexOf(addButton), emptyLabel);
 
@@ -327,7 +327,7 @@ namespace Jungle.Editor
             var buttonContainer = ConfigureButtons(container, arrayProperty, serializedObject, index, itemContainer);
             var foldout = new Foldout();
             foldout.text = displayName; // Keep class name in foldout header
-            foldout.AddToClassList("octoputs-custom-list-title-foldout");
+            foldout.AddToClassList("jungle-custom-list-title-foldout");
 
             // Access the foldout's toggle (header) to add buttons to it
             var foldoutToggle = foldout.Q<Toggle>();
@@ -341,7 +341,7 @@ namespace Jungle.Editor
                 if (label != null)
                 {
                     label.style.flexGrow = 1;
-                    label.AddToClassList("octoputs-custom-list-title-label");
+                    label.AddToClassList("jungle-custom-list-title-label");
                 }
 
                 foldoutToggle.Add(buttonContainer);
@@ -389,7 +389,7 @@ namespace Jungle.Editor
                                 continue;
 
                             var propertyField = new PropertyField(iterator.Copy());
-                            propertyField.AddToClassList("octoputs-custom-list-property-field");
+                            propertyField.AddToClassList("jungle-custom-list-property-field");
 
                             propertyField.Bind(tempSerializedObject);
                             foldout.Add(propertyField);
@@ -401,7 +401,7 @@ namespace Jungle.Editor
                     if (foldout.childCount == 0)
                     {
                         var propertyField = new PropertyField(element);
-                        propertyField.AddToClassList("octoputs-custom-list-property-field");
+                        propertyField.AddToClassList("jungle-custom-list-property-field");
                         propertyField.label = "";
                         propertyField.Bind(serializedObject);
                         foldout.Add(propertyField);
@@ -421,7 +421,7 @@ namespace Jungle.Editor
                                 break;
 
                             var propertyField = new PropertyField(childProperty.Copy());
-                            propertyField.AddToClassList("octoputs-custom-list-property-field");
+                            propertyField.AddToClassList("jungle-custom-list-property-field");
                             propertyField.Bind(serializedObject);
                             foldout.Add(propertyField);
                         }
@@ -432,7 +432,7 @@ namespace Jungle.Editor
                     if (foldout.childCount == 0)
                     {
                         var propertyField = new PropertyField(element);
-                        propertyField.AddToClassList("octoputs-custom-list-property-field");
+                        propertyField.AddToClassList("jungle-custom-list-property-field");
                         propertyField.label = "";
                         propertyField.Bind(serializedObject);
                         foldout.Add(propertyField);
@@ -606,7 +606,7 @@ namespace Jungle.Editor
             }
             else
             {
-                Debug.LogWarning("Could not load JungleListStyles.uss from Resources folder");
+                Debug.LogWarning("Could not load JunglePackageListStyles.uss from Resources folder");
             }
         }
     }

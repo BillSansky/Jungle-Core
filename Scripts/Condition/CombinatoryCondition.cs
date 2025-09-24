@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Conditions
@@ -10,6 +11,7 @@ namespace Jungle.Conditions
     [Serializable]
     public class CombinatoryCondition : Condition
     {
+        [JungleList("Conditions", "Add Condition")]
         [SerializeReference] private List<Condition> conditions;
         [SerializeField] private LogicalOperator logicalOperator = LogicalOperator.And;
 

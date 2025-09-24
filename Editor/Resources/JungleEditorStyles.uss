@@ -1,8 +1,183 @@
-﻿/* Root container for the whole window */
+﻿
+.jungle-editor {
+    padding: 5px 5px 1px;
+    margin: 0;
+    border-width: 1px;
+    border-color: rgb(99, 84, 131);
+    border-radius: 4px;
+    background-color: var(--unity-colors-default-background);
+}
+
+.jungle-section-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+.jungle-section-content {
+    margin-top: 2px;
+
+}
+
+.jungle-subsection-header {
+    -unity-font-style: bold;
+    flex-grow: 1;
+    margin-bottom: 6px;
+}
+
+.jungle-section {
+    margin-bottom: 4px;
+    padding: 8px;
+    background-color: var(--unity-colors-inspector_titlebar-background);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--unity-colors-default-border);
+}
+
+.jungle-marginfield {
+    margin-left: 15px;
+}
+
+.jungle-runtime-info {
+    background-color: var(--unity-colors-inspector_titlebar-background-hover);
+    border-left-width: 3px;
+    border-left-color: var(--unity-colors-highlight-background);
+    padding: 6px 8px;
+    margin-top: 4px;
+}
+
+.jungle-runtime-list {
+    margin-top: 4px;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
+.jungle-runtime-subheader {
+    margin-top: 6px;
+}
+
+.jungle-runtime-empty-label {
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.jungle-runtime-info .unity-toggle {
+    opacity: 0.8;
+}
+
+.jungle-runtime-info .unity-object-field {
+    opacity: 0.8;
+}
+
+.jungle-section-foldable {
+    margin: 4px 6px;
+    padding: 0;
+    background-color: var(--unity-colors-inspector_titlebar-background);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--unity-colors-default-border);
+}
+
+.jungle-section-foldable .unity-foldout__toggle {
+    margin: 0;
+    padding: 8px;
+    background-color: transparent;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+    border-radius: 4px 4px 0 0;
+    min-height: auto;
+}
+
+.jungle-section-foldable .unity-foldout__toggle:hover {
+    background-color: var(--unity-colors-inspector_titlebar-background-hover);
+}
+
+.jungle-section-foldable .unity-foldout__toggle .unity-toggle__checkmark {
+    margin-right: 4px;
+    margin-left: 0px;
+    width: 12px;
+    height: 12px;
+    margin-top: 1px;
+}
+
+.jungle-section-foldable .unity-foldout__toggle .unity-foldout__text {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--unity-colors-default-text);
+    opacity: 0.9;
+    margin: 0;
+    padding: 0;
+}
+
+.jungle-section-foldable .unity-foldout__content {
+    padding: 8px;
+    margin: 0;
+    background-color: transparent;
+}
+
+.jungle-section-foldable .unity-foldout--opened .unity-foldout__toggle {
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+    border-radius: 4px 4px 0 0;
+}
+
+
+
+.jungle-section-foldable .unity-property-field > .unity-property-field__input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 60px;
+    margin-left: 4px;
+    flex-basis: 0;
+}
+
+
+.jungle-add-inline-button {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 3px;
+    background-color: #1E7A4F;
+    border-color: #BFEBD5;
+    border-width: 1px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: white;
+    padding: 0;
+    margin-left: 8px;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+.jungle-add-inline-button:hover {
+    background-color: rgb(115, 98, 150);
+    border-color: rgb(115, 98, 150);
+}
+
+.jungle-add-inline-button:active {
+    background-color: rgb(85, 72, 115);
+    border-color: rgb(85, 72, 115);
+}
+
+.jungle-warning
+{
+    margin: 4px 6px;
+}
+
+.jungle-editor-button {
+    margin-top: 8px;
+    align-self: flex-start;
+    min-width: 140px;
+}
+
+
+* Root container for the whole package window *,
 .jungle-root {
     padding: 8px;
     margin: 4px;
-    background-color: #0F1512;       /* dark jungle background */
 
     /* full border */
     border-left-width: 2px;
@@ -31,7 +206,6 @@
 .jungle-footer {
     margin-top: 6px;
     padding: 6px 8px;
-    background-color: #0F1512;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 }
@@ -43,7 +217,6 @@
 
 /* Buttons */
 .jungle-btn--primary {
-    background-color: #1E7A4F;
     color: white;
     border-radius: 6px;
     padding-left: 12px;
