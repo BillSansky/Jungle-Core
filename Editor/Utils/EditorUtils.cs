@@ -89,29 +89,31 @@ namespace Jungle.Editor
         {
             if (propertyField == null) return;
 
+
             // Create a container to hold both the PropertyField and the selection controls
             var container = new VisualElement();
             AttachJungleEditorStyles(container);
             container.AddToClassList("jungle-class-selector-container");
 
+
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+
 
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
 
-            // Remove the PropertyField from its current parent
-            parent.Remove(propertyField);
-
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
+
 
             // Create the button column so that we can place the clear button above the selector
             var buttonColumn = new VisualElement();
             buttonColumn.AddToClassList("jungle-class-selector-button-column");
 
             // Create the main jungle themed selection button
+
             var addButton = new Button();
             addButton.text = "+";
             addButton.tooltip = "Select or change type";
@@ -189,6 +191,7 @@ namespace Jungle.Editor
                 UpdateButtonState();
             };
 
+
             // Add both elements to the container
             container.Add(propertyField);
             buttonColumn.Add(clearButton);
@@ -198,8 +201,65 @@ namespace Jungle.Editor
             propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
             UpdateButtonState();
 
-            // Insert the container at the original PropertyField's position
-            parent.Insert(index, container);
+            const string inlineWrapperClass = "octoputs-add-inline-wrapper";
+
+            bool TryAttachButton()
+            {
+                // unity-content contains the label + base field when the property renders with a label
+                var unityContent = propertyField.Q(className: "unity-content");
+                var baseField = unityContent?.Q(className: "unity-base-field") ?? propertyField.Q(className: "unity-base-field");
+
+                if (baseField == null)
+                {
+                    return false;
+                }
+
+                var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
+
+                if (inputContainer == null)
+                {
+                    return false;
+                }
+
+                if (inputContainer.Q(className: inlineWrapperClass) != null)
+                {
+                    return true;
+                }
+
+                var inlineWrapper = new VisualElement();
+                inlineWrapper.AddToClassList(inlineWrapperClass);
+                inlineWrapper.style.flexDirection = FlexDirection.Row;
+                inlineWrapper.style.alignItems = Align.Center;
+                inlineWrapper.style.flexGrow = 1;
+                inlineWrapper.style.gap = 2f;
+
+                // Move existing children into the wrapper so the button sits inside the same outlined group
+                while (inputContainer.childCount > 0)
+                {
+                    inlineWrapper.Add(inputContainer[0]);
+                }
+
+                addButton.style.flexShrink = 0;
+                addButton.style.marginLeft = 4f;
+
+                inlineWrapper.Add(addButton);
+                inputContainer.Add(inlineWrapper);
+
+                return true;
+            }
+
+            if (!TryAttachButton())
+            {
+                // Delay attachment until the visual tree of the PropertyField is fully built.
+                propertyField.schedule.Execute(() =>
+                {
+                    if (!TryAttachButton())
+                    {
+                        // Try once more after a small delay to handle asynchronous bindings.
+                        propertyField.schedule.Execute(TryAttachButton).ExecuteLater(50);
+                    }
+                });
+            }
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
