@@ -87,13 +87,9 @@ namespace Jungle.Editor
         {
             if (propertyField == null) return;
 
-            // Create a container to hold both the PropertyField and the plus button
-            var container = new VisualElement();
-            container.style.flexDirection = FlexDirection.Row;
-            container.style.alignItems = Align.Center;
-
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+
 
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
@@ -101,6 +97,7 @@ namespace Jungle.Editor
 
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
+
 
             // Create the purple plus button
             var addButton = new Button();
@@ -126,12 +123,65 @@ namespace Jungle.Editor
                 }
             };
 
-            // Add both elements to the container
-            container.Add(propertyField);
-            container.Add(addButton);
+            const string inlineWrapperClass = "octoputs-add-inline-wrapper";
 
-            // Insert the container at the original PropertyField's position
-            parent.Insert(index, container);
+            bool TryAttachButton()
+            {
+                // unity-content contains the label + base field when the property renders with a label
+                var unityContent = propertyField.Q(className: "unity-content");
+                var baseField = unityContent?.Q(className: "unity-base-field") ?? propertyField.Q(className: "unity-base-field");
+
+                if (baseField == null)
+                {
+                    return false;
+                }
+
+                var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
+
+                if (inputContainer == null)
+                {
+                    return false;
+                }
+
+                if (inputContainer.Q(className: inlineWrapperClass) != null)
+                {
+                    return true;
+                }
+
+                var inlineWrapper = new VisualElement();
+                inlineWrapper.AddToClassList(inlineWrapperClass);
+                inlineWrapper.style.flexDirection = FlexDirection.Row;
+                inlineWrapper.style.alignItems = Align.Center;
+                inlineWrapper.style.flexGrow = 1;
+                inlineWrapper.style.gap = 2f;
+
+                // Move existing children into the wrapper so the button sits inside the same outlined group
+                while (inputContainer.childCount > 0)
+                {
+                    inlineWrapper.Add(inputContainer[0]);
+                }
+
+                addButton.style.flexShrink = 0;
+                addButton.style.marginLeft = 4f;
+
+                inlineWrapper.Add(addButton);
+                inputContainer.Add(inlineWrapper);
+
+                return true;
+            }
+
+            if (!TryAttachButton())
+            {
+                // Delay attachment until the visual tree of the PropertyField is fully built.
+                propertyField.schedule.Execute(() =>
+                {
+                    if (!TryAttachButton())
+                    {
+                        // Try once more after a small delay to handle asynchronous bindings.
+                        propertyField.schedule.Execute(TryAttachButton).ExecuteLater(50);
+                    }
+                });
+            }
         }
 
 
