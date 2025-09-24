@@ -216,11 +216,7 @@ namespace Jungle.Editor
 
                 var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
 
-                if (inputContainer == null)
-                {
-                    return false;
-                }
-
+                
                 if (inputContainer.Q(className: inlineWrapperClass) != null)
                 {
                     return true;
@@ -228,19 +224,13 @@ namespace Jungle.Editor
 
                 var inlineWrapper = new VisualElement();
                 inlineWrapper.AddToClassList(inlineWrapperClass);
-                inlineWrapper.style.flexDirection = FlexDirection.Row;
-                inlineWrapper.style.alignItems = Align.Center;
-                inlineWrapper.style.flexGrow = 1;
-                inlineWrapper.style.gap = 2f;
 
                 // Move existing children into the wrapper so the button sits inside the same outlined group
                 while (inputContainer.childCount > 0)
                 {
                     inlineWrapper.Add(inputContainer[0]);
                 }
-
-                addButton.style.flexShrink = 0;
-                addButton.style.marginLeft = 4f;
+                
 
                 inlineWrapper.Add(addButton);
                 inputContainer.Add(inlineWrapper);
@@ -256,7 +246,7 @@ namespace Jungle.Editor
                     if (!TryAttachButton())
                     {
                         // Try once more after a small delay to handle asynchronous bindings.
-                        propertyField.schedule.Execute(TryAttachButton).ExecuteLater(50);
+                        propertyField.schedule.Execute(_=>TryAttachButton()).ExecuteLater(50);
                     }
                 });
             }
