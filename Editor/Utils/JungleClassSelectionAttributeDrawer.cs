@@ -17,7 +17,10 @@ namespace Jungle.Editor
 
             var propertyField = new PropertyField(property);
 
-            if (baseType != null && typeof(Component).IsAssignableFrom(baseType))
+            var supportsComponents = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+            var supportsManagedReference = property.propertyType == SerializedPropertyType.ManagedReference;
+
+            if (baseType != null && (supportsComponents || supportsManagedReference))
             {
                 var isInitialized = false;
                 propertyField.RegisterCallback<AttachToPanelEvent>(_ =>
@@ -34,7 +37,7 @@ namespace Jungle.Editor
             else
             {
                 Debug.LogWarning(
-                    $"JungleClassSelectionAttribute requires a Component type but '{baseType?.Name ?? fieldInfo?.FieldType.Name}' does not inherit from Component."
+                    $"JungleClassSelectionAttribute requires a valid base type but '{baseType?.Name ?? fieldInfo?.FieldType.Name}' is not supported."
                 );
             }
 

@@ -92,6 +92,9 @@ namespace Jungle.Editor
             container.style.flexDirection = FlexDirection.Row;
             container.style.alignItems = Align.Center;
 
+            var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
+            var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
@@ -114,7 +117,16 @@ namespace Jungle.Editor
                 var buttonRect = addButton.worldBound;
                 var buttonPosition = new Vector2(buttonRect.x, buttonRect.y + buttonRect.height);
 
-                ShowAddComponentTypeMenuAndCreate(baseType, property);
+                if (supportsManagedReferences)
+                {
+                    ShowAddManagedReferenceTypeMenuAndCreate(baseType, property);
+                    return;
+                }
+
+                if (supportsComponentReferences)
+                {
+                    ShowAddComponentTypeMenuAndCreate(baseType, property);
+                }
             };
 
             // Add both elements to the container
@@ -161,6 +173,16 @@ namespace Jungle.Editor
             }
 
             ShowAddTypeMenu(componentType, CreateComponent);
+        }
+
+        public static void ShowAddManagedReferenceTypeMenuAndCreate(Type referenceType, SerializedProperty property)
+        {
+            void CreateReference(Type type)
+            {
+                CreateManagedReferenceFieldValue(type, property);
+            }
+
+            ShowAddTypeMenu(referenceType, CreateReference);
         }
 
 
@@ -221,6 +243,25 @@ namespace Jungle.Editor
             EditorUtility.SetDirty(serializedObject.targetObject);
 
             return newComponent;
+        }
+
+        public static object CreateManagedReferenceFieldValue(Type referenceType, SerializedProperty property,
+            string undoName = "Set Reference")
+        {
+            var serializedObject = property.serializedObject;
+
+            Undo.RecordObject(serializedObject.targetObject, undoName);
+
+            serializedObject.Update();
+
+            var instance = Activator.CreateInstance(referenceType);
+            property.managedReferenceValue = instance;
+
+            serializedObject.ApplyModifiedProperties();
+
+            EditorUtility.SetDirty(serializedObject.targetObject);
+
+            return instance;
         }
     }
 }
