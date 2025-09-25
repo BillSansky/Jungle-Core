@@ -60,7 +60,14 @@ namespace Jungle.Editor.Conditions
 
             InitializeContent(contentRoot, property);
 
-            root.BindProperty(property);
+            if (property.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                root.Bind(property.serializedObject);
+            }
+            else
+            {
+                root.BindProperty(property);
+            }
 
             ProcessJungleListAttributes(root, property);
 
