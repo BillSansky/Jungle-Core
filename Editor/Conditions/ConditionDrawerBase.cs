@@ -56,53 +56,32 @@ namespace Jungle.Editor.Conditions
                 }
             }
 
-            var rebuildGuard = false;
-
-            void RebuildUI()
+            VisualElement contentRoot;
+            if (contentTemplate != null)
             {
-                if (rebuildGuard)
-                {
-                    return;
-                }
-
-                rebuildGuard = true;
-
-                try
-                {
-                    root.Unbind();
-
-                    VisualElement contentRoot;
-                    if (contentTemplate != null)
-                    {
-                        contentContainer.Clear();
-                        contentRoot = contentTemplate.CloneTree();
-                        contentContainer.Add(contentRoot);
-                    }
-                    else
-                    {
-                        contentContainer.Clear();
-                        contentRoot = contentContainer;
-                    }
-
-                    SetupConditionMetadata(root, property);
-
-                    InitializeContent(contentRoot, property);
-
-                    ProcessJungleListAttributes(root, property);
-
-                    root.BindProperty(property);
-
-                    BindNegateConditionField(root, property);
-                }
-                finally
-                {
-                    rebuildGuard = false;
-                }
+                contentContainer.Clear();
+                contentRoot = contentTemplate.CloneTree();
+                contentContainer.Add(contentRoot);
+            }
+            else
+            {
+                contentContainer.Clear();
+                contentRoot = contentContainer;
             }
 
-            RebuildUI();
+            SetupConditionMetadata(root, property);
 
-            root.TrackPropertyValue(property, _ => RebuildUI());
+            InitializeContent(contentRoot, property);
+
+            ProcessJungleListAttributes(root, property);
+
+            root.bindingPath = property.propertyPath;
+
+            if (property.propertyType != SerializedPropertyType.ManagedReference)
+            {
+                root.BindProperty(property);
+            }
+          
 
             return root;
         }
@@ -130,10 +109,12 @@ namespace Jungle.Editor.Conditions
                     {
                         descriptionLabel.text = infoAttribute.Description;
                     }
+
                     if (infoContainer != null)
                     {
                         infoContainer.style.display = DisplayStyle.Flex;
                     }
+
                     return;
                 }
             }
@@ -230,29 +211,6 @@ namespace Jungle.Editor.Conditions
             }
         }
 
-        private static void BindNegateConditionField(VisualElement root, SerializedProperty property)
-        {
-            if (root == null || property == null)
-            {
-                return;
-            }
-
-            var negateConditionField = root.Q<PropertyField>("negate-condition-field");
-            if (negateConditionField == null)
-            {
-                return;
-            }
-
-            var negateConditionProperty = property.FindPropertyRelative("negateCondition");
-            if (negateConditionProperty == null)
-            {
-                Debug.LogWarning($"Could not find negateCondition property on '{property.propertyPath}'.");
-                return;
-            }
-
-            negateConditionField.Unbind();
-            negateConditionField.BindProperty(negateConditionProperty);
-        }
 
         private static void AddStyleSheet(VisualElement element, string styleSheetPath)
         {
@@ -286,7 +244,8 @@ namespace Jungle.Editor.Conditions
                 return fieldType.GetElementType();
             }
 
-            if (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+            if (fieldType.IsGenericType &&
+                fieldType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
             {
                 return fieldType.GetGenericArguments().FirstOrDefault();
             }
@@ -309,6 +268,7 @@ namespace Jungle.Editor.Conditions
                 {
                     builder.Append('-');
                 }
+
                 builder.Append(char.ToLowerInvariant(character));
             }
 
