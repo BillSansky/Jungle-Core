@@ -140,7 +140,6 @@ namespace Jungle.Editor
 
             // Add both elements to the container
             container.Add(propertyField);
-            container.Add(addButton);
             AttachJungleEditorStyles(container);
             container.AddToClassList("jungle-class-selector-container");
 
@@ -213,9 +212,7 @@ namespace Jungle.Editor
 
 
             // Add both elements to the container
-            container.Add(propertyField);
             buttonColumn.Add(clearButton);
-            buttonColumn.Add(addButton);
             container.Add(buttonColumn);
 
             propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
@@ -242,12 +239,18 @@ namespace Jungle.Editor
                 var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
 
 
-                if (inputContainer.Q(className: inlineWrapperClass) != null)
+                var inlineWrapper = inputContainer.Q(className: inlineWrapperClass);
+                if (inlineWrapper != null)
                 {
+                    if (addButton.parent != inlineWrapper)
+                    {
+                        inlineWrapper.Add(addButton);
+                    }
+
                     return true;
                 }
 
-                var inlineWrapper = new VisualElement();
+                inlineWrapper = new VisualElement();
                 inlineWrapper.AddToClassList(inlineWrapperClass);
 
                 inlineWrapper.style.flexDirection = FlexDirection.Row;
@@ -268,20 +271,39 @@ namespace Jungle.Editor
                 return true;
             }
 
-            if (!TryAttachButton())
+            parent.Insert(index, container);
+
+            bool AttachButtonOrScheduleFallback()
             {
+                if (TryAttachButton())
+                {
+                    return true;
+                }
+
                 // Delay attachment until the visual tree of the PropertyField is fully built.
                 propertyField.schedule.Execute(() =>
                 {
-                    if (!TryAttachButton())
+                    if (TryAttachButton())
                     {
-                        // Try once more after a small delay to handle asynchronous bindings.
-                        propertyField.schedule.Execute(_ => TryAttachButton()).ExecuteLater(50);
+                        return;
                     }
+
+                    // Try once more after a small delay to handle asynchronous bindings. If it still
+                    // fails, fall back to placing the button inside the external column so the
+                    // control remains usable and styled.
+                    propertyField.schedule.Execute(_ =>
+                    {
+                        if (!TryAttachButton() && addButton.parent != buttonColumn)
+                        {
+                            buttonColumn.Add(addButton);
+                        }
+                    }).ExecuteLater(50);
                 });
+
+                return false;
             }
 
-            parent.Insert(index, container);
+            AttachButtonOrScheduleFallback();
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
