@@ -139,8 +139,8 @@
     min-width: 18px;
     min-height: 18px;
     border-radius: 3px;
-    background-color: #1E7A4F;
-    border-color: #BFEBD5;
+    background-color: #3E8F63;
+    border-color: #9BD7B8;
     border-width: 1px;
     font-size: 14px;
     -unity-font-style: bold;
@@ -153,13 +153,13 @@
 }
 
 .jungle-add-inline-button:hover {
-    background-color: rgb(115, 98, 150);
-    border-color: rgb(115, 98, 150);
+    background-color: #4FA876;
+    border-color: #B6E4CF;
 }
 
 .jungle-add-inline-button:active {
-    background-color: rgb(85, 72, 115);
-    border-color: rgb(85, 72, 115);
+    background-color: #2F7A52;
+    border-color: #6AB98D;
 }
 
 .jungle-warning
@@ -282,8 +282,8 @@
 }
 
 .jungle-add-inline-button.jungle-class-selector-button--has-value {
-    background-color: #155C3A;
-    border-color: #8ADAB2;
+    background-color: #2C7A52;
+    border-color: #7BCBA4;
 }
 
 .jungle-class-selector-clear-button {
