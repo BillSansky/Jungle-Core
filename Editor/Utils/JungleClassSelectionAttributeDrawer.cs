@@ -15,24 +15,28 @@ namespace Jungle.Editor
             var classSelectionAttribute = (JungleClassSelectionAttribute)attribute;
             var baseType = classSelectionAttribute.BaseType ?? fieldInfo?.FieldType;
 
-            var propertyField = new PropertyField(property);
-            propertyField.BindProperty(property);
+            var root = new VisualElement();                  // wrapper to isolate our changes
+            var field = new PropertyField(property);
+            root.Add(field);
+            field.BindProperty(property);
 
             var supportsComponents = baseType != null && typeof(Component).IsAssignableFrom(baseType);
             var supportsManagedReference = property.propertyType == SerializedPropertyType.ManagedReference;
 
             if (baseType != null && (supportsComponents || supportsManagedReference))
             {
-                var isInitialized = false;
-                propertyField.RegisterCallback<AttachToPanelEvent>(_ =>
-                {
-                    if (isInitialized)
-                    {
-                        return;
-                    }
+                // Guard against multiple runs
+                bool initialized = false;
 
-                    isInitialized = true;
-                    EditorUtils.SetupFieldWithClassSelectionButton(propertyField, baseType, property);
+                // Defer mutations until after the attach/layout pass
+                field.schedule.Execute(() =>
+                {
+                    if (initialized || field.panel == null) return;
+                    initialized = true;
+
+                    // Make sure Setup... only adds children under 'field' (or 'root'),
+                    // not by reparenting 'field' itself.
+                    EditorUtils.SetupFieldWithClassSelectionButton(field, baseType, property);
                 });
             }
             else
@@ -42,8 +46,9 @@ namespace Jungle.Editor
                 );
             }
 
-            return propertyField;
+            return root;
         }
+
     }
 }
 #endif
