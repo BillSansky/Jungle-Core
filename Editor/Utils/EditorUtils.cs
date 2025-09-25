@@ -196,7 +196,7 @@ namespace Jungle.Editor
             propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
             UpdateButtonState();
 
-            const string inlineWrapperClass = "octoputs-add-inline-wrapper";
+            const string inlineWrapperClass = "jungle-add-inline-wrapper";
 
             bool TryAttachButton()
             {
@@ -208,10 +208,11 @@ namespace Jungle.Editor
                 {
                     return false;
                 }
-
+                
+              
                 var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
 
-                
+              
                 if (inputContainer.Q(className: inlineWrapperClass) != null)
                 {
                     return true;
