@@ -109,6 +109,7 @@ namespace Jungle.Editor
 
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
+            propertyField.AddToClassList("jungle-class-selector-field");
 
 
             // Create the button column so that we can place the clear button above the selector
