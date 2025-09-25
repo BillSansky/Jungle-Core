@@ -62,7 +62,7 @@ namespace Jungle.Editor.Conditions
                 var fieldPropertyCopy = fieldProperty.Copy();
                 var propertyField = new PropertyField(fieldPropertyCopy);
                 propertyField.AddToClassList("jungle-marginfield");
-                propertyField.BindProperty(fieldProperty);
+                EditorUtils.BindPropertySafely(propertyField, fieldProperty);
                 AttachClassSelectionButtonIfNeeded(propertyField, field, fieldProperty);
                 contentRoot.Add(propertyField);
             }

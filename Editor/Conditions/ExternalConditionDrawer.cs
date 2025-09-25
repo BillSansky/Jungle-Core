@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using EditorUtils = Jungle.Editor.EditorUtils;
 
 namespace Jungle.Editor.Conditions
 {
@@ -38,7 +39,7 @@ namespace Jungle.Editor.Conditions
                 conditionProviderField.objectType = typeof(Object);
                 conditionProviderField.allowSceneObjects = true;
 
-                conditionProviderField.BindProperty(conditionProviderProp);
+                EditorUtils.BindPropertySafely(conditionProviderField, conditionProviderProp);
 
                 conditionProviderField.RegisterValueChangedCallback(_ => ValidateConditionProvider());
             }
