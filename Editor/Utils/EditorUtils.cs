@@ -87,17 +87,25 @@ namespace Jungle.Editor
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
-            // Create a container to hold both the PropertyField and the selection controls
-            var container = new VisualElement();
-            AttachJungleEditorStyles(container);
-            container.AddToClassList("jungle-class-selector-container");
-
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+
+
+            // Create a container to hold both the PropertyField and the plus button
+            var container = new VisualElement
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Row,
+                    alignItems = Align.Center
+                }
+            };
+
 
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
+
 
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
@@ -121,6 +129,22 @@ namespace Jungle.Editor
             clearButton.style.display = DisplayStyle.None;
             clearButton.AddToClassList("jungle-custom-list-remove-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button");
+
+            // Remove the PropertyField from its current parent
+            parent.Remove(propertyField);
+            // Insert the container at the original PropertyField's position
+
+            // Configure the PropertyField to grow and fill available space
+            propertyField.style.flexGrow = 1;
+
+            // Add both elements to the container
+            container.Add(propertyField);
+            container.Add(addButton);
+            AttachJungleEditorStyles(container);
+            container.AddToClassList("jungle-class-selector-container");
+
+            addButton.AddToClassList("jungle-add-inline-button");
+
 
             // Setup button click handler
             void UpdateButtonState()
@@ -225,6 +249,11 @@ namespace Jungle.Editor
                 var inlineWrapper = new VisualElement();
                 inlineWrapper.AddToClassList(inlineWrapperClass);
 
+                inlineWrapper.style.flexDirection = FlexDirection.Row;
+                inlineWrapper.style.alignItems = Align.Center;
+                inlineWrapper.style.flexGrow = 1;
+
+
                 // Move existing children into the wrapper so the button sits inside the same outlined group
                 while (inputContainer.childCount > 0)
                 {
@@ -250,6 +279,8 @@ namespace Jungle.Editor
                     }
                 });
             }
+
+            parent.Insert(index, container);
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
