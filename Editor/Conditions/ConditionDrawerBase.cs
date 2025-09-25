@@ -39,37 +39,70 @@ namespace Jungle.Editor.Conditions
             AddStyleSheet(root, EditorStyleSheetPath);
             AddStyleSheet(root, ListStyleSheetPath);
 
-            var contentContainer = root.Q<VisualElement>("condition-content") ?? root;
-            VisualElement contentRoot = contentContainer;
+            var contentContainer = root.Q<VisualElement>("condition-content");
+            if (contentContainer == null)
+            {
+                contentContainer = new VisualElement { name = "condition-content" };
+                root.Add(contentContainer);
+            }
 
+            VisualTreeAsset contentTemplate = null;
             if (!string.IsNullOrEmpty(ContentTemplatePath))
             {
-                var contentTemplate = Resources.Load<VisualTreeAsset>(ContentTemplatePath);
+                contentTemplate = Resources.Load<VisualTreeAsset>(ContentTemplatePath);
                 if (contentTemplate == null)
                 {
                     Debug.LogError($"Could not load {ContentTemplatePath}.uxml from Resources folder");
                 }
-                else
+            }
+
+            var rebuildGuard = false;
+
+            void RebuildUI()
+            {
+                if (rebuildGuard)
                 {
-                    contentRoot = contentTemplate.CloneTree();
-                    contentContainer.Add(contentRoot);
+                    return;
+                }
+
+                rebuildGuard = true;
+
+                try
+                {
+                    root.Unbind();
+
+                    VisualElement contentRoot;
+                    if (contentTemplate != null)
+                    {
+                        contentContainer.Clear();
+                        contentRoot = contentTemplate.CloneTree();
+                        contentContainer.Add(contentRoot);
+                    }
+                    else
+                    {
+                        contentContainer.Clear();
+                        contentRoot = contentContainer;
+                    }
+
+                    SetupConditionMetadata(root, property);
+
+                    InitializeContent(contentRoot, property);
+
+                    ProcessJungleListAttributes(root, property);
+
+                    root.BindProperty(property);
+
+                    BindNegateConditionField(root, property);
+                }
+                finally
+                {
+                    rebuildGuard = false;
                 }
             }
 
-            SetupConditionMetadata(root, property);
+            RebuildUI();
 
-            InitializeContent(contentRoot, property);
-
-            if (property.propertyType == SerializedPropertyType.ManagedReference)
-            {
-                root.Bind(property.serializedObject);
-            }
-            else
-            {
-                root.BindProperty(property);
-            }
-
-            ProcessJungleListAttributes(root, property);
+            root.TrackPropertyValue(property, _ => RebuildUI());
 
             return root;
         }
@@ -195,6 +228,30 @@ namespace Jungle.Editor.Conditions
                     listAttribute.ListTitle,
                     listAttribute.EmptyMessage);
             }
+        }
+
+        private static void BindNegateConditionField(VisualElement root, SerializedProperty property)
+        {
+            if (root == null || property == null)
+            {
+                return;
+            }
+
+            var negateConditionField = root.Q<PropertyField>("negate-condition-field");
+            if (negateConditionField == null)
+            {
+                return;
+            }
+
+            var negateConditionProperty = property.FindPropertyRelative("negateCondition");
+            if (negateConditionProperty == null)
+            {
+                Debug.LogWarning($"Could not find negateCondition property on '{property.propertyPath}'.");
+                return;
+            }
+
+            negateConditionField.Unbind();
+            negateConditionField.BindProperty(negateConditionProperty);
         }
 
         private static void AddStyleSheet(VisualElement element, string styleSheetPath)
