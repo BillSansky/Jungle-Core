@@ -87,23 +87,18 @@ namespace Jungle.Editor
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
-            if (propertyField == null) return;
-
 
             // Create a container to hold both the PropertyField and the selection controls
             var container = new VisualElement();
             AttachJungleEditorStyles(container);
             container.AddToClassList("jungle-class-selector-container");
 
-
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
-
-
+            
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
-            var index = parent.IndexOf(propertyField);
-
+           
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
 
