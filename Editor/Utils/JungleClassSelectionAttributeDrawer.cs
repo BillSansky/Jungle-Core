@@ -16,7 +16,7 @@ namespace Jungle.Editor
             var baseType = classSelectionAttribute.BaseType ?? fieldInfo?.FieldType;
 
             var propertyField = new PropertyField(property);
-            propertyField.BindProperty(property);
+            EditorUtils.BindPropertySafely(propertyField, property);
 
             var supportsComponents = baseType != null && typeof(Component).IsAssignableFrom(baseType);
             var supportsManagedReference = property.propertyType == SerializedPropertyType.ManagedReference;

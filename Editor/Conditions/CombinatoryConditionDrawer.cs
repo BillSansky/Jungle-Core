@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using EditorUtils = Jungle.Editor.EditorUtils;
 
 namespace Jungle.Editor.Conditions
 {
@@ -31,7 +32,10 @@ namespace Jungle.Editor.Conditions
                 return;
             }
 
-            logicalOperatorField?.BindProperty(logicalOperatorProperty);
+            if (logicalOperatorField != null)
+            {
+                EditorUtils.BindPropertySafely(logicalOperatorField, logicalOperatorProperty);
+            }
         }
     }
 }

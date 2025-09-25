@@ -90,7 +90,10 @@ namespace Jungle.Editor.Conditions
 
                     ProcessJungleListAttributes(root, property);
 
-                    root.BindProperty(property);
+                    if (property.propertyType != SerializedPropertyType.ManagedReference)
+                    {
+                        root.BindProperty(property);
+                    }
 
                     BindNegateConditionField(root, property);
                 }
@@ -250,8 +253,7 @@ namespace Jungle.Editor.Conditions
                 return;
             }
 
-            negateConditionField.Unbind();
-            negateConditionField.BindProperty(negateConditionProperty);
+            EditorUtils.BindPropertySafely(negateConditionField, negateConditionProperty);
         }
 
         private static void AddStyleSheet(VisualElement element, string styleSheetPath)

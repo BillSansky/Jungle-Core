@@ -12,6 +12,28 @@ namespace Jungle.Editor
     public static class EditorUtils
     {
         /// <summary>
+        /// Binds a UI Toolkit element to a property while handling managed references gracefully.
+        /// </summary>
+        public static void BindPropertySafely(BindableElement element, SerializedProperty property)
+        {
+            if (element == null || property == null)
+            {
+                return;
+            }
+
+            element.Unbind();
+
+            if (property.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                element.bindingPath = property.propertyPath;
+                element.Bind(property.serializedObject);
+                return;
+            }
+
+            element.BindProperty(property);
+        }
+
+        /// <summary>
         /// Gets all available types that inherit from a specified base type using TypeCache
         /// </summary>
         /// <typeparam name="T">The base type to search for subclasses of</typeparam>
