@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jungle.Attributes;
 using Jungle.Conditions;
+using EditorUtils = Jungle.Editor.EditorUtils;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -58,11 +59,45 @@ namespace Jungle.Editor.Conditions
                     continue;
                 }
 
-                var propertyField = new PropertyField(fieldProperty.Copy());
+                var fieldPropertyCopy = fieldProperty.Copy();
+                var propertyField = new PropertyField(fieldPropertyCopy);
                 propertyField.AddToClassList("jungle-marginfield");
                 propertyField.BindProperty(fieldProperty);
+                AttachClassSelectionButtonIfNeeded(propertyField, field, fieldProperty);
                 contentRoot.Add(propertyField);
             }
+        }
+
+        private static void AttachClassSelectionButtonIfNeeded(PropertyField propertyField, FieldInfo field,
+            SerializedProperty fieldProperty)
+        {
+            var classSelectionAttribute = field.GetCustomAttribute<JungleClassSelectionAttribute>();
+            if (classSelectionAttribute == null)
+            {
+                return;
+            }
+
+            var baseType = classSelectionAttribute.BaseType ?? field.FieldType;
+            if (baseType == null)
+            {
+                var fieldTypeName = field.FieldType != null ? field.FieldType.Name : "Unknown";
+                var message = "JungleClassSelectionAttribute requires a valid base type but '" + fieldTypeName + "' is not supported.";
+                Debug.LogWarning(message);
+                return;
+            }
+
+            var propertyForSelection = fieldProperty.Copy();
+            var isInitialized = false;
+            propertyField.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                if (isInitialized)
+                {
+                    return;
+                }
+
+                isInitialized = true;
+                EditorUtils.SetupFieldWithClassSelectionButton(propertyField, baseType, propertyForSelection);
+            });
         }
 
     }
