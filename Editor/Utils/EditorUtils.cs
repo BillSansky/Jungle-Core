@@ -87,7 +87,6 @@ namespace Jungle.Editor
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
-
             // Create a container to hold both the PropertyField and the selection controls
             var container = new VisualElement();
             AttachJungleEditorStyles(container);
@@ -95,10 +94,11 @@ namespace Jungle.Editor
 
             var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
             var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
-            
+
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
-           
+            var index = parent.IndexOf(propertyField);
+
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
 
@@ -198,21 +198,25 @@ namespace Jungle.Editor
 
             const string inlineWrapperClass = "jungle-add-inline-wrapper";
 
+            if (index >= 0 && index < parent.childCount - 1)
+                parent.Insert(index, container);
+
             bool TryAttachButton()
             {
                 // unity-content contains the label + base field when the property renders with a label
                 var unityContent = propertyField.Q(className: "unity-content");
-                var baseField = unityContent?.Q(className: "unity-base-field") ?? propertyField.Q(className: "unity-base-field");
+                var baseField = unityContent?.Q(className: "unity-base-field") ??
+                                propertyField.Q(className: "unity-base-field");
 
                 if (baseField == null)
                 {
                     return false;
                 }
-                
-              
+
+
                 var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
 
-              
+
                 if (inputContainer.Q(className: inlineWrapperClass) != null)
                 {
                     return true;
@@ -226,7 +230,7 @@ namespace Jungle.Editor
                 {
                     inlineWrapper.Add(inputContainer[0]);
                 }
-                
+
 
                 inlineWrapper.Add(addButton);
                 inputContainer.Add(inlineWrapper);
@@ -242,7 +246,7 @@ namespace Jungle.Editor
                     if (!TryAttachButton())
                     {
                         // Try once more after a small delay to handle asynchronous bindings.
-                        propertyField.schedule.Execute(_=>TryAttachButton()).ExecuteLater(50);
+                        propertyField.schedule.Execute(_ => TryAttachButton()).ExecuteLater(50);
                     }
                 });
             }
