@@ -136,6 +136,7 @@ namespace Jungle.Editor
 
             // Add both elements to the container
             container.Add(propertyField);
+
             container.Add(buttonColumn);
             buttonColumn.Add(clearButton);
 
@@ -300,6 +301,7 @@ namespace Jungle.Editor
             }
 
             AttemptInlineAttachment();
+
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
