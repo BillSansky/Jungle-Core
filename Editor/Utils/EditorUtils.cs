@@ -92,7 +92,9 @@ namespace Jungle.Editor
 
 
             // Create a container to hold both the PropertyField and the plus button
+
             var container = new VisualElement();
+
 
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
@@ -119,6 +121,8 @@ namespace Jungle.Editor
                 text = "✕",
                 tooltip = "Clear selection"
             };
+
+
             clearButton.AddToClassList("jungle-custom-list-remove-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button--hidden");
@@ -128,6 +132,7 @@ namespace Jungle.Editor
 
             // Add both elements to the container
             container.Add(propertyField);
+
             container.Add(buttonColumn);
             buttonColumn.Add(clearButton);
             buttonColumn.Add(addButton);
@@ -136,6 +141,7 @@ namespace Jungle.Editor
             AttachJungleEditorStyles(propertyField);
             AttachJungleEditorStyles(buttonColumn);
             container.AddToClassList("jungle-class-selector-container");
+
 
             void UpdateButtonState()
             {
@@ -232,7 +238,9 @@ namespace Jungle.Editor
                 if (inlineWrapper == null)
                 {
                     inlineWrapper = new VisualElement();
+
                     inlineWrapper.AddToClassList("jungle-add-inline-wrapper");
+
                     AttachJungleEditorStyles(inlineWrapper);
                 }
 
