@@ -17,6 +17,7 @@ namespace Jungle.Editor
 
             var root = new VisualElement();                  // wrapper to isolate our changes
             var field = new PropertyField(property);
+            
             root.Add(field);
             field.BindProperty(property);
 
@@ -34,8 +35,7 @@ namespace Jungle.Editor
                     if (initialized || field.panel == null) return;
                     initialized = true;
 
-                    // Make sure Setup... only adds children under 'field' (or 'root'),
-                    // not by reparenting 'field' itself.
+                  
                     EditorUtils.SetupFieldWithClassSelectionButton(field, baseType, property);
                 });
             }

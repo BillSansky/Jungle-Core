@@ -94,34 +94,25 @@ namespace Jungle.Editor
             // Create a container to hold both the PropertyField and the plus button
 
             var container = new VisualElement();
-            container.style.flexDirection = FlexDirection.Row;
-            container.style.alignItems = Align.Center;
+            container.AddToClassList("jungle-class-selector-container");
             
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
 
-            // Configure the PropertyField to grow and fill available space
+
             propertyField.AddToClassList("jungle-class-selector-field");
 
             // Create the button column so that we can place the clear button above the selector
             var buttonColumn = new VisualElement();
             buttonColumn.AddToClassList("jungle-class-selector-button-column");
-            buttonColumn.style.flexDirection = FlexDirection.Column;
-            buttonColumn.style.alignItems = Align.Stretch;
-            buttonColumn.style.justifyContent = Justify.FlexStart;
-
-            // Create the main jungle themed selection button
-            var addButtonIcon = new Label("+");
-            addButtonIcon.AddToClassList("jungle-inline-button-icon");
-
+            
             var addButton = new Button
             {
+                text = "+",
                 tooltip = "Select or change type"
             };
-            addButton.text = string.Empty;
-            addButton.Add(addButtonIcon);
-            addButton.AddToClassList("jungle-add-inline-button");
+            
 
             // Create the clear button which will reset the value to null
             var clearButton = new Button
@@ -130,9 +121,6 @@ namespace Jungle.Editor
                 tooltip = "Clear selection"
             };
             
-            clearButton.AddToClassList("jungle-class-selector-clear-button");
-            clearButton.AddToClassList("jungle-class-selector-clear-button--hidden");
-
             // Remove the PropertyField from its current parent
             parent.Remove(propertyField);
 
@@ -142,7 +130,7 @@ namespace Jungle.Editor
 
             AttachJungleEditorStyles(container);
             AttachJungleEditorStyles(propertyField);
-            container.AddToClassList("jungle-class-selector-container");
+          
 
             void UpdateButtonState()
             {
@@ -160,7 +148,7 @@ namespace Jungle.Editor
                     hasValue = property.objectReferenceValue != null;
                 }
 
-                addButtonIcon.text = hasValue ? "⇄" : "+";
+                addButton.text = hasValue ? "⇄" : "+";
                 addButton.EnableInClassList("jungle-class-selector-button--has-value", hasValue);
 
                 clearButton.EnableInClassList("jungle-class-selector-clear-button--visible", hasValue);

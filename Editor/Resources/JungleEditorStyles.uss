@@ -1,11 +1,10 @@
-﻿
+﻿* SECTIONS *,
 .jungle-editor {
     padding: 5px 5px 1px;
     margin: 0;
     border-width: 1px;
-    border-color: rgb(99, 84, 131);
+    border-color: #22B14C;
     border-radius: 4px;
-    background-color: var(--unity-colors-default-background);
 }
 
 .jungle-section-header {
@@ -15,15 +14,14 @@
     margin-bottom: 10px;
 }
 
-.jungle-section-content {
-    margin-top: 2px;
-
-}
-
 .jungle-subsection-header {
     -unity-font-style: bold;
     flex-grow: 1;
     margin-bottom: 6px;
+}
+
+.jungle-section-content {
+    margin-top: 2px;
 }
 
 .jungle-section {
@@ -32,13 +30,61 @@
     background-color: var(--unity-colors-inspector_titlebar-background);
     border-radius: 4px;
     border-width: 1px;
-    border-color: var(--unity-colors-default-border);
 }
+
+.jungle-section-foldable {
+    margin: 4px 6px;
+    padding: 0;
+    background-color: var(--unity-colors-inspector_titlebar-background);
+    border-radius: 4px;
+    border-width: 1px;
+}
+
+.jungle-section-foldable .unity-foldout__toggle {
+    margin: 0;
+    padding: 8px;
+    background-color: transparent;
+    border-bottom-width: 1px;
+    border-radius: 4px 4px 0 0;
+    min-height: auto;
+}
+
+.jungle-section-foldable .unity-foldout__toggle:hover {
+    background-color: var(--unity-colors-inspector_titlebar-background-hover);
+}
+
+
+.jungle-section-foldable .unity-foldout--opened .unity-foldout__toggle {
+    border-bottom-width: 1px;
+    border-radius: 4px 4px 0 0;
+}
+
+
+* FIELDS *,
 
 .jungle-marginfield {
     margin-left: 15px;
 }
 
+.jungle-empty-message {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    align-self: center;
+    margin-left: 8px;
+    margin-right: 8px;
+    -unity-font-style: italic;
+    opacity: 0.7;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+}
+
+.jungle-warning {
+    margin: 4px 6px;
+}
+
+* RUNTIME INFO *,
 .jungle-runtime-info {
     background-color: var(--unity-colors-inspector_titlebar-background-hover);
     border-left-width: 3px;
@@ -50,7 +96,6 @@
 .jungle-runtime-list {
     margin-top: 4px;
     flex-direction: column;
-    row-gap: 4px;
 }
 
 .jungle-runtime-subheader {
@@ -70,116 +115,35 @@
     opacity: 0.8;
 }
 
-.jungle-section-foldable {
-    margin: 4px 6px;
-    padding: 0;
-    background-color: var(--unity-colors-inspector_titlebar-background);
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: var(--unity-colors-default-border);
-}
-
-.jungle-section-foldable .unity-foldout__toggle {
-    margin: 0;
-    padding: 8px;
-    background-color: transparent;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--unity-colors-default-border);
-    border-radius: 4px 4px 0 0;
-    min-height: auto;
-}
-
-.jungle-section-foldable .unity-foldout__toggle:hover {
-    background-color: var(--unity-colors-inspector_titlebar-background-hover);
-}
-
-.jungle-section-foldable .unity-foldout__toggle .unity-toggle__checkmark {
-    margin-right: 4px;
-    margin-left: 0px;
-    width: 12px;
-    height: 12px;
-    margin-top: 1px;
-}
-
-.jungle-section-foldable .unity-foldout__toggle .unity-foldout__text {
-    font-size: 12px;
-    -unity-font-style: bold;
-    color: var(--unity-colors-default-text);
-    opacity: 0.9;
-    margin: 0;
-    padding: 0;
-}
-
-.jungle-section-foldable .unity-foldout__content {
-    padding: 8px;
-    margin: 0;
-    background-color: transparent;
-}
-
-.jungle-section-foldable .unity-foldout--opened .unity-foldout__toggle {
-    border-bottom-width: 1px;
-    border-bottom-color: var(--unity-colors-default-border);
-    border-radius: 4px 4px 0 0;
-}
-
-
-
-.jungle-section-foldable .unity-property-field > .unity-property-field__input {
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-width: 60px;
-    margin-left: 4px;
-    flex-basis: 0;
-}
-
-
-.jungle-add-inline-button {
+* BUTTONS *,
+.jungle-important-button:enabled {
     width: 18px;
     height: 18px;
     min-width: 18px;
     min-height: 18px;
     border-radius: 3px;
-    background-color: #3E8F63;
-    border-color: #9BD7B8;
+    background-color: #22B14C;
+    border-color: #22B14C;
     border-width: 1px;
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    color: var(--unity-colors-button-text);
     padding: 0;
     margin-left: 8px;
     flex-shrink: 0;
     align-self: center;
 }
 
-.jungle-inline-button-icon {
-    color: inherit;
+.jungle-important-button:hover {
+    background-color: #2CE663;
+    border-color: #2CE663;
+}
+
+.jungle-button-icon {
     -unity-text-align: middle-center;
 }
 
-.jungle-add-inline-button:hover {
-    background-color: #4FA876;
-    border-color: #B6E4CF;
-}
-
-.jungle-add-inline-button:active {
-    background-color: #2F7A52;
-    border-color: #6AB98D;
-}
-
-.jungle-warning
-{
-    margin: 4px 6px;
-}
-
-.jungle-editor-button {
-    margin-top: 8px;
-    align-self: flex-start;
-    min-width: 140px;
-}
-
-
-* Root container for the whole package window *,
+* Package Window *,
 .jungle-root {
     padding: 8px;
     margin: 4px;
@@ -189,7 +153,7 @@
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-left-color: #1E7A4F;      /* jungle green */
+    border-left-color: #1E7A4F; /* jungle green */
     border-right-color: #1E7A4F;
     border-top-color: #1E7A4F;
     border-bottom-color: #1E7A4F;
@@ -216,39 +180,10 @@
 }
 
 .footer-label {
-    color: #BFEBD5;           /* minty green */
+    color: #BFEBD5; /* minty green */
     -unity-font-style: italic;
 }
 
-/* Buttons */
-.jungle-btn--primary {
-    color: white;
-    border-radius: 6px;
-    padding-left: 12px;
-    padding-right: 12px;
-    height: 24px;
-    min-height: 24px;
-}
-.jungle-btn--primary:hover { background-color: #23935E; }
-
-.jungle-btn--ghost {
-    background-color: rgba(30,122,79,0.10);
-    color: #1E7A4F;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: #1E7A4F;
-    border-right-color: #1E7A4F;
-    border-top-color: #1E7A4F;
-    border-bottom-color: #1E7A4F;
-    border-radius: 6px;
-    padding-left: 10px;
-    padding-right: 10px;
-    height: 24px;
-    min-height: 24px;
-}
-.jungle-btn--ghost:hover { background-color: rgba(35,147,94,0.15); }
 
 /* Text */
 .pkg-title {
@@ -256,22 +191,30 @@
     font-size: 13px;
     color: #E8FFF3;
 }
+
 .pkg-desc {
     color: #D3F7E6;
     white-space: normal;
 }
+
 .pkg-status {
     -unity-font-style: bold;
     margin-left: auto;
 }
-.status-installed { color: #8ADAB2; }
-.status-missing   { color: #E88A8A; }
 
-/* Class selector field layout */
+.status-installed {
+    color: #8ADAB2;
+}
+
+.status-missing {
+    color: #E88A8A;
+}
+
+* CLASS SELECTOR *,
 .jungle-class-selector-container {
     flex-direction: row;
+    flex-basis: auto;
     align-items: center;
-    column-gap: 4px;
 }
 
 .jungle-class-selector-field {
@@ -279,71 +222,25 @@
     flex-shrink: 1;
 }
 
-.jungle-class-selector-field .unity-base-field__input {
-    padding: 0;
-    background-color: transparent;
-    border-width: 0;
-}
-
-.jungle-add-inline-wrapper {
+.jungle-inline-wrapper {
     flex-grow: 1;
     flex-direction: row;
     align-items: center;
-    column-gap: 4px;
     padding: 2px 2px 2px 8px;
     border-width: 1px;
-    border-color: var(--unity-colors-default-border);
-    border-radius: 9999px;
-    background-color: var(--unity-colors-default-background);
 }
 
-.jungle-add-inline-wrapper > :first-child {
-    flex-grow: 1;
-    flex-shrink: 1;
-}
 
 .jungle-class-selector-inline-buttons {
     flex-direction: row;
     align-items: center;
-    column-gap: 4px;
     margin-left: 6px;
     flex-shrink: 0;
 }
 
-.jungle-class-selector-inline-buttons > .jungle-custom-list-remove-button {
-    margin-left: 0;
-}
+.jungle-class-selector-button-column {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
 
-.jungle-add-inline-button.jungle-class-selector-button--has-value {
-    background-color: #2C7A52;
-    border-color: #7BCBA4;
-}
-
-.jungle-add-inline-button.jungle-class-selector-button--has-value:hover {
-    background-color: #37905F;
-    border-color: #94D8B8;
-}
-
-.jungle-add-inline-button.jungle-class-selector-button--has-value:active {
-    background-color: #256845;
-    border-color: #63B78E;
-}
-
-.jungle-class-selector-clear-button {
-    background-color: rgba(232, 138, 138, 0.9);
-    border-color: #E88A8A;
-    color: white;
-}
-
-.jungle-class-selector-clear-button--hidden {
-    display: none;
-}
-
-.jungle-class-selector-clear-button--visible {
-    display: flex;
-}
-
-.jungle-class-selector-clear-button:hover {
-    background-color: rgba(232, 138, 138, 1.0);
-    border-color: #F2B3B3;
 }
