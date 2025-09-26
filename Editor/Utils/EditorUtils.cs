@@ -136,6 +136,7 @@ namespace Jungle.Editor
 
             // Add both elements to the container
             container.Add(propertyField);
+
             container.Add(buttonColumn);
             buttonColumn.Add(clearButton);
 
@@ -216,6 +217,7 @@ namespace Jungle.Editor
             parent.Insert(index, container);
 
             VisualElement inlineWrapper = null;
+
             IVisualElementScheduledItem pendingInlineRetry = null;
 
             void EnsureInlineWrapper()
