@@ -237,6 +237,12 @@
     border-radius: 4px;
 }
 
+.jungle-inline-content{
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-shrink: 1;
+}
+
 
 .jungle-inline-button-column {
     flex-direction: column;
