@@ -97,56 +97,54 @@ namespace Jungle.Editor
                 style =
                 {
                     flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center
+                    alignItems = Align.FlexStart
                 }
             };
-
 
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
 
-
             // Configure the PropertyField to grow and fill available space
             propertyField.style.flexGrow = 1;
             propertyField.AddToClassList("jungle-class-selector-field");
-
 
             // Create the button column so that we can place the clear button above the selector
             var buttonColumn = new VisualElement();
             buttonColumn.AddToClassList("jungle-class-selector-button-column");
 
             // Create the main jungle themed selection button
-
-            var addButton = new Button();
-            addButton.text = "+";
-            addButton.tooltip = "Select or change type";
+            var addButton = new Button
+            {
+                text = "+",
+                tooltip = "Select or change type"
+            };
             addButton.AddToClassList("jungle-add-inline-button");
 
             // Create the clear button which will reset the value to null
-            var clearButton = new Button();
-            clearButton.text = "✕";
-            clearButton.tooltip = "Clear selection";
+            var clearButton = new Button
+            {
+                text = "✕",
+                tooltip = "Clear selection"
+            };
             clearButton.style.display = DisplayStyle.None;
             clearButton.AddToClassList("jungle-custom-list-remove-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button");
 
             // Remove the PropertyField from its current parent
             parent.Remove(propertyField);
-            // Insert the container at the original PropertyField's position
-
-            // Configure the PropertyField to grow and fill available space
-            propertyField.style.flexGrow = 1;
 
             // Add both elements to the container
             container.Add(propertyField);
+
+            container.Add(buttonColumn);
+            buttonColumn.Add(clearButton);
+
             AttachJungleEditorStyles(container);
+            AttachJungleEditorStyles(propertyField);
+            AttachJungleEditorStyles(buttonColumn);
             container.AddToClassList("jungle-class-selector-container");
 
-            addButton.AddToClassList("jungle-add-inline-button");
-
-
-            // Setup button click handler
             void UpdateButtonState()
             {
                 var serializedObject = property.serializedObject;
@@ -211,99 +209,99 @@ namespace Jungle.Editor
             };
 
 
-            // Add both elements to the container
-            buttonColumn.Add(clearButton);
-            container.Add(buttonColumn);
-
             propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
             UpdateButtonState();
 
             const string inlineWrapperClass = "jungle-add-inline-wrapper";
 
-            if (index >= 0 && index < parent.childCount - 1)
-                parent.Insert(index, container);
+            parent.Insert(index, container);
 
-            bool TryAttachButton()
+            VisualElement inlineWrapper = null;
+            var inlineAttachmentComplete = false;
+            var awaitingGeometry = false;
+
+            bool AttachInlineButton()
             {
-                // unity-content contains the label + base field when the property renders with a label
-                var unityContent = propertyField.Q(className: "unity-content");
-                var baseField = unityContent?.Q(className: "unity-base-field") ??
-                                propertyField.Q(className: "unity-base-field");
+                var contentContainer = propertyField.contentContainer;
 
-                if (baseField == null)
+                if (contentContainer.childCount == 0)
                 {
                     return false;
                 }
 
-
-                var inputContainer = baseField.Q(className: "unity-base-field__input") ?? baseField;
-
-
-                var inlineWrapper = inputContainer.Q(className: inlineWrapperClass);
-                if (inlineWrapper != null)
+                if (inlineWrapper == null)
                 {
-                    if (addButton.parent != inlineWrapper)
-                    {
-                        inlineWrapper.Add(addButton);
-                    }
-
-                    return true;
+                    inlineWrapper = new VisualElement();
+                    inlineWrapper.AddToClassList(inlineWrapperClass);
+                    AttachJungleEditorStyles(inlineWrapper);
                 }
 
-                inlineWrapper = new VisualElement();
-                inlineWrapper.AddToClassList(inlineWrapperClass);
-
-                inlineWrapper.style.flexDirection = FlexDirection.Row;
-                inlineWrapper.style.alignItems = Align.Center;
-                inlineWrapper.style.flexGrow = 1;
-
-
-                // Move existing children into the wrapper so the button sits inside the same outlined group
-                while (inputContainer.childCount > 0)
+                if (inlineWrapper.parent != contentContainer)
                 {
-                    inlineWrapper.Add(inputContainer[0]);
+                    var fieldElement = contentContainer[0];
+                    contentContainer.Insert(0, inlineWrapper);
+                    inlineWrapper.Add(fieldElement);
                 }
 
+                if (!inlineWrapper.Contains(addButton))
+                {
+                    inlineWrapper.Add(addButton);
+                }
 
-                inlineWrapper.Add(addButton);
-                inputContainer.Add(inlineWrapper);
-
+                inlineAttachmentComplete = true;
                 return true;
             }
 
-            parent.Insert(index, container);
-
-            bool AttachButtonOrScheduleFallback()
+            void UseFallbackColumn()
             {
-                if (TryAttachButton())
+                if (addButton.parent != buttonColumn)
                 {
-                    return true;
+                    buttonColumn.Add(addButton);
                 }
 
-                // Delay attachment until the visual tree of the PropertyField is fully built.
-                propertyField.schedule.Execute(() =>
-                {
-                    if (TryAttachButton())
-                    {
-                        return;
-                    }
-
-                    // Try once more after a small delay to handle asynchronous bindings. If it still
-                    // fails, fall back to placing the button inside the external column so the
-                    // control remains usable and styled.
-                    propertyField.schedule.Execute(_ =>
-                    {
-                        if (!TryAttachButton() && addButton.parent != buttonColumn)
-                        {
-                            buttonColumn.Add(addButton);
-                        }
-                    }).ExecuteLater(50);
-                });
-
-                return false;
+                inlineAttachmentComplete = true;
             }
 
-            AttachButtonOrScheduleFallback();
+            void AttemptInlineAttachment()
+            {
+                if (inlineAttachmentComplete)
+                {
+                    return;
+                }
+
+                if (AttachInlineButton())
+                {
+                    if (awaitingGeometry)
+                    {
+                        propertyField.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                        awaitingGeometry = false;
+                    }
+
+                    return;
+                }
+
+                if (!awaitingGeometry)
+                {
+                    propertyField.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                    awaitingGeometry = true;
+                }
+            }
+
+            void OnGeometryChanged(GeometryChangedEvent evt)
+            {
+                propertyField.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                awaitingGeometry = false;
+
+                if (AttachInlineButton())
+                {
+                    return;
+                }
+
+                UseFallbackColumn();
+            }
+
+            AttemptInlineAttachment();
+
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
