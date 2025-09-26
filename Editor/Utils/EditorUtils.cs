@@ -217,17 +217,26 @@ namespace Jungle.Editor
             parent.Insert(index, container);
 
             VisualElement inlineWrapper = null;
-            var inlineAttachmentComplete = false;
-            var awaitingGeometry = false;
 
+            IVisualElementScheduledItem pendingInlineRetry = null;
 
-            bool AttachInlineButton()
+            void EnsureInlineWrapper()
             {
-                var contentContainer = propertyField.contentContainer;
+                var valueInputContainer = propertyField.contentContainer;
+                var inputParent = valueInputContainer.parent;
 
-                if (contentContainer.childCount == 0)
+                if (inputParent == null)
                 {
-                    return false;
+                    if (pendingInlineRetry == null)
+                    {
+                        pendingInlineRetry = propertyField.schedule.Execute(() =>
+                        {
+                            pendingInlineRetry = null;
+                            EnsureInlineWrapper();
+                        });
+                    }
+
+                    return;
                 }
 
                 if (inlineWrapper == null)
@@ -237,87 +246,26 @@ namespace Jungle.Editor
                     AttachJungleEditorStyles(inlineWrapper);
                 }
 
-                if (inlineWrapper.parent != contentContainer)
-
+                if (inlineWrapper.parent != inputParent)
                 {
-                    contentContainer.Insert(0, inlineWrapper);
+                    var insertIndex = inputParent.IndexOf(valueInputContainer);
+                    inputParent.Insert(insertIndex, inlineWrapper);
                 }
 
-                var childrenToMove = new List<VisualElement>();
-
-                foreach (var child in contentContainer.Children())
+                if (valueInputContainer.parent != inlineWrapper)
                 {
-                    if (child != inlineWrapper)
-                    {
-                        childrenToMove.Add(child);
-                    }
-                }
-
-                foreach (var child in childrenToMove)
-                {
-                    inlineWrapper.Add(child);
+                    inlineWrapper.Insert(0, valueInputContainer);
                 }
 
                 if (addButton.parent != inlineWrapper)
                 {
                     inlineWrapper.Add(addButton);
                 }
-
-                inlineAttachmentComplete = true;
-                return true;
             }
 
-            void UseFallbackColumn()
-            {
-                if (addButton.parent != buttonColumn)
-                {
-                    buttonColumn.Add(addButton);
-                }
+            EnsureInlineWrapper();
 
-                inlineAttachmentComplete = true;
-            }
-
-            void AttemptInlineAttachment()
-            {
-                if (inlineAttachmentComplete)
-                {
-                    return;
-                }
-
-
-                if (AttachInlineButton())
-                {
-                    if (awaitingGeometry)
-                    {
-                        propertyField.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                        awaitingGeometry = false;
-                    }
-
-                    return;
-                }
-
-                if (!awaitingGeometry)
-                {
-                    propertyField.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                    awaitingGeometry = true;
-                }
-            }
-
-            void OnGeometryChanged(GeometryChangedEvent evt)
-            {
-                propertyField.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                awaitingGeometry = false;
-
-                if (AttachInlineButton())
-                {
-                    return;
-                }
-
-                UseFallbackColumn();
-            }
-
-            AttemptInlineAttachment();
-
+            propertyField.RegisterCallback<AttachToPanelEvent>(_ => EnsureInlineWrapper());
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
