@@ -145,11 +145,16 @@
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    color: white;
+    color: var(--unity-colors-button-text);
     padding: 0;
     margin-left: 8px;
     flex-shrink: 0;
     align-self: center;
+}
+
+.jungle-inline-button-icon {
+    color: inherit;
+    -unity-text-align: middle-center;
 }
 
 .jungle-add-inline-button:hover {
