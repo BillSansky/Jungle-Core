@@ -265,7 +265,13 @@
 /* Class selector field layout */
 .jungle-class-selector-container {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
+    column-gap: 4px;
+}
+
+.jungle-class-selector-field {
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 .jungle-class-selector-field .unity-base-field__input {
@@ -288,6 +294,7 @@
 
 .jungle-add-inline-wrapper > :first-child {
     flex-grow: 1;
+    flex-shrink: 1;
 }
 
 .jungle-add-inline-wrapper > .jungle-add-inline-button {
@@ -312,10 +319,28 @@
     border-color: #7BCBA4;
 }
 
+.jungle-add-inline-button.jungle-class-selector-button--has-value:hover {
+    background-color: #37905F;
+    border-color: #94D8B8;
+}
+
+.jungle-add-inline-button.jungle-class-selector-button--has-value:active {
+    background-color: #256845;
+    border-color: #63B78E;
+}
+
 .jungle-class-selector-clear-button {
     background-color: rgba(232, 138, 138, 0.9);
     border-color: #E88A8A;
     color: white;
+}
+
+.jungle-class-selector-clear-button--hidden {
+    display: none;
+}
+
+.jungle-class-selector-clear-button--visible {
+    display: flex;
 }
 
 .jungle-class-selector-clear-button:hover {
