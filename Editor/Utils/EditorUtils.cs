@@ -96,9 +96,7 @@ namespace Jungle.Editor
             var container = new VisualElement();
             container.style.flexDirection = FlexDirection.Row;
             container.style.alignItems = Align.Center;
-            container.style.gap = 4f;
-
-
+            
             // Get the parent and index of the original PropertyField
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
@@ -131,8 +129,7 @@ namespace Jungle.Editor
                 text = "✕",
                 tooltip = "Clear selection"
             };
-          
-            clearButton.AddToClassList("jungle-custom-list-remove-button");
+            
             clearButton.AddToClassList("jungle-class-selector-clear-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button--hidden");
 
@@ -248,7 +245,7 @@ namespace Jungle.Editor
                     inlineWrapper.AddToClassList("jungle-add-inline-wrapper");
                     inlineWrapper.style.flexDirection = FlexDirection.Row;
                     inlineWrapper.style.alignItems = Align.Center;
-                    inlineWrapper.style.gap = 4f;
+                 
                     AttachJungleEditorStyles(inlineWrapper);
                 }
 
@@ -258,7 +255,7 @@ namespace Jungle.Editor
                     inlineButtonGroup.AddToClassList("jungle-class-selector-inline-buttons");
                     inlineButtonGroup.style.flexDirection = FlexDirection.Row;
                     inlineButtonGroup.style.alignItems = Align.Center;
-                    inlineButtonGroup.style.gap = 4f;
+
                     AttachJungleEditorStyles(inlineButtonGroup);
                 }
 
