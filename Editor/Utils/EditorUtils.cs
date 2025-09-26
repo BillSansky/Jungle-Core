@@ -108,11 +108,15 @@ namespace Jungle.Editor
             buttonColumn.AddToClassList("jungle-class-selector-button-column");
 
             // Create the main jungle themed selection button
+            var addButtonIcon = new Label("+");
+            addButtonIcon.AddToClassList("jungle-inline-button-icon");
+
             var addButton = new Button
             {
-                text = "+",
                 tooltip = "Select or change type"
             };
+            addButton.text = string.Empty;
+            addButton.Add(addButtonIcon);
             addButton.AddToClassList("jungle-add-inline-button");
 
             // Create the clear button which will reset the value to null
@@ -153,11 +157,12 @@ namespace Jungle.Editor
                     hasValue = property.objectReferenceValue != null;
                 }
 
-                addButton.text = hasValue ? "⇄" : "+";
+                addButtonIcon.text = hasValue ? "⇄" : "+";
                 addButton.EnableInClassList("jungle-class-selector-button--has-value", hasValue);
 
                 clearButton.EnableInClassList("jungle-class-selector-clear-button--visible", hasValue);
                 clearButton.EnableInClassList("jungle-class-selector-clear-button--hidden", !hasValue);
+                clearButton.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
             addButton.clicked += () =>
