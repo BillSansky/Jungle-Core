@@ -149,7 +149,7 @@
     padding: 0;
     margin-left: 8px;
     flex-shrink: 0;
-    align-self: flex-start;
+    align-self: center;
 }
 
 .jungle-add-inline-button:hover {
@@ -297,20 +297,15 @@
     flex-shrink: 1;
 }
 
-.jungle-add-inline-wrapper > .jungle-add-inline-button {
+.jungle-class-selector-inline-buttons {
+    flex-direction: row;
+    align-items: center;
+    column-gap: 4px;
     margin-left: 6px;
-}
-
-.jungle-class-selector-button-column {
-    flex-direction: column;
-    align-items: stretch;
-    row-gap: 2px;
-    margin-left: 4px;
     flex-shrink: 0;
 }
 
-.jungle-class-selector-button-column > .jungle-add-inline-button,
-.jungle-class-selector-button-column > .jungle-custom-list-remove-button {
+.jungle-class-selector-inline-buttons > .jungle-custom-list-remove-button {
     margin-left: 0;
 }
 

@@ -121,8 +121,7 @@ namespace Jungle.Editor
                 text = "✕",
                 tooltip = "Clear selection"
             };
-
-
+          
             clearButton.AddToClassList("jungle-custom-list-remove-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button");
             clearButton.AddToClassList("jungle-class-selector-clear-button--hidden");
@@ -133,15 +132,10 @@ namespace Jungle.Editor
             // Add both elements to the container
             container.Add(propertyField);
 
-            container.Add(buttonColumn);
-            buttonColumn.Add(clearButton);
-            buttonColumn.Add(addButton);
 
             AttachJungleEditorStyles(container);
             AttachJungleEditorStyles(propertyField);
-            AttachJungleEditorStyles(buttonColumn);
             container.AddToClassList("jungle-class-selector-container");
-
 
             void UpdateButtonState()
             {
@@ -214,6 +208,8 @@ namespace Jungle.Editor
             parent.Insert(index, container);
 
             VisualElement inlineWrapper = null;
+            VisualElement inlineButtonGroup = null;
+
             IVisualElementScheduledItem pendingInlineRetry = null;
 
             void EnsureInlineWrapper()
@@ -238,10 +234,15 @@ namespace Jungle.Editor
                 if (inlineWrapper == null)
                 {
                     inlineWrapper = new VisualElement();
-
                     inlineWrapper.AddToClassList("jungle-add-inline-wrapper");
-
                     AttachJungleEditorStyles(inlineWrapper);
+                }
+
+                if (inlineButtonGroup == null)
+                {
+                    inlineButtonGroup = new VisualElement();
+                    inlineButtonGroup.AddToClassList("jungle-class-selector-inline-buttons");
+                    AttachJungleEditorStyles(inlineButtonGroup);
                 }
 
                 if (inlineWrapper.parent != inputParent)
@@ -255,9 +256,19 @@ namespace Jungle.Editor
                     inlineWrapper.Insert(0, valueInputContainer);
                 }
 
-                if (addButton.parent != inlineWrapper)
+                if (inlineButtonGroup.parent != inlineWrapper)
                 {
-                    inlineWrapper.Add(addButton);
+                    inlineWrapper.Add(inlineButtonGroup);
+                }
+
+                if (addButton.parent != inlineButtonGroup)
+                {
+                    inlineButtonGroup.Add(addButton);
+                }
+
+                if (clearButton.parent != inlineButtonGroup)
+                {
+                    inlineButtonGroup.Add(clearButton);
                 }
             }
 
