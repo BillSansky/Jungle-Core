@@ -136,6 +136,7 @@ namespace Jungle.Editor
 
             // Add both elements to the container
             container.Add(propertyField);
+
             container.Add(buttonColumn);
             buttonColumn.Add(clearButton);
 
@@ -219,6 +220,7 @@ namespace Jungle.Editor
             var inlineAttachmentComplete = false;
             var awaitingGeometry = false;
 
+
             bool AttachInlineButton()
             {
                 var contentContainer = propertyField.contentContainer;
@@ -236,6 +238,7 @@ namespace Jungle.Editor
                 }
 
                 if (inlineWrapper.parent != contentContainer)
+
                 {
                     contentContainer.Insert(0, inlineWrapper);
                 }
@@ -281,6 +284,7 @@ namespace Jungle.Editor
                     return;
                 }
 
+
                 if (AttachInlineButton())
                 {
                     if (awaitingGeometry)
@@ -313,6 +317,7 @@ namespace Jungle.Editor
             }
 
             AttemptInlineAttachment();
+
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
