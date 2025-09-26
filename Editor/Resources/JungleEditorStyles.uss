@@ -3,7 +3,7 @@
     padding: 5px 5px 1px;
     margin: 0;
     border-width: 1px;
-    border-color: #22B14C;
+    border-color: #43823F;
     border-radius: 4px;
 }
 
@@ -66,7 +66,11 @@
     margin-left: 15px;
 }
 
-.jungle-empty-message {
+.jungle-inline-property-field {
+    --unity-base-field-label-width: 0px;
+}
+
+.jungle-empty-value {
     flex-shrink: 1;
     min-width: 0;
     overflow: hidden;
@@ -116,6 +120,17 @@
 }
 
 * BUTTONS *,
+
+.jungle-button {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 3px;
+    border-width: 1px;
+    font-size: 14px;
+}
+
 .jungle-important-button:enabled {
     width: 18px;
     height: 18px;
@@ -210,17 +225,8 @@
     color: #E88A8A;
 }
 
-* CLASS SELECTOR *,
-.jungle-class-selector-container {
-    flex-direction: row;
-    flex-basis: auto;
-    align-items: center;
-}
+* INLINE WRAP *,
 
-.jungle-class-selector-field {
-    flex-grow: 1;
-    flex-shrink: 1;
-}
 
 .jungle-inline-wrapper {
     flex-grow: 1;
@@ -228,17 +234,11 @@
     align-items: center;
     padding: 2px 2px 2px 8px;
     border-width: 1px;
+    border-radius: 4px;
 }
 
 
-.jungle-class-selector-inline-buttons {
-    flex-direction: row;
-    align-items: center;
-    margin-left: 6px;
-    flex-shrink: 0;
-}
-
-.jungle-class-selector-button-column {
+.jungle-inline-button-column {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;

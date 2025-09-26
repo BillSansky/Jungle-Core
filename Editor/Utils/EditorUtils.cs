@@ -87,196 +87,22 @@ namespace Jungle.Editor
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
-            var supportsManagedReferences = property.propertyType == SerializedPropertyType.ManagedReference;
-            var supportsComponentReferences = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+         
+                // Remove the original field from layout…
+                var parent = propertyField.parent;
+                var index  = parent.IndexOf(propertyField);
+                parent.Remove(propertyField);
 
+                // …and insert our clean composite control in the same spot.
+                var selector = new TypeSelectableField();
+                selector.Initialize(property, baseType);
 
-            // Create a container to hold both the PropertyField and the plus button
+                // Optional: keep your stylesheet hookup
+                AttachJungleEditorStyles(selector);
 
-            var container = new VisualElement();
-            container.AddToClassList("jungle-class-selector-container");
-            
-            // Get the parent and index of the original PropertyField
-            var parent = propertyField.parent;
-            var index = parent.IndexOf(propertyField);
-
-
-            propertyField.AddToClassList("jungle-class-selector-field");
-
-            // Create the button column so that we can place the clear button above the selector
-            var buttonColumn = new VisualElement();
-            buttonColumn.AddToClassList("jungle-class-selector-button-column");
-            
-            var addButton = new Button
-            {
-                text = "+",
-                tooltip = "Select or change type"
-            };
+                parent.Insert(index, selector);
             
 
-            // Create the clear button which will reset the value to null
-            var clearButton = new Button
-            {
-                text = "✕",
-                tooltip = "Clear selection"
-            };
-            
-            // Remove the PropertyField from its current parent
-            parent.Remove(propertyField);
-
-            // Add both elements to the container
-            container.Add(propertyField);
-
-
-            AttachJungleEditorStyles(container);
-            AttachJungleEditorStyles(propertyField);
-          
-
-            void UpdateButtonState()
-            {
-                var serializedObject = property.serializedObject;
-                serializedObject.Update();
-
-                var hasValue = false;
-
-                if (supportsManagedReferences)
-                {
-                    hasValue = !string.IsNullOrEmpty(property.managedReferenceFullTypename);
-                }
-                else if (supportsComponentReferences)
-                {
-                    hasValue = property.objectReferenceValue != null;
-                }
-
-                addButton.text = hasValue ? "⇄" : "+";
-                addButton.EnableInClassList("jungle-class-selector-button--has-value", hasValue);
-
-                clearButton.EnableInClassList("jungle-class-selector-clear-button--visible", hasValue);
-                clearButton.EnableInClassList("jungle-class-selector-clear-button--hidden", !hasValue);
-                clearButton.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
-            }
-
-            addButton.clicked += () =>
-            {
-                if (supportsManagedReferences)
-                {
-                    ShowAddManagedReferenceTypeMenuAndCreate(baseType, property);
-                    UpdateButtonState();
-                    return;
-                }
-
-                if (supportsComponentReferences)
-                {
-                    ShowAddComponentTypeMenuAndCreate(baseType, property);
-                    UpdateButtonState();
-                }
-            };
-
-            clearButton.clicked += () =>
-            {
-                var serializedObject = property.serializedObject;
-                Undo.RecordObjects(serializedObject.targetObjects, "Clear Selection");
-                serializedObject.Update();
-
-                if (supportsManagedReferences)
-                {
-                    property.managedReferenceValue = null;
-                }
-                else if (supportsComponentReferences)
-                {
-                    property.objectReferenceValue = null;
-                }
-
-                serializedObject.ApplyModifiedProperties();
-
-                foreach (var target in serializedObject.targetObjects)
-                {
-                    EditorUtility.SetDirty(target);
-                }
-
-                UpdateButtonState();
-            };
-
-
-            propertyField.TrackPropertyValue(property, _ => UpdateButtonState());
-            UpdateButtonState();
-
-            parent.Insert(index, container);
-
-            VisualElement inlineWrapper = null;
-            VisualElement inlineButtonGroup = null;
-
-            IVisualElementScheduledItem pendingInlineRetry = null;
-
-            void EnsureInlineWrapper()
-            {
-                var valueInputContainer = propertyField.contentContainer;
-                var inputParent = valueInputContainer.parent;
-
-                if (inputParent == null)
-                {
-                    if (pendingInlineRetry == null)
-                    {
-                        pendingInlineRetry = propertyField.schedule.Execute(() =>
-                        {
-                            pendingInlineRetry = null;
-                            EnsureInlineWrapper();
-                        });
-                    }
-
-                    return;
-                }
-
-                if (inlineWrapper == null)
-                {
-                    inlineWrapper = new VisualElement();
-                    inlineWrapper.AddToClassList("jungle-add-inline-wrapper");
-                    inlineWrapper.style.flexDirection = FlexDirection.Row;
-                    inlineWrapper.style.alignItems = Align.Center;
-                 
-                    AttachJungleEditorStyles(inlineWrapper);
-                }
-
-                if (inlineButtonGroup == null)
-                {
-                    inlineButtonGroup = new VisualElement();
-                    inlineButtonGroup.AddToClassList("jungle-class-selector-inline-buttons");
-                    inlineButtonGroup.style.flexDirection = FlexDirection.Row;
-                    inlineButtonGroup.style.alignItems = Align.Center;
-
-                    AttachJungleEditorStyles(inlineButtonGroup);
-                }
-
-                if (inlineWrapper.parent != inputParent)
-                {
-                    var insertIndex = inputParent.IndexOf(valueInputContainer);
-                    inputParent.Insert(insertIndex, inlineWrapper);
-                }
-
-                if (valueInputContainer.parent != inlineWrapper)
-                {
-                    inlineWrapper.Insert(0, valueInputContainer);
-                }
-
-                if (inlineButtonGroup.parent != inlineWrapper)
-                {
-                    inlineWrapper.Add(inlineButtonGroup);
-                }
-
-                if (addButton.parent != inlineButtonGroup)
-                {
-                    inlineButtonGroup.Add(addButton);
-                }
-
-                if (clearButton.parent != inlineButtonGroup)
-                {
-                    inlineButtonGroup.Add(clearButton);
-                }
-            }
-
-            EnsureInlineWrapper();
-
-            propertyField.RegisterCallback<AttachToPanelEvent>(_ => EnsureInlineWrapper());
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
