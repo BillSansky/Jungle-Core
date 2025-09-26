@@ -94,6 +94,9 @@ namespace Jungle.Editor
             // Create a container to hold both the PropertyField and the plus button
 
             var container = new VisualElement();
+            container.style.flexDirection = FlexDirection.Row;
+            container.style.alignItems = Align.Center;
+            container.style.gap = 4f;
 
 
             // Get the parent and index of the original PropertyField
@@ -106,6 +109,9 @@ namespace Jungle.Editor
             // Create the button column so that we can place the clear button above the selector
             var buttonColumn = new VisualElement();
             buttonColumn.AddToClassList("jungle-class-selector-button-column");
+            buttonColumn.style.flexDirection = FlexDirection.Column;
+            buttonColumn.style.alignItems = Align.Stretch;
+            buttonColumn.style.justifyContent = Justify.FlexStart;
 
             // Create the main jungle themed selection button
             var addButtonIcon = new Label("+");
@@ -240,6 +246,9 @@ namespace Jungle.Editor
                 {
                     inlineWrapper = new VisualElement();
                     inlineWrapper.AddToClassList("jungle-add-inline-wrapper");
+                    inlineWrapper.style.flexDirection = FlexDirection.Row;
+                    inlineWrapper.style.alignItems = Align.Center;
+                    inlineWrapper.style.gap = 4f;
                     AttachJungleEditorStyles(inlineWrapper);
                 }
 
@@ -247,6 +256,9 @@ namespace Jungle.Editor
                 {
                     inlineButtonGroup = new VisualElement();
                     inlineButtonGroup.AddToClassList("jungle-class-selector-inline-buttons");
+                    inlineButtonGroup.style.flexDirection = FlexDirection.Row;
+                    inlineButtonGroup.style.alignItems = Align.Center;
+                    inlineButtonGroup.style.gap = 4f;
                     AttachJungleEditorStyles(inlineButtonGroup);
                 }
 
