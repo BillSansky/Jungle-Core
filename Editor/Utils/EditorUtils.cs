@@ -220,6 +220,7 @@ namespace Jungle.Editor
             var inlineAttachmentComplete = false;
             var awaitingGeometry = false;
 
+
             bool AttachInlineButton()
             {
                 var contentContainer = propertyField.contentContainer;
@@ -237,13 +238,27 @@ namespace Jungle.Editor
                 }
 
                 if (inlineWrapper.parent != contentContainer)
+
                 {
-                    var fieldElement = contentContainer[0];
                     contentContainer.Insert(0, inlineWrapper);
-                    inlineWrapper.Add(fieldElement);
                 }
 
-                if (!inlineWrapper.Contains(addButton))
+                var childrenToMove = new List<VisualElement>();
+
+                foreach (var child in contentContainer.Children())
+                {
+                    if (child != inlineWrapper)
+                    {
+                        childrenToMove.Add(child);
+                    }
+                }
+
+                foreach (var child in childrenToMove)
+                {
+                    inlineWrapper.Add(child);
+                }
+
+                if (addButton.parent != inlineWrapper)
                 {
                     inlineWrapper.Add(addButton);
                 }
@@ -268,6 +283,7 @@ namespace Jungle.Editor
                 {
                     return;
                 }
+
 
                 if (AttachInlineButton())
                 {
