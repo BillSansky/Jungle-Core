@@ -145,7 +145,7 @@ namespace Jungle.Editor
                 screenPos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
             }
 
-            ClassSelectionPopup.Show(screenPos, types, callback, menuTitle);
+            ClassSelectionWindow.Show(screenPos, types, callback, menuTitle);
         }
 
         public static void ShowAddComponentTypeMenuAndCreate(Type componentType,
