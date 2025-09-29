@@ -1,8 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="external-condition-root" class="jungle-section-content">
-        <uie:ObjectField name="condition-provider-field" label="Condition Provider" binding-path="conditionProvider" class="jungle-marginfield" />
-        <ui:VisualElement name="error-container" class="jungle-warning" style="display: none;">
-            <ui:Label name="error-label" text="" class="pkg-desc" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>

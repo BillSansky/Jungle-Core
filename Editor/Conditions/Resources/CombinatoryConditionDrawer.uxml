@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="combinatory-condition-root" class="jungle-section-content">
-        <uie:PropertyField name="logical-operator-field" binding-path="logicalOperator" label="Logical Operator" class="jungle-marginfield" />
-        <ui:VisualElement name="conditions-content" class="jungle-runtime-list" />
-    </ui:VisualElement>
-</ui:UXML>

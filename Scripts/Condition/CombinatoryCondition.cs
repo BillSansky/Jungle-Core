@@ -9,11 +9,11 @@ namespace Jungle.Conditions
     /// Condition that combines multiple other conditions with configurable logic.
     /// </summary>
     [Serializable]
-    
     public class CombinatoryCondition : Condition
     {
-        [JungleList("Conditions", "Add Condition")]
-        [SerializeReference] private List<Condition> conditions;
+        [JungleClassSelection] [SerializeReference]
+        private List<Condition> conditions;
+
         [SerializeField] private LogicalOperator logicalOperator = LogicalOperator.And;
 
         protected internal override bool IsValidImpl()

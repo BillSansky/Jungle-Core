@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections;
 using Jungle.Attributes;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -13,11 +14,24 @@ namespace Jungle.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var classSelectionAttribute = (JungleClassSelectionAttribute)attribute;
-            var baseType = classSelectionAttribute.BaseType ?? fieldInfo?.FieldType;
+            var baseType = EditorUtils.ResolveElementType(
+                classSelectionAttribute?.BaseType,
+                fieldInfo?.FieldType,
+                property.serializedObject.targetObject.GetType(),
+                property.propertyPath
+            );
+            ;
 
-            var root = new VisualElement();                  // wrapper to isolate our changes
+            if (baseType == null) return new Label("Invalid base type");
+
+            if (baseType.IsArray || baseType.IsAssignableFrom(typeof(ICollection)))
+            {
+                baseType = baseType.GetElementType();
+            }
+
+            var root = new VisualElement(); // wrapper to isolate our changes
             var field = new PropertyField(property);
-            
+
             root.Add(field);
             field.BindProperty(property);
 
@@ -35,7 +49,7 @@ namespace Jungle.Editor
                     if (initialized || field.panel == null) return;
                     initialized = true;
 
-                  
+
                     EditorUtils.SetupFieldWithClassSelectionButton(field, baseType, property);
                 });
             }
@@ -48,7 +62,6 @@ namespace Jungle.Editor
 
             return root;
         }
-
     }
 }
 #endif

@@ -7,21 +7,13 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
-    /// <summary>
-    /// Same row layout you had (label | summary | buttons). New: a separate toggle on the far left
-    /// controls visibility of a details container placed UNDER the row. Buttons stay on the row.
-    /// For ManagedReference: summary shows type; details show child properties in the under-row host.
-    /// For UnityEngine.Object: behaves like before (ObjectField or inline Inspector); toggle is independent.
-    /// </summary>
+
     public sealed class TypeSelectableField : BindableElement
     {
         // --- UI ---
-        private readonly VisualElement input;     // root host
-        private readonly VisualElement row;       // label | summary | btns
         private readonly Toggle expandToggle;     // separated "foldout" toggle (arrow)
         private readonly Label label;             // left label
         private readonly VisualElement content;   // right-side summary ("None" / type name / object field / inline inspector)
-        private readonly VisualElement btns;      // buttons container
         private readonly Button btnPickOrSwap;    // "+" (pick) or "↺" (swap)
         private readonly Button btnClear;         // "✕"
 
@@ -44,55 +36,55 @@ namespace Jungle.Editor
             AddToClassList("jungle-editor");
 
 
-            input = new VisualElement();
-            Add(input);
+            var input1 = new VisualElement();
+            Add(input1);
             
-            row = new VisualElement();
-            row.AddToClassList("jungle-section");
-            row.AddToClassList("jungle-inline-wrapper");
+            var row1 = new VisualElement();
+            row1.AddToClassList("jungle-section");
+            row1.AddToClassList("jungle-inline-wrapper");
             
             expandToggle = new Toggle { value = false, text = "", focusable = false, tooltip = "Show details" };
             expandToggle.AddToClassList("tsf__toggle");
             expandToggle.AddToClassList("unity-foldout__toggle");
-            row.Add(expandToggle); // first in row
+            row1.Add(expandToggle); // first in row
 
             // Label next to the toggle
             label = new Label();
             label.AddToClassList("unity-base-field__label");
-            row.Add(label);
+            row1.Add(label);
 
             // Right content host (summary)
             content = new VisualElement { name = "tsf-content" };
             content.AddToClassList("jungle-inline-content");
-            row.Add(content);
+            row1.Add(content);
 
             // Buttons on the far right (keep your class)
-            btns = new VisualElement();
-            btns.AddToClassList("jungle-inline-button-group");
-            row.Add(btns);
+            var btns1 = new VisualElement();
+            btns1.AddToClassList("jungle-inline-button-group");
+            row1.Add(btns1);
 
             btnPickOrSwap = new Button(OnPickOrSwapClicked) { text = "+" };
             btnPickOrSwap.tooltip = "Pick or change the type";
             btnPickOrSwap.AddToClassList("jungle-button");
-            btns.Add(btnPickOrSwap);
+            btns1.Add(btnPickOrSwap);
 
             btnClear = new Button(OnClearClicked) { text = "✕" };
             btnClear.tooltip = "Clear";
             btnClear.AddToClassList("jungle-button");
-            btns.Add(btnClear);
+            btns1.Add(btnClear);
 
-            input.Add(row);
+            input1.Add(row1);
 
 
             underRowHost = new VisualElement();
             underRowHost.AddToClassList("jungle-foldout-group");
-            input.Add(underRowHost);
+            input1.Add(underRowHost);
             
 
-            row.RegisterCallback<ClickEvent>(evt =>
+            row1.RegisterCallback<ClickEvent>(evt =>
             {
 
-                if (evt.target is VisualElement ve && (btns.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
+                if (evt.target is VisualElement ve && (btns1.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
                     return;
 
                 expandToggle.value = !expandToggle.value;
@@ -105,13 +97,11 @@ namespace Jungle.Editor
 
         }
 
-        /// <summary>For compatibility with older callsites.</summary>
-        public void Initialize(SerializedProperty property, Type baseType) => Bind(property, baseType);
-
         /// <summary>Bind the field to a property and base type.</summary>
         public void Bind(SerializedProperty property, Type baseType)
         {
             prop = property ?? throw new ArgumentNullException(nameof(property));
+            
             this.baseType = baseType ?? throw new ArgumentNullException(nameof(baseType));
             isManagedRef = prop.propertyType == SerializedPropertyType.ManagedReference;
 

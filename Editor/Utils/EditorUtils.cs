@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,76 @@ namespace Jungle.Editor
 {
     public static class EditorUtils
     {
+        public static Type ResolveElementType(Type overrideBase,
+            Type fieldType,
+            Type rootType,
+            string propertyPath)
+        {
+            // 1) Attribute override wins
+            if (overrideBase != null) return overrideBase;
+
+            // 2) Try fieldInfo first
+            var t = fieldType ?? GetFieldTypeFromPropertyPath(rootType, propertyPath);
+            var elem = TryGetEnumerableElementType(t);
+            if (elem != null) return elem;
+
+            // 3) As a last resort (empty list etc.), try to infer from a dummy element managed-ref type
+            //    NOTE: we can't safely index an empty array, so we just return object here.
+            return typeof(object);
+        }
+
+        private static Type TryGetEnumerableElementType(Type t)
+        {
+            if (t == null) return null;
+
+            // Arrays
+            if (t.IsArray) return t.GetElementType();
+
+            // Direct generic List<T>
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+                return t.GetGenericArguments()[0];
+
+            // Check common generic interfaces
+            foreach (var i in t.GetInterfaces())
+            {
+                if (!i.IsGenericType) continue;
+                var g = i.GetGenericTypeDefinition();
+                if (g == typeof(System.Collections.Generic.IList<>) ||
+                    g == typeof(System.Collections.Generic.ICollection<>) ||
+                    g == typeof(System.Collections.Generic.IEnumerable<>) ||
+                    g == typeof(System.Collections.Generic.IReadOnlyList<>))
+                {
+                    return i.GetGenericArguments()[0];
+                }
+            }
+
+            // If t itself is a generic with a single type arg (custom wrappers)
+            if (t.IsGenericType && t.GetGenericArguments().Length == 1)
+                return t.GetGenericArguments()[0];
+
+            return null;
+        }
+
+        private static Type GetFieldTypeFromPropertyPath(Type rootType, string propertyPath)
+        {
+            const BindingFlags BF = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var t = rootType;
+            FieldInfo last = null;
+
+            foreach (var raw in propertyPath.Split('.'))
+            {
+                if (raw == "Array") continue;
+                if (raw.StartsWith("data[")) continue;
+
+                last = t.GetField(raw, BF);
+                if (last == null) break;
+                t = last.FieldType;
+            }
+
+            return last?.FieldType;
+        }
+
+
         /// <summary>
         /// Gets all available types that inherit from a specified base type using TypeCache
         /// </summary>
@@ -87,22 +158,19 @@ namespace Jungle.Editor
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
             SerializedProperty property)
         {
-         
-                // Remove the original field from layout…
-                var parent = propertyField.parent;
-                var index  = parent.IndexOf(propertyField);
-                parent.Remove(propertyField);
+            // Remove the original field from layout…
+            var parent = propertyField.parent;
+            var index = parent.IndexOf(propertyField);
+            parent.Remove(propertyField);
 
-                // …and insert our clean composite control in the same spot.
-                var selector = new TypeSelectableField();
-                selector.Initialize(property, baseType);
+            // …and insert our clean composite control in the same spot.
+            var selector = new TypeSelectableField();
+            selector.Bind(property, baseType);
 
-                // Optional: keep your stylesheet hookup
-                AttachJungleEditorStyles(selector);
+            // Optional: keep your stylesheet hookup
+            AttachJungleEditorStyles(selector);
 
-                parent.Insert(index, selector);
-            
-
+            parent.Insert(index, selector);
         }
 
         private static void AttachJungleEditorStyles(VisualElement element)
