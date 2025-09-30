@@ -30,17 +30,5 @@ namespace Jungle.Conditions
         bool Condition { get; }
     }
 
-    public class NestedCondition : Condition
-    {
-
-        [SerializeReference,JungleClassSelection]
-        public Condition Condition;
-        
-        
-        protected internal override bool IsValidImpl()
-        {
-            throw new NotImplementedException();
-        }
-    } 
     
 }

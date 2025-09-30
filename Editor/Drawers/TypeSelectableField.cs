@@ -109,7 +109,7 @@ namespace Jungle.Editor
             isManagedRef = prop.propertyType == SerializedPropertyType.ManagedReference;
             allowRowToggle = false; 
             
-            bindingPath = prop.propertyPath;
+           // bindingPath = prop.propertyPath;
 
             label.text = string.IsNullOrEmpty(prop.displayName) ? prop.name : prop.displayName;
             label.tooltip = prop.tooltip;
@@ -384,7 +384,6 @@ namespace Jungle.Editor
                 expandToggle.SetValueWithoutNotify(false);
                 expandToggle.style.display = DisplayStyle.None;
                 expandToggle.SetEnabled(false);
-                underRowHost.style.display = DisplayStyle.None;
 
                 var of = new ObjectField
                 {
