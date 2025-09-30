@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -12,5 +13,11 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class AnimationCurveValueFromAsset :
+        ValueFromAsset<AnimationCurve, AnimationCurveValueAsset>, IAnimationCurveValue
+    {
     }
 }

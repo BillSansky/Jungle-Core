@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -12,5 +13,10 @@ namespace Jungle.Values.Primitives
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class IntValueFromAsset : ValueFromAsset<int, IntValueAsset>, IIntValue
+    {
     }
 }

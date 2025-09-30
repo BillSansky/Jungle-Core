@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
+    public interface IMaterialValue : IValue<Material>
+    {
+    }
+
     [Serializable]
-    public class MaterialValue : LocalValue<Material>
+    public class MaterialValue : LocalValue<Material>, IMaterialValue
     {
     }
 }

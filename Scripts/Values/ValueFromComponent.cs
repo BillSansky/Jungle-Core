@@ -4,14 +4,16 @@ using UnityEngine;
 namespace Jungle.Values
 {
     /// <summary>
-    /// Provides a value sourced from a <see cref="Component"/> that implements <see cref="IValue{T}"/>.
+    /// Provides a value sourced from a <see cref="ValueComponent{T}"/> instance.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
+    /// <typeparam name="TComponent">Concrete component type used to fetch the value.</typeparam>
     [Serializable]
-    public class ValueFromComponent<T,T1> : IValue<T> where T1: ValueComponent<T>
+    public class ValueFromComponent<T, TComponent> : IValue<T>
+        where TComponent : ValueComponent<T>
     {
         [SerializeField]
-        private T1 component;
+        private TComponent component;
 
         /// <inheritdoc />
         public T GetValue()
@@ -19,18 +21,11 @@ namespace Jungle.Values
             if (component == null)
             {
                 Debug.LogError(
-                    $"Component reference is missing for {GetType().Name}. Assign a component that implements {typeof(IValue<T>).Name}.");
+                    $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
                 return default;
             }
 
-            if (component is IValue<T> valueProvider)
-            {
-                return valueProvider.GetValue();
-            }
-
-            Debug.LogError(
-                $"Component {component.GetType().Name} does not implement {typeof(IValue<T>).Name} and cannot provide the expected value.");
-            return default;
+            return component.GetValue();
         }
     }
 }
