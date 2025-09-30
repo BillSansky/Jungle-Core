@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -11,5 +12,11 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class Vector3IntValueFromComponent :
+        ValueFromComponent<Vector3Int, Vector3IntValueComponent>, IVector3IntValue
+    {
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -11,5 +12,11 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class QuaternionValueFromComponent : ValueFromComponent<Quaternion, QuaternionValueComponent>,
+        IQuaternionValue
+    {
     }
 }

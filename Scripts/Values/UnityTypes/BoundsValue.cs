@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
+    public interface IBoundsValue : IValue<Bounds>
+    {
+    }
+
     [Serializable]
-    public class BoundsValue : LocalValue<Bounds>
+    public class BoundsValue : LocalValue<Bounds>, IBoundsValue
     {
     }
 }

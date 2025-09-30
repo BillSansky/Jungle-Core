@@ -2,9 +2,13 @@ using System;
 
 namespace Jungle.Values.Primitives
 {
-    [Serializable]
-    public class BoolValue : LocalValue<bool>
+    public interface IBoolValue : IValue<bool>
     {
     }
-   
+
+    [Serializable]
+    public class BoolValue : LocalValue<bool>, IBoolValue
+    {
+    }
+
 }

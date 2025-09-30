@@ -3,9 +3,9 @@
 namespace Jungle.Values
 {
     /// <summary>
-    /// Base class for ScriptableObject assets that expose a value of type <typeparamref name="T"/>.
+    /// Base class for <see cref="MonoBehaviour"/> components that expose a value of type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
+    /// <typeparam name="T">Type of the value provided by the component.</typeparam>
     public abstract class ValueComponent<T> : MonoBehaviour, IValue<T>
     {
         /// <inheritdoc />

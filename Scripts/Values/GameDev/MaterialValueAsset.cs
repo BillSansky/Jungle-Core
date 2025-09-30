@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -12,5 +13,11 @@ namespace Jungle.Values.GameDev
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class MaterialValueFromAsset :
+        ValueFromAsset<Material, MaterialValueAsset>, IMaterialValue
+    {
     }
 }

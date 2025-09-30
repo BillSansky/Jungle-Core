@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -11,5 +12,10 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class Color32ValueFromComponent : ValueFromComponent<Color32, Color32ValueComponent>, IColor32Value
+    {
     }
 }

@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
+    public interface IAnimationClipValue : IValue<AnimationClip>
+    {
+    }
+
     [Serializable]
-    public class AnimationClipValue : LocalValue<AnimationClip>
+    public class AnimationClipValue : LocalValue<AnimationClip>, IAnimationClipValue
     {
     }
 }
