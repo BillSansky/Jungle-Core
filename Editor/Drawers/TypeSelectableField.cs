@@ -1,21 +1,27 @@
 ﻿#if UNITY_EDITOR
 using System;
-using UnityEditor; 
+using System.IO;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
-
     public sealed class TypeSelectableField : BindableElement
     {
+        private bool allowRowToggle;
+
+        
         // --- UI ---
-        private readonly Toggle expandToggle;     // separated "foldout" toggle (arrow)
-        private readonly Label label;             // left label
-        private readonly VisualElement content;   // right-side summary ("None" / type name / object field / inline inspector)
-        private readonly Button btnPickOrSwap;    // "+" (pick) or "↺" (swap)
-        private readonly Button btnClear;         // "✕"
+        private readonly Toggle expandToggle; 
+        private readonly Label label; 
+
+        private readonly VisualElement
+            content; 
+
+        private readonly Button btnPickOrSwap; // "+" (pick) or "↺" (swap)
+        private readonly Button btnClear; // "✕"
 
         // Under-row details host (the "folded" section)
         private readonly VisualElement underRowHost;
@@ -25,7 +31,6 @@ namespace Jungle.Editor
         private Type baseType;
         private bool isManagedRef;
 
-        // Avoid double-registering the toggle callback on rebind
         private EventCallback<ChangeEvent<bool>> expandToggleHandler;
 
         // Guard in case some drawer mistakenly applies to children
@@ -34,15 +39,14 @@ namespace Jungle.Editor
         public TypeSelectableField()
         {
             AddToClassList("jungle-editor");
-
-
+            
             var input1 = new VisualElement();
             Add(input1);
-            
+
             var row1 = new VisualElement();
             row1.AddToClassList("jungle-section");
             row1.AddToClassList("jungle-inline-wrapper");
-            
+
             expandToggle = new Toggle { value = false, text = "", focusable = false, tooltip = "Show details" };
             expandToggle.AddToClassList("tsf__toggle");
             expandToggle.AddToClassList("unity-foldout__toggle");
@@ -74,15 +78,15 @@ namespace Jungle.Editor
             btns1.Add(btnClear);
 
             input1.Add(row1);
-
-
+            
             underRowHost = new VisualElement();
             underRowHost.AddToClassList("jungle-foldout-group");
             input1.Add(underRowHost);
-            
+
 
             row1.RegisterCallback<ClickEvent>(evt =>
             {
+                if (!allowRowToggle) return; // <-- ignore clicks in object mode or when empty
 
                 if (evt.target is VisualElement ve && (btns1.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
                     return;
@@ -94,17 +98,17 @@ namespace Jungle.Editor
 
             btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
-
         }
 
         /// <summary>Bind the field to a property and base type.</summary>
         public void Bind(SerializedProperty property, Type baseType)
         {
             prop = property ?? throw new ArgumentNullException(nameof(property));
-            
+
             this.baseType = baseType ?? throw new ArgumentNullException(nameof(baseType));
             isManagedRef = prop.propertyType == SerializedPropertyType.ManagedReference;
-
+            allowRowToggle = false; 
+            
             bindingPath = prop.propertyPath;
 
             label.text = string.IsNullOrEmpty(prop.displayName) ? prop.name : prop.displayName;
@@ -147,13 +151,14 @@ namespace Jungle.Editor
 
         // ---------------- Buttons ----------------
 
+
         private void OnPickOrSwapClicked()
         {
             if (prop == null) return;
 
             if (isManagedRef)
             {
-                // Searchable popup anchored to the button
+                // Unchanged: managed-ref path uses your existing searchable picker
                 TypePickerDropdown.Show(btnPickOrSwap.worldBound, baseType, t =>
                 {
                     var so = prop.serializedObject;
@@ -164,21 +169,133 @@ namespace Jungle.Editor
                     }
                     else
                     {
-                        try { prop.managedReferenceValue = Activator.CreateInstance(t); }
-                        catch (Exception e) { Debug.LogException(e); }
+                        try
+                        {
+                            prop.managedReferenceValue = Activator.CreateInstance(t);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogException(e);
+                        }
                     }
-                    so.ApplyModifiedProperties();
 
-                    // Repaint next tick to avoid flicker if Inspector rebuilds
+                    so.ApplyModifiedProperties();
                     schedule.Execute(RepaintContentOnly);
                     schedule.Execute(RefreshButtons);
                 });
+                return;
             }
-            else
+
+            // NEW: UnityEngine.Object path also opens the same type picker
+            TypePickerDropdown.Show(btnPickOrSwap.worldBound, baseType, pickedType =>
             {
-                // For UnityEngine.Object, '+' doesn't pick a type; ensure UI stays fresh.
-                RepaintContentOnly();
-            }
+                if (pickedType == null) return;
+
+                var so = prop.serializedObject;
+                so.Update();
+
+                UnityEngine.Object createdOrAssigned = null;
+
+                try
+                {
+                    // ScriptableObject
+                    if (typeof(ScriptableObject).IsAssignableFrom(pickedType))
+                    {
+                        var instance = ScriptableObject.CreateInstance(pickedType);
+
+                        // Propose a sensible default folder (selected folder or Assets)
+                        string defaultFolder = "Assets";
+                        string selPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+                        if (!string.IsNullOrEmpty(selPath))
+                        {
+                            defaultFolder = Path.HasExtension(selPath)
+                                ? Path.GetDirectoryName(selPath)
+                                : selPath;
+                        }
+
+                        string path = EditorUtility.SaveFilePanelInProject(
+                            $"Create {pickedType.Name}",
+                            $"{pickedType.Name}.asset",
+                            "asset",
+                            "Choose a save location",
+                            defaultFolder
+                        );
+
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            AssetDatabase.CreateAsset(instance, path);
+                            AssetDatabase.SaveAssets();
+                            EditorGUIUtility.PingObject(instance);
+                            createdOrAssigned = instance;
+                        }
+                        else
+                        {
+                            // user cancelled: clean up the temp instance
+                            UnityEngine.Object.DestroyImmediate(instance);
+                        }
+                    }
+                    // Component / MonoBehaviour
+                    else if (typeof(Component).IsAssignableFrom(pickedType) ||
+                             typeof(MonoBehaviour).IsAssignableFrom(pickedType))
+                    {
+                        var go = ResolveContextGameObject(prop);
+                        if (go == null)
+                        {
+                            EditorUtility.DisplayDialog(
+                                "Select a GameObject",
+                                "No suitable GameObject found. Select a GameObject in the Hierarchy and try again.",
+                                "OK"
+                            );
+                        }
+                        else
+                        {
+                            Undo.RecordObject(go, "Add Component");
+                            var comp = Undo.AddComponent(go, pickedType) as Component;
+                            createdOrAssigned = comp;
+                            // Keep inspector focused on where the component was added
+                            Selection.activeGameObject = go;
+                        }
+                    }
+                    // Fallback: other UnityEngine.Object types (Textures, Materials, etc.) – not auto-created
+                    else if (typeof(UnityEngine.Object).IsAssignableFrom(pickedType))
+                    {
+                        EditorUtility.DisplayDialog(
+                            "Unsupported Instantiation",
+                            $"Cannot automatically create an instance of {pickedType.Name}. Assign via the Object field instead.",
+                            "OK"
+                        );
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog(
+                            "Invalid Type",
+                            $"{pickedType.Name} is not a UnityEngine.Object.",
+                            "OK"
+                        );
+                    }
+
+                    if (createdOrAssigned != null)
+                    {
+                        prop.objectReferenceValue = createdOrAssigned;
+                        so.ApplyModifiedProperties();
+                        schedule.Execute(RepaintContentOnly);
+                        schedule.Execute(RefreshButtons);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            });
+        }
+
+// Helpers (put inside the same class)
+        private static GameObject ResolveContextGameObject(SerializedProperty p)
+        {
+            var target = p.serializedObject.targetObject;
+            if (target is Component c) return c.gameObject;
+            if (target is GameObject go) return go;
+            return Selection.activeGameObject; // fallback
         }
 
         private void OnClearClicked()
@@ -235,23 +352,23 @@ namespace Jungle.Editor
                 bool empty = prop.managedReferenceValue == null &&
                              string.IsNullOrEmpty(prop.managedReferenceFullTypename);
 
-                // Show/hide foldout arrow based on selection
-                expandToggle.style.display = empty ? DisplayStyle.None : DisplayStyle.Flex;
-
                 if (empty)
                 {
-                    // Force the under-row area hidden if nothing selected,
-                    // regardless of any previously saved expanded state.
+                    allowRowToggle = false;
+                    expandToggle.style.display = DisplayStyle.None;
+                    expandToggle.SetEnabled(false);
                     underRowHost.style.display = DisplayStyle.None;
 
-                    // Show "None" in-row; no details to render
                     var none = new Label("None");
                     none.AddToClassList("jungle-empty-value");
-                    none.tooltip = "No value assigned";
                     content.Add(none);
                     return;
                 }
 
+                allowRowToggle = true;
+                expandToggle.style.display = DisplayStyle.Flex;
+                expandToggle.SetEnabled(true);
+                
                 // Row summary = nice type name
                 var typeNice = GetManagedRefNiceName(prop);
                 var summary = new Label(typeNice);
@@ -263,27 +380,19 @@ namespace Jungle.Editor
             }
             else
             {
-                // UnityEngine.Object behavior: show ObjectField when null, inline Inspector when assigned
-                var obj = prop.objectReferenceValue;
+                allowRowToggle = false;
+                expandToggle.SetValueWithoutNotify(false);
+                expandToggle.style.display = DisplayStyle.None;
+                expandToggle.SetEnabled(false);
+                underRowHost.style.display = DisplayStyle.None;
 
-                // Show/hide foldout arrow based on selection
-                bool hasObj = obj != null;
-                expandToggle.style.display = hasObj ? DisplayStyle.Flex : DisplayStyle.None;
-                if (!hasObj)
-                    underRowHost.style.display = DisplayStyle.None;
-
-                if (obj == null)
+                var of = new ObjectField
                 {
-                    var of = new ObjectField { objectType = baseType, allowSceneObjects = true };
-                    of.BindProperty(prop);
-                    content.Add(of);
-                }
-                else
-                {
-                    var inspector = new InspectorElement(obj);
-                    inspector.AddToClassList("jungle-inline-inspector");
-                    content.Add(inspector);
-                }
+                    objectType = baseType,
+                    allowSceneObjects = true
+                };
+                of.BindProperty(prop);
+                content.Add(of);
             }
         }
 
@@ -335,7 +444,6 @@ namespace Jungle.Editor
                 renderingChildren = false;
             }
         }
-
     }
 }
 #endif

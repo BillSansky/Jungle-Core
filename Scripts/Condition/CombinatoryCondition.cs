@@ -9,6 +9,7 @@ namespace Jungle.Conditions
     /// Condition that combines multiple other conditions with configurable logic.
     /// </summary>
     [Serializable]
+    [JungleClassInfo("Combinatory Condition","Combines a few conditions together with logical operators",null,"General")]
     public class CombinatoryCondition : Condition
     {
         [JungleClassSelection] [SerializeReference]
