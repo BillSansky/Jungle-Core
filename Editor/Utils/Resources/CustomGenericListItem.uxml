@@ -1,6 +1,6 @@
 ﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Packages/jungle.core/Editor/Resources/JungleEditorStyles.uss" />
-    <Style src="project://database/Packages/jungle.core/Editor/Resources/JungleListStyles.uss" />
+    <Style src="project://database/Packages/jungle.core/Editor/Resources/JunglePackageListStyles.uss" />
     <ui:VisualElement class="octoputs-custom-list-item">
         <ui:VisualElement name="item-header" class="octoputs-actions-inline-container">
             <ui:Label name="item-title" text="Class Name" class="octoputs-custom-list-item-title" />

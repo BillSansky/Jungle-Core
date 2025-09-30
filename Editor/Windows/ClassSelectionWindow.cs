@@ -9,7 +9,7 @@ using Jungle.Attributes;
 
 namespace Jungle.Editor
 {
-    public class ClassSelectionPopup : EditorWindow
+    public class ClassSelectionWindow : EditorWindow
     {
         private List<Type> classTypes;
         private Action<Type> onClassSelected;
@@ -21,7 +21,7 @@ namespace Jungle.Editor
 
         public static void Show(Vector2 position, List<Type> types, Action<Type> onTypeSelected, string title = "Select Class")
         {
-            var window = CreateInstance<ClassSelectionPopup>();
+            var window = CreateInstance<ClassSelectionWindow>();
             window.classTypes = types ?? new List<Type>();
             window.onClassSelected = onTypeSelected;
             window.titleContent = new GUIContent(title);
@@ -100,7 +100,7 @@ namespace Jungle.Editor
             }
 
             // Load the UXML file
-            var visualTree = Resources.Load<VisualTreeAsset>("ClassSelectionPopup");
+            var visualTree = Resources.Load<VisualTreeAsset>("ClassSelectionWindow");
             if (visualTree != null)
             {
                 visualTree.CloneTree(rootVisualElement);
@@ -327,10 +327,10 @@ namespace Jungle.Editor
 
         private (string description, string iconPath, string category) GetClassInfo(Type classType)
         {
-            if (classType.GetCustomAttributes(typeof(JungleInfoAttribute), true)
-                    .FirstOrDefault() is JungleInfoAttribute attribute)
+            if (classType.GetCustomAttributes(typeof(JungleClassInfoAttribute), true)
+                    .FirstOrDefault() is JungleClassInfoAttribute attribute)
             {
-                return (attribute.Description, attribute.IconPath, attribute.Category);
+                return (attribute.Description, attribute.IconPathOrKey, attribute.Category);
             }
 
             // Generate default description and category based on type name

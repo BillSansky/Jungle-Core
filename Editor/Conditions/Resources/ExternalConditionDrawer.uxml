@@ -1,8 +1,0 @@
-﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="external-condition-root" class="octoputs-external-condition-container">
-        <uie:ObjectField name="condition-provider-field" label="Condition Provider" class="octoputs-object-field" binding-path="ConditionProvider" />
-        <ui:VisualElement name="error-container" class="octoputs-error-container" style="display: none;">
-            <ui:Label name="error-label" text="Error message" class="octoputs-error-label" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>

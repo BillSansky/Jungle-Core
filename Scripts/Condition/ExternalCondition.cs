@@ -1,4 +1,5 @@
 ﻿using System;
+using Jungle.Attributes;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -9,6 +10,7 @@ namespace Jungle.Conditions
     /// Useful for testing or creating simple on/off conditions.
     /// </summary>
     [Serializable]
+    [JungleClassInfo("External Condition","Take another class and returns a condition from it",null,"General")]
     public class ExternalCondition : Condition
     {
         [SerializeField] private Object conditionProvider;
@@ -28,4 +30,17 @@ namespace Jungle.Conditions
         bool Condition { get; }
     }
 
+    public class NestedCondition : Condition
+    {
+
+        [SerializeReference,JungleClassSelection]
+        public Condition Condition;
+        
+        
+        protected internal override bool IsValidImpl()
+        {
+            throw new NotImplementedException();
+        }
+    } 
+    
 }
