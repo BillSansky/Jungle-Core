@@ -17,16 +17,13 @@ namespace Jungle.Editor
             Type rootType,
             string propertyPath)
         {
-            // 1) Attribute override wins
             if (overrideBase != null) return overrideBase;
-
-            // 2) Try fieldInfo first
+            
             var t = fieldType ?? GetFieldTypeFromPropertyPath(rootType, propertyPath);
             var elem = TryGetEnumerableElementType(t);
             if (elem != null) return elem;
 
-            // 3) As a last resort (empty list etc.), try to infer from a dummy element managed-ref type
-            //    NOTE: we can't safely index an empty array, so we just return object here.
+ 
             return typeof(object);
         }
 
@@ -38,7 +35,7 @@ namespace Jungle.Editor
             if (t.IsArray) return t.GetElementType();
 
             // Direct generic List<T>
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
                 return t.GetGenericArguments()[0];
 
             // Check common generic interfaces
@@ -46,10 +43,10 @@ namespace Jungle.Editor
             {
                 if (!i.IsGenericType) continue;
                 var g = i.GetGenericTypeDefinition();
-                if (g == typeof(System.Collections.Generic.IList<>) ||
-                    g == typeof(System.Collections.Generic.ICollection<>) ||
-                    g == typeof(System.Collections.Generic.IEnumerable<>) ||
-                    g == typeof(System.Collections.Generic.IReadOnlyList<>))
+                if (g == typeof(IList<>) ||
+                    g == typeof(ICollection<>) ||
+                    g == typeof(IEnumerable<>) ||
+                    g == typeof(IReadOnlyList<>))
                 {
                     return i.GetGenericArguments()[0];
                 }
@@ -59,7 +56,7 @@ namespace Jungle.Editor
             if (t.IsGenericType && t.GetGenericArguments().Length == 1)
                 return t.GetGenericArguments()[0];
 
-            return null;
+            return t;
         }
 
         private static Type GetFieldTypeFromPropertyPath(Type rootType, string propertyPath)
@@ -155,7 +152,7 @@ namespace Jungle.Editor
 
         private const string JungleEditorStyleSheetResource = "JungleEditorStyles";
 
-        public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
+        public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, Type baseType,
             SerializedProperty property)
         {
             // Remove the original field from layout…

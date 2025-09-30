@@ -24,21 +24,16 @@ namespace Jungle.Editor
 
             if (baseType == null) return new Label("Invalid base type");
 
-            if (baseType.IsArray || baseType.IsAssignableFrom(typeof(ICollection)))
-            {
-                baseType = baseType.GetElementType();
-            }
-
             var root = new VisualElement(); // wrapper to isolate our changes
             var field = new PropertyField(property);
 
             root.Add(field);
-            field.BindProperty(property);
+            //field.BindProperty(property);
 
-            var supportsComponents = baseType != null && typeof(Component).IsAssignableFrom(baseType);
+            var supportsObject =  typeof(Object).IsAssignableFrom(baseType);
             var supportsManagedReference = property.propertyType == SerializedPropertyType.ManagedReference;
 
-            if (baseType != null && (supportsComponents || supportsManagedReference))
+            if (supportsObject || supportsManagedReference)
             {
                 // Guard against multiple runs
                 bool initialized = false;
