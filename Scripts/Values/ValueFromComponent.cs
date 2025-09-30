@@ -8,13 +8,13 @@ namespace Jungle.Values
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
     [Serializable]
-    public class ComponentValue<T> : ValueSource<T>
+    public class ValueFromComponent<T,T1> : IValue<T> where T1: ValueComponent<T>
     {
         [SerializeField]
-        private Component component;
+        private T1 component;
 
         /// <inheritdoc />
-        public override T GetValue()
+        public T GetValue()
         {
             if (component == null)
             {

@@ -7,7 +7,7 @@ namespace Jungle.Values
     /// </summary>
     /// <typeparam name="T">Type of value being stored.</typeparam>
     [Serializable]
-    public class LocalValue<T> : ValueSource<T>
+    public class LocalValue<T> : IValue<T>
     {
         /// <summary>
         /// Local value stored directly on the reference.
@@ -29,9 +29,8 @@ namespace Jungle.Values
         {
             Value = value;
         }
-
-        /// <inheritdoc />
-        public override T GetValue()
+        
+        public T GetValue()
         {
             return Value;
         }
