@@ -2,7 +2,7 @@
   "name": "jungle.core",
   "displayName": "Jungle Core",
   "description": "Core editor and runtime tools for Jungle Plugins and Game Development and shared assets for Jungle packages.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "unity": "2021.3",
   "unityRelease": "0f1",
   "keywords": [
