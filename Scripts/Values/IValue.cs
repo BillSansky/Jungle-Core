@@ -12,4 +12,5 @@ namespace Jungle.Values
         /// <returns>The value produced by the provider.</returns>
         T GetValue();
     }
+    
 }

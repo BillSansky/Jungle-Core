@@ -6,4 +6,5 @@ namespace Jungle.Values.Primitives
     public class BoolValue : LocalValue<bool>
     {
     }
+   
 }
