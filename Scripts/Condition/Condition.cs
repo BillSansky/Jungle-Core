@@ -11,7 +11,7 @@ namespace Jungle.Conditions
     public abstract class Condition
     {
         [SerializeField]
-        private bool negateCondition;
+        private bool invertCondition;
 
         /// <summary>
         /// Evaluates whether the condition is currently valid.
@@ -19,7 +19,7 @@ namespace Jungle.Conditions
         /// <returns>True if the condition is met, false otherwise.</returns>
         public bool IsValid()
         {
-            return negateCondition ? !IsValidImpl() : IsValidImpl();
+            return invertCondition ? !IsValidImpl() : IsValidImpl();
         }
         
         protected internal abstract bool IsValidImpl();

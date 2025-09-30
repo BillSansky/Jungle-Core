@@ -1,6 +1,6 @@
 ﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsEditorStyles.uss" />
-    <Style src="project://database/Assets/Plugins/Octoputs%20-%203D%20Drag%20And%20Drop/Editor/Resources/OctoputsListStyles.uss" />
+    <Style src="project://database/Packages/jungle.core/Editor/Resources/JungleEditorStyles.uss" />
+    <Style src="project://database/Packages/jungle.core/Editor/Resources/JunglePackageListStyles.uss" />
     <ui:VisualElement class="octoputs-section octoputs-custom-list-container">
         <ui:VisualElement name="list-header" class="octoputs-actions-inline-container">
             <ui:Label name="list-title" text="List" class="octoputs-list-section-header" />

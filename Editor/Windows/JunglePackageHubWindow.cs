@@ -74,7 +74,7 @@ public class JunglePackageHubWindow : EditorWindow
 
         // Attach USS styles
         TryAddStyle(rootVisualElement, $"{PackageRoot}/Editor/Resources/JungleEditorStyles.uss");
-        TryAddStyle(rootVisualElement, $"{PackageRoot}/Editor/Resources/JungleListStyles.uss");
+        TryAddStyle(rootVisualElement, $"{PackageRoot}/Editor/Resources/JunglePackageListStyles.uss");
 
         // Query UI
         listView   = rootVisualElement.Q<ScrollView>("package-list");

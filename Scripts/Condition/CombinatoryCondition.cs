@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Conditions
@@ -8,9 +9,12 @@ namespace Jungle.Conditions
     /// Condition that combines multiple other conditions with configurable logic.
     /// </summary>
     [Serializable]
+    [JungleClassInfo("Combinatory Condition","Combines a few conditions together with logical operators",null,"General")]
     public class CombinatoryCondition : Condition
     {
-        [SerializeReference] private List<Condition> conditions;
+        [JungleClassSelection] [SerializeReference]
+        private List<Condition> conditions;
+
         [SerializeField] private LogicalOperator logicalOperator = LogicalOperator.And;
 
         protected internal override bool IsValidImpl()

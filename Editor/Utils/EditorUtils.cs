@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,73 @@ namespace Jungle.Editor
 {
     public static class EditorUtils
     {
+        public static Type ResolveElementType(Type overrideBase,
+            Type fieldType,
+            Type rootType,
+            string propertyPath)
+        {
+            if (overrideBase != null) return overrideBase;
+            
+            var t = fieldType ?? GetFieldTypeFromPropertyPath(rootType, propertyPath);
+            var elem = TryGetEnumerableElementType(t);
+            if (elem != null) return elem;
+
+ 
+            return typeof(object);
+        }
+
+        private static Type TryGetEnumerableElementType(Type t)
+        {
+            if (t == null) return null;
+
+            // Arrays
+            if (t.IsArray) return t.GetElementType();
+
+            // Direct generic List<T>
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
+                return t.GetGenericArguments()[0];
+
+            // Check common generic interfaces
+            foreach (var i in t.GetInterfaces())
+            {
+                if (!i.IsGenericType) continue;
+                var g = i.GetGenericTypeDefinition();
+                if (g == typeof(IList<>) ||
+                    g == typeof(ICollection<>) ||
+                    g == typeof(IEnumerable<>) ||
+                    g == typeof(IReadOnlyList<>))
+                {
+                    return i.GetGenericArguments()[0];
+                }
+            }
+
+            // If t itself is a generic with a single type arg (custom wrappers)
+            if (t.IsGenericType && t.GetGenericArguments().Length == 1)
+                return t.GetGenericArguments()[0];
+
+            return t;
+        }
+
+        private static Type GetFieldTypeFromPropertyPath(Type rootType, string propertyPath)
+        {
+            const BindingFlags BF = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var t = rootType;
+            FieldInfo last = null;
+
+            foreach (var raw in propertyPath.Split('.'))
+            {
+                if (raw == "Array") continue;
+                if (raw.StartsWith("data[")) continue;
+
+                last = t.GetField(raw, BF);
+                if (last == null) break;
+                t = last.FieldType;
+            }
+
+            return last?.FieldType;
+        }
+
+
         /// <summary>
         /// Gets all available types that inherit from a specified base type using TypeCache
         /// </summary>
@@ -82,47 +150,40 @@ namespace Jungle.Editor
             return FormatTypeName(actionType, "Action");
         }
 
-        public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, System.Type baseType,
+        private const string JungleEditorStyleSheetResource = "JungleEditorStyles";
+
+        public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, Type baseType,
             SerializedProperty property)
         {
-            if (propertyField == null) return;
-
-            // Create a container to hold both the PropertyField and the plus button
-            var container = new VisualElement();
-            container.style.flexDirection = FlexDirection.Row;
-            container.style.alignItems = Align.Center;
-
-            // Get the parent and index of the original PropertyField
+            // Remove the original field from layout…
             var parent = propertyField.parent;
             var index = parent.IndexOf(propertyField);
-
-            // Remove the PropertyField from its current parent
             parent.Remove(propertyField);
 
-            // Configure the PropertyField to grow and fill available space
-            propertyField.style.flexGrow = 1;
+            // …and insert our clean composite control in the same spot.
+            var selector = new TypeSelectableField();
+            selector.Bind(property, baseType);
 
-            // Create the purple plus button
-            var addButton = new Button();
-            addButton.text = "+";
-            addButton.AddToClassList("octoputs-add-inline-button");
+            // Optional: keep your stylesheet hookup
+            AttachJungleEditorStyles(selector);
 
-            // Setup button click handler
-            addButton.clicked += () =>
+            parent.Insert(index, selector);
+        }
+
+        private static void AttachJungleEditorStyles(VisualElement element)
+        {
+            if (element == null)
             {
-                // Calculate button position in screen coordinates
-                var buttonRect = addButton.worldBound;
-                var buttonPosition = new Vector2(buttonRect.x, buttonRect.y + buttonRect.height);
+                return;
+            }
 
-                ShowAddComponentTypeMenuAndCreate(baseType, property);
-            };
+            var styleSheet = Resources.Load<StyleSheet>(JungleEditorStyleSheetResource);
+            if (styleSheet == null || element.styleSheets.Contains(styleSheet))
+            {
+                return;
+            }
 
-            // Add both elements to the container
-            container.Add(propertyField);
-            container.Add(addButton);
-
-            // Insert the container at the original PropertyField's position
-            parent.Insert(index, container);
+            element.styleSheets.Add(styleSheet);
         }
 
 
@@ -149,7 +210,7 @@ namespace Jungle.Editor
                 screenPos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
             }
 
-            ClassSelectionPopup.Show(screenPos, types, callback, menuTitle);
+            ClassSelectionWindow.Show(screenPos, types, callback, menuTitle);
         }
 
         public static void ShowAddComponentTypeMenuAndCreate(Type componentType,
@@ -161,6 +222,16 @@ namespace Jungle.Editor
             }
 
             ShowAddTypeMenu(componentType, CreateComponent);
+        }
+
+        public static void ShowAddManagedReferenceTypeMenuAndCreate(Type referenceType, SerializedProperty property)
+        {
+            void CreateReference(Type type)
+            {
+                CreateManagedReferenceFieldValue(type, property);
+            }
+
+            ShowAddTypeMenu(referenceType, CreateReference);
         }
 
 
@@ -221,6 +292,25 @@ namespace Jungle.Editor
             EditorUtility.SetDirty(serializedObject.targetObject);
 
             return newComponent;
+        }
+
+        public static object CreateManagedReferenceFieldValue(Type referenceType, SerializedProperty property,
+            string undoName = "Set Reference")
+        {
+            var serializedObject = property.serializedObject;
+
+            Undo.RecordObject(serializedObject.targetObject, undoName);
+
+            serializedObject.Update();
+
+            var instance = Activator.CreateInstance(referenceType);
+            property.managedReferenceValue = instance;
+
+            serializedObject.ApplyModifiedProperties();
+
+            EditorUtility.SetDirty(serializedObject.targetObject);
+
+            return instance;
         }
     }
 }
