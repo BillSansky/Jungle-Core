@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    public class QuaternionValueComponent : ValueComponent<Quaternion>
+    public class QuaternionValueComponent : ValueComponent<Quaternion>, IQuaternionValue
     {
         [SerializeField]
         private Quaternion value;

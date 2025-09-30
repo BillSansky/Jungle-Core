@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    public class BoolValueComponent : ValueComponent<bool>
+    public class BoolValueComponent : ValueComponent<bool>, IBoolValue
     {
         [SerializeField]
         private bool value;

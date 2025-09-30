@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.UnityTypes
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color Value", fileName = "ColorValue")]
-    public class ColorValueAsset : ValueAsset<Color>
+    public class ColorValueAsset : ValueAsset<Color>, IColorValue
     {
         [SerializeField]
         private Color value = Color.white;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public class GameObjectValueComponent : ValueComponent<GameObject>
+    public class GameObjectValueComponent : ValueComponent<GameObject>, IGameObjectValue
     {
         [SerializeField]
         private GameObject value;

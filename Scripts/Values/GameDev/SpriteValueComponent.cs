@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public class SpriteValueComponent : ValueComponent<Sprite>
+    public class SpriteValueComponent : ValueComponent<Sprite>, ISpriteValue
     {
         [SerializeField]
         private Sprite value;

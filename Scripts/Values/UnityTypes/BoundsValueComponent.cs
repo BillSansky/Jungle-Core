@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    public class BoundsValueComponent : ValueComponent<Bounds>
+    public class BoundsValueComponent : ValueComponent<Bounds>, IBoundsValue
     {
         [SerializeField]
         private Bounds value = new Bounds(Vector3.zero, Vector3.one);

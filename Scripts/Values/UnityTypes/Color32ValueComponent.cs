@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    public class Color32ValueComponent : ValueComponent<Color32>
+    public class Color32ValueComponent : ValueComponent<Color32>, IColor32Value
     {
         [SerializeField]
         private Color32 value = new Color32(255, 255, 255, 255);

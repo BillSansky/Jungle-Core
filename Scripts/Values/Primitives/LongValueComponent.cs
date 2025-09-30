@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    public class LongValueComponent : ValueComponent<long>
+    public class LongValueComponent : ValueComponent<long>, ILongValue
     {
         [SerializeField]
         private long value;

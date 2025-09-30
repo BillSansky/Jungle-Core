@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.UnityTypes
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/AnimationCurve Value", fileName = "AnimationCurveValue")]
-    public class AnimationCurveValueAsset : ValueAsset<AnimationCurve>
+    public class AnimationCurveValueAsset : ValueAsset<AnimationCurve>, IAnimationCurveValue
     {
         [SerializeField]
         private AnimationCurve value = AnimationCurve.Linear(0f, 0f, 1f, 1f);

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public class AudioClipValueComponent : ValueComponent<AudioClip>
+    public class AudioClipValueComponent : ValueComponent<AudioClip>, IAudioClipValue
     {
         [SerializeField]
         private AudioClip value;

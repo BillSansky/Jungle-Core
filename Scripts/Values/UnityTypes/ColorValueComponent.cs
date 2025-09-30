@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    public class ColorValueComponent : ValueComponent<Color>
+    public class ColorValueComponent : ValueComponent<Color>, IColorValue
     {
         [SerializeField]
         private Color value = Color.white;

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.GameDev
 {
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AnimationClip Value", fileName = "AnimationClipValue")]
-    public class AnimationClipValueAsset : ValueAsset<AnimationClip>
+    public class AnimationClipValueAsset : ValueAsset<AnimationClip>, IAnimationClipValue
     {
         [SerializeField]
         private AnimationClip value;

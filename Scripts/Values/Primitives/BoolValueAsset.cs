@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.Primitives
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool Value", fileName = "BoolValue")]
-    public class BoolValueAsset : ValueAsset<bool>
+    public class BoolValueAsset : ValueAsset<bool>, IBoolValue
     {
         [SerializeField]
         private bool value;

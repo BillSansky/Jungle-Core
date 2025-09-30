@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    public class IntValueComponent : ValueComponent<int>
+    public class IntValueComponent : ValueComponent<int>, IIntValue
     {
         [SerializeField]
         private int value;

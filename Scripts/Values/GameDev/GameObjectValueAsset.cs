@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.GameDev
 {
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/GameObject Value", fileName = "GameObjectValue")]
-    public class GameObjectValueAsset : ValueAsset<GameObject>
+    public class GameObjectValueAsset : ValueAsset<GameObject>, IGameObjectValue
     {
         [SerializeField]
         private GameObject value;

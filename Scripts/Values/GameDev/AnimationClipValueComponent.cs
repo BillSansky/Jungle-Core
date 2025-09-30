@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public class AnimationClipValueComponent : ValueComponent<AnimationClip>
+    public class AnimationClipValueComponent : ValueComponent<AnimationClip>, IAnimationClipValue
     {
         [SerializeField]
         private AnimationClip value;

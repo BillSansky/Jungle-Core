@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.GameDev
 {
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Sprite Value", fileName = "SpriteValue")]
-    public class SpriteValueAsset : ValueAsset<Sprite>
+    public class SpriteValueAsset : ValueAsset<Sprite>, ISpriteValue
     {
         [SerializeField]
         private Sprite value;

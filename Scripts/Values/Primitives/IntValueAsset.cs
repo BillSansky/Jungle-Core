@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.Primitives
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int Value", fileName = "IntValue")]
-    public class IntValueAsset : ValueAsset<int>
+    public class IntValueAsset : ValueAsset<int>, IIntValue
     {
         [SerializeField]
         private int value;

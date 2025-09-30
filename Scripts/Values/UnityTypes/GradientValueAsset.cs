@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.UnityTypes
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient Value", fileName = "GradientValue")]
-    public class GradientValueAsset : ValueAsset<Gradient>
+    public class GradientValueAsset : ValueAsset<Gradient>, IGradientValue
     {
         [SerializeField]
         private Gradient value = new Gradient();

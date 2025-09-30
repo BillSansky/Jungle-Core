@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Jungle.Values.GameDev
 {
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Transform Value", fileName = "TransformValue")]
-    public class TransformValueAsset : ValueAsset<Transform>
+    public class TransformValueAsset : ValueAsset<Transform>, ITransformValue
     {
         [SerializeField]
         private Transform value;

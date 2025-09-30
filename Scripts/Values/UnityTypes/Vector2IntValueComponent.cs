@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    public class Vector2IntValueComponent : ValueComponent<Vector2Int>
+    public class Vector2IntValueComponent : ValueComponent<Vector2Int>, IVector2IntValue
     {
         [SerializeField]
         private Vector2Int value;
