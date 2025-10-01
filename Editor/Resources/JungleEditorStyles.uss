@@ -69,7 +69,15 @@
 
 * FIELDS *,
 
-.jungle-marginfield {
+.jungle-section .unity-foldout {
+    padding-left: 15px;           /* nudges the arrow & label in */
+}
+
+.jungle-section .unity-foldout__content {
+    margin-left: 15px;            /* keeps the inner content aligned with the label */
+}
+
+.jungle-margin-field {
     margin-left: 15px;
 }
 
