@@ -38,7 +38,7 @@ namespace Jungle.Editor
 
         public TypeSelectableField()
         {
-            AddToClassList("jungle-editor");
+           // AddToClassList("jungle-editor");
             
             var input1 = new VisualElement();
             Add(input1);
@@ -74,6 +74,7 @@ namespace Jungle.Editor
 
             btnClear = new Button(OnClearClicked) { text = "✕" };
             btnClear.tooltip = "Clear";
+            btnClear.style.fontSize = 10;
             btnClear.AddToClassList("jungle-button");
             btns1.Add(btnClear);
 
@@ -325,7 +326,18 @@ namespace Jungle.Editor
                     ? prop.managedReferenceValue != null || !string.IsNullOrEmpty(prop.managedReferenceFullTypename)
                     : prop.objectReferenceValue != null);
 
-            btnPickOrSwap.text = isManagedRef && hasValue ? "↺" : "+";
+            if (isManagedRef && hasValue)
+            {
+                btnPickOrSwap.text =  "↺";
+                btnPickOrSwap.style.fontSize = 11;
+            }
+            else
+            {
+                btnPickOrSwap.text =  "+";
+                btnPickOrSwap.style.fontSize = 14;
+            }
+            
+          
             btnClear.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
