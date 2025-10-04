@@ -6,18 +6,14 @@ namespace Jungle.Actions
     /// Base class for actions that support starting and stopping their execution.
     /// </summary>
     [Serializable]
-    public abstract class StartStopAction : Action
+    public abstract class StartStopAction
     {
         private bool isStarted;
 
-        /// <summary>
-        /// Indicates whether the action has been started.
-        /// </summary>
+        
         protected bool IsStarted => isStarted;
 
-        /// <summary>
-        /// Starts the action. This method is also invoked when the action is executed.
-        /// </summary>
+
         public void Start()
         {
             if (isStarted)
@@ -42,14 +38,7 @@ namespace Jungle.Actions
             isStarted = false;
             OnStop();
         }
-
-        /// <summary>
-        /// Executes the action. For start/stop actions execution simply starts them.
-        /// </summary>
-        public sealed override void Execute()
-        {
-            Start();
-        }
+        
 
         /// <summary>
         /// Called when the action starts.
