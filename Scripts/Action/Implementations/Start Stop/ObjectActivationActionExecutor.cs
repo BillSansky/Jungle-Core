@@ -7,7 +7,7 @@ namespace Jungle.Actions
     {
      
 
-        [SerializeReference] private List<StartStopAction> actions;
+        [SerializeReference] private List<ProcessAction> actions;
 
         public void OnEnable()
         {

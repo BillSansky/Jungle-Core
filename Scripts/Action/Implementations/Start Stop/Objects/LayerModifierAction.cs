@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class LayerModifierAction : StartStopAction
+    public class LayerModifierAction : ProcessAction
     {
         [SerializeReference] private IGameObjectValue targetObjects = new GameObjectValue();
 

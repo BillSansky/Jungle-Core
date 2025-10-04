@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Utils;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Jungle.Actions
 {
     /// <summary>
     /// Event-driven sequence of child ProcessActions.
-    /// - Progression listens to child OnProcessComplete/OnProcessFailed (no polling).
+    /// - Progression listens to child ProcessCompleted/ProcessFailed (no polling).
     /// - Coroutine only services time limits (sequence & per-step).
     /// - In Loop mode: restarts when all steps finish.
     /// - In TimeLimited mode: restarts when all steps finish while time remains; completes/cancels only when time expires.
@@ -76,8 +75,8 @@ namespace Jungle.Actions
             [NonSerialized] internal bool suppressLoopOnce;
 
             // Event handlers to detach safely
-            [NonSerialized] internal UnityAction completedHandler;
-            [NonSerialized] internal UnityAction failedHandler;
+            [NonSerialized] internal Action completedHandler;
+            [NonSerialized] internal Action failedHandler;
         }
 
         // Runtime state
@@ -379,8 +378,8 @@ namespace Jungle.Actions
                 HandleStepTerminal(s);
             };
 
-            s.Action.OnProcessComplete.AddListener(s.completedHandler);
-            s.Action.OnProcessFailed.AddListener(s.failedHandler);
+            s.Action.ProcessCompleted += s.completedHandler;
+            s.Action.ProcessFailed += s.failedHandler;
         }
 
         private void DetachStepListeners(Step s)
@@ -389,13 +388,13 @@ namespace Jungle.Actions
 
             if (s.completedHandler != null)
             {
-                s.Action.OnProcessComplete.RemoveListener(s.completedHandler);
+                s.Action.ProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
 
             if (s.failedHandler != null)
             {
-                s.Action.OnProcessFailed.RemoveListener(s.failedHandler);
+                s.Action.ProcessFailed -= s.failedHandler;
                 s.failedHandler = null;
             }
         }
