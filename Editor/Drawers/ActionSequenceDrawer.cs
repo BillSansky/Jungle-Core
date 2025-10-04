@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Cursor = UnityEngine.UIElements.Cursor;
 
 namespace Jungle.Editor
 {
@@ -331,45 +332,39 @@ namespace Jungle.Editor
                 }
             }
 
+            // Fixed, deterministic fallback placement without undefined variables.
             private static float[] CalculateFallbackStartTimes(IReadOnlyList<TimelineEntry> entries, float fallbackWidth)
             {
                 var result = new float[entries.Count];
-                var fallbackPosition = 0f;
+                var cursor = 0f; // advances when blocking items consume time
 
                 for (var i = 0; i < entries.Count; i++)
                 {
-                    var entry = entries[i];
+                    var e = entries[i];
 
-                    float fraction;
-                    if (entry.StartTime.HasValue)
+                    if (e.StartTime.HasValue)
                     {
+                        var start = Mathf.Max(0f, e.StartTime.Value);
+                        result[i] = start;
 
-                        var value = Mathf.Max(0f, entry.StartTime.Value);
-                        result[i] = value;
-                        lastKnownStart = value;
-                        hasLastKnownStart = true;
-
-                        fraction = Mathf.Clamp01(totalDuration > 0f ? entry.StartTime.Value / totalDuration : 0f);
-                        fallbackPosition = Mathf.Max(fallbackPosition, fraction);
-
+                        if (e.Blocking)
+                        {
+                            var dur = e.Duration.HasValue ? Mathf.Max(0f, e.Duration.Value) : Mathf.Max(0.25f, fallbackWidth * 0.6f);
+                            cursor = Mathf.Max(cursor, start + dur);
+                        }
                     }
                     else
                     {
+                        // If no known start, place at current cursor (sequential feel for blocking chains)
+                        // Non-blocking items start at cursor too (parallel look), which is acceptable for a preview.
+                        var start = Mathf.Max(0f, cursor);
+                        result[i] = start;
 
-                        var fallback = Mathf.Max(0f, i * fallbackWidth);
-                        result[i] = fallback;
-                        lastKnownStart = fallback;
-                        hasLastKnownStart = true;
-
-                        fraction = fallbackPosition;
-
-                    }
-
-                    result[i] = fraction;
-
-                    if (entry.Blocking)
-                    {
-                        fallbackPosition = Mathf.Clamp01(fraction + fallbackWidthFraction);
+                        if (e.Blocking)
+                        {
+                            var dur = e.Duration.HasValue ? Mathf.Max(0f, e.Duration.Value) : Mathf.Max(0.25f, fallbackWidth * 0.6f);
+                            cursor = start + dur;
+                        }
                     }
                 }
 
@@ -397,7 +392,8 @@ namespace Jungle.Editor
                 bar.style.borderBottomRightRadius = 3f;
                 bar.style.borderTopLeftRadius = 3f;
                 bar.style.borderTopRightRadius = 3f;
-                bar.style.cursor = new StyleCursor(MouseCursor.MoveArrow);
+             
+                bar.style.cursor = new StyleCursor(StyleKeyword.Auto);
 
                 UpdateBarVisual(bar, entry);
 
@@ -436,10 +432,7 @@ namespace Jungle.Editor
                 {
                     bar.RegisterCallback<PointerDownEvent>(evt =>
                     {
-                        if (evt.button != 0)
-                        {
-                            return;
-                        }
+                        if (evt.button != 0) return;
 
                         evt.StopPropagation();
                         BeginDrag(entry, DragMode.MoveStart, bar, label, evt.pointerId, evt.position, entry.StartDelay, bar);
@@ -447,29 +440,38 @@ namespace Jungle.Editor
 
                     bar.RegisterCallback<PointerMoveEvent>(evt =>
                     {
-                        if (currentDrag == null || currentDrag.Entry != entry || currentDrag.Mode != DragMode.MoveStart || evt.pointerId != currentDrag.PointerId)
-                        {
-                            return;
-                        }
+                        var drag = currentDrag;
+                        var shouldHandle =
+                            drag != null &&
+                            drag.Entry == entry &&
+                            drag.Mode == DragMode.MoveStart &&
+                            evt.pointerId == drag.PointerId;
 
-                        evt.StopPropagation();
-                        UpdateMoveDrag(evt.position);
+                        if (shouldHandle)
+                        {
+                            evt.StopPropagation();
+                            UpdateMoveDrag(evt.position);
+                        }
                     });
 
                     bar.RegisterCallback<PointerUpEvent>(evt =>
                     {
-                        if (currentDrag == null || evt.pointerId != currentDrag.PointerId)
-                        {
-                            return;
-                        }
+                        var drag = currentDrag;
+                        var shouldHandle = drag != null && evt.pointerId == drag.PointerId;
 
-                        evt.StopPropagation();
-                        EndDrag(true);
+                        if (shouldHandle)
+                        {
+                            evt.StopPropagation();
+                            EndDrag(true);
+                        }
                     });
 
                     bar.RegisterCallback<PointerCaptureOutEvent>(_ =>
                     {
-                        if (currentDrag != null && currentDrag.Entry == entry && currentDrag.Mode == DragMode.MoveStart)
+                        var drag = currentDrag;
+                        var shouldHandle = drag != null && drag.Entry == entry && drag.Mode == DragMode.MoveStart;
+
+                        if (shouldHandle)
                         {
                             EndDrag(false);
                         }
@@ -485,16 +487,13 @@ namespace Jungle.Editor
                     handle.style.bottom = 0f;
                     handle.style.width = 6f;
                     handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.3f);
-                    handle.style.cursor = new StyleCursor(MouseCursor.ResizeHorizontal);
+                    handle.style.cursor = new StyleCursor(StyleKeyword.Auto);
 
                     bar.Add(handle);
 
                     handle.RegisterCallback<PointerDownEvent>(evt =>
                     {
-                        if (evt.button != 0)
-                        {
-                            return;
-                        }
+                        if (evt.button != 0) return;
 
                         evt.StopPropagation();
                         BeginDrag(entry, DragMode.ResizeDuration, bar, label, evt.pointerId, evt.position, entry.DisplayDuration, handle);
@@ -502,29 +501,38 @@ namespace Jungle.Editor
 
                     handle.RegisterCallback<PointerMoveEvent>(evt =>
                     {
-                        if (currentDrag == null || currentDrag.Entry != entry || currentDrag.Mode != DragMode.ResizeDuration || evt.pointerId != currentDrag.PointerId)
-                        {
-                            return;
-                        }
+                        var drag = currentDrag;
+                        var shouldHandle =
+                            drag != null &&
+                            drag.Entry == entry &&
+                            drag.Mode == DragMode.ResizeDuration &&
+                            evt.pointerId == drag.PointerId;
 
-                        evt.StopPropagation();
-                        UpdateResizeDrag(evt.position);
+                        if (shouldHandle)
+                        {
+                            evt.StopPropagation();
+                            UpdateResizeDrag(evt.position);
+                        }
                     });
 
                     handle.RegisterCallback<PointerUpEvent>(evt =>
                     {
-                        if (currentDrag == null || evt.pointerId != currentDrag.PointerId)
-                        {
-                            return;
-                        }
+                        var drag = currentDrag;
+                        var shouldHandle = drag != null && evt.pointerId == drag.PointerId;
 
-                        evt.StopPropagation();
-                        EndDrag(true);
+                        if (shouldHandle)
+                        {
+                            evt.StopPropagation();
+                            EndDrag(true);
+                        }
                     });
 
                     handle.RegisterCallback<PointerCaptureOutEvent>(_ =>
                     {
-                        if (currentDrag != null && currentDrag.Entry == entry && currentDrag.Mode == DragMode.ResizeDuration)
+                        var drag = currentDrag;
+                        var shouldHandle = drag != null && drag.Entry == entry && drag.Mode == DragMode.ResizeDuration;
+
+                        if (shouldHandle)
                         {
                             EndDrag(false);
                         }
@@ -560,66 +568,63 @@ namespace Jungle.Editor
             private void UpdateMoveDrag(Vector2 position)
             {
                 var drag = currentDrag;
-                if (drag == null)
+                Debug.Assert(drag != null, "UpdateMoveDrag called without an active drag state");
+                if (drag != null)
                 {
-                    return;
+                    var deltaPixels = position.x - drag.StartPosition.x;
+                    var deltaSeconds = deltaPixels / PixelsPerSecond;
+                    var newDelay = Mathf.Max(0f, drag.StartValue + deltaSeconds);
+
+                    drag.Entry.StartDelayProperty.floatValue = newDelay;
+                    serializedObject.ApplyModifiedProperties();
+
+                    drag.Entry.StartDelay = newDelay;
+                    var newStartTime = drag.BaseStartTime + newDelay;
+                    drag.Entry.StartTime = newStartTime;
+                    drag.Entry.DisplayStart = newStartTime;
+
+                    UpdateBarVisual(drag.BarElement, drag.Entry);
+                    drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
                 }
-
-                var deltaPixels = position.x - drag.StartPosition.x;
-                var deltaSeconds = deltaPixels / PixelsPerSecond;
-                var newDelay = Mathf.Max(0f, drag.StartValue + deltaSeconds);
-
-                drag.Entry.StartDelayProperty.floatValue = newDelay;
-                serializedObject.ApplyModifiedProperties();
-
-                drag.Entry.StartDelay = newDelay;
-                var newStartTime = drag.BaseStartTime + newDelay;
-                drag.Entry.StartTime = newStartTime;
-                drag.Entry.DisplayStart = newStartTime;
-
-                UpdateBarVisual(drag.BarElement, drag.Entry);
-                drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
             }
 
             private void UpdateResizeDrag(Vector2 position)
             {
                 var drag = currentDrag;
-                if (drag == null)
+                Debug.Assert(drag != null, "UpdateResizeDrag called without an active drag state");
+                if (drag != null)
                 {
-                    return;
+                    var deltaPixels = position.x - drag.StartPosition.x;
+                    var deltaSeconds = deltaPixels / PixelsPerSecond;
+                    var newDuration = Mathf.Max(0f, drag.StartValue + deltaSeconds);
+
+                    drag.Entry.TimeLimitProperty.floatValue = newDuration;
+                    serializedObject.ApplyModifiedProperties();
+
+                    drag.Entry.Duration = newDuration;
+                    drag.Entry.DisplayDuration = newDuration;
+
+                    UpdateBarVisual(drag.BarElement, drag.Entry);
+                    drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
                 }
-
-                var deltaPixels = position.x - drag.StartPosition.x;
-                var deltaSeconds = deltaPixels / PixelsPerSecond;
-                var newDuration = Mathf.Max(0f, drag.StartValue + deltaSeconds);
-
-                drag.Entry.TimeLimitProperty.floatValue = newDuration;
-                serializedObject.ApplyModifiedProperties();
-
-                drag.Entry.Duration = newDuration;
-                drag.Entry.DisplayDuration = newDuration;
-
-                UpdateBarVisual(drag.BarElement, drag.Entry);
-                drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
             }
 
             private void EndDrag(bool refresh)
             {
-                if (currentDrag == null)
+                var drag = currentDrag;
+                Debug.Assert(drag != null, "EndDrag called without an active drag state");
+                if (drag != null)
                 {
-                    return;
-                }
+                    if (drag.PointerOwner.HasPointerCapture(drag.PointerId))
+                    {
+                        drag.PointerOwner.ReleasePointer(drag.PointerId);
+                    }
+                    currentDrag = null;
 
-                if (currentDrag.PointerOwner.HasPointerCapture(currentDrag.PointerId))
-                {
-                    currentDrag.PointerOwner.ReleasePointer(currentDrag.PointerId);
-                }
-
-                currentDrag = null;
-
-                if (refresh)
-                {
-                    Refresh();
+                    if (refresh)
+                    {
+                        Refresh();
+                    }
                 }
             }
 

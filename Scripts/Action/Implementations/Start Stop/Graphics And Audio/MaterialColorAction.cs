@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Jungle.Actions;
-
+using Jungle.Attributes;
 using Jungle.Utils;
 using Jungle.Values;
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace Jungle.Actions
 
         [SerializeField] private int materialIndex = -1; // -1 means all materials, 0+ targets specific material index
 
-        [SerializeReference] private IRendererValue targetRenderer;
+        [SerializeReference][JungleClassSelection] private IRendererValue targetRenderer;
 
         private Dictionary<Renderer, Color[]> originalColorsMap = new();
 

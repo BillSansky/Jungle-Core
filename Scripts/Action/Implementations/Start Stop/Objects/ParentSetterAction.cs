@@ -11,7 +11,7 @@ namespace Jungle.Actions
         "d_UnityEditor.HierarchyWindow")]
     public class ParentSetterAction : ProcessAction
     {
-        [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeField] private Transform parentTransform;
         [SerializeField] private bool setParentOnStart = true;
         [SerializeField] private bool resetParentOnStop = true;
