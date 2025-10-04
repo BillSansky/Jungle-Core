@@ -28,6 +28,8 @@ namespace Jungle.Actions
 
         private Coroutine routine;
 
+        public override bool IsTimed => duration?.V > 0f;
+        public override float Duration => duration?.V ?? 0f;
     
         public void StartAction()
         {

@@ -24,6 +24,9 @@ namespace Jungle.Actions
         private bool wasKinematic;
         private bool skipStop;
 
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
+
         public void StartAction()
         {
             Start();

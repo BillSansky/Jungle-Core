@@ -27,6 +27,8 @@ namespace Jungle.Actions
         private List<Transform> originalParents = new ();
         private bool skipStop;
         
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
 
         public void StartAction()
         {

@@ -28,6 +28,8 @@ namespace Jungle.Actions
         private bool isWaitingForStopDelay;
         private bool actionsCurrentlyRunning;
 
+        public override bool IsTimed => true;
+        public override float Duration => startDelay + (useStopDelay ? stopDelay : 0f);
       
         public void StartAction()
         {

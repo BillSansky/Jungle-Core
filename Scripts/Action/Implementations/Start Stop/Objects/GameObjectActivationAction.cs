@@ -26,7 +26,8 @@ namespace Jungle.Actions
 
         private readonly Dictionary<GameObject, bool> originalStates = new();
 
-        
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
 
         public void StartAction()
         {

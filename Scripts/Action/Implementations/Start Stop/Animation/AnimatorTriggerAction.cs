@@ -15,6 +15,9 @@ namespace Jungle.Actions
 
         private Animator cachedAnimator;
 
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
+
         public void StartAction()
         {
             Start();

@@ -47,6 +47,38 @@ namespace Jungle.Actions
                 (s.timeLimited && s.timeLimit > 0f) ||
                 (s.overrideSequenceMode && s.mode == ProcessMode.TimeLimited && s.modeTimeLimit > 0f)));
 
+        public override float Duration
+        {
+            get
+            {
+                if (Mode == ProcessMode.TimeLimited)
+                {
+                    return SequenceTimeLimit;
+                }
+
+                if (Mode == ProcessMode.Loop)
+                {
+                    return 0f; // Infinite loop has no specific duration
+                }
+
+                // Mode == Once: calculate total duration of all steps
+                float totalDuration = StartDelay;
+                if (Steps == null || Steps.Count == 0)
+                    return totalDuration;
+
+                foreach (var step in Steps)
+                {
+                    totalDuration += step.startDelay;
+                    if (step.Action != null && step.Action.IsTimed)
+                    {
+                        totalDuration += step.Action.Duration;
+                    }
+                }
+
+                return totalDuration;
+            }
+        }
+
         [Serializable]
         public class Step
         {

@@ -16,6 +16,8 @@ namespace Jungle.Actions
         private readonly Dictionary<GameObject, int> storedLayers = new();
         private bool skipStop;
 
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
         
         public void StartAction()
         {

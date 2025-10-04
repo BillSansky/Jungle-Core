@@ -12,7 +12,8 @@ namespace Jungle.Actions
         [SerializeField] private AudioClip dragEndSound;
         [SerializeField] private AudioClip targetReachedSound;
 
-       
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
 
         public void StartAction()
         {

@@ -20,8 +20,10 @@ namespace Jungle.Actions
         /// <summary>
         /// Does this process have a specific duration?
         /// </summary>
-        public virtual bool IsTimed => false;
+        public abstract bool IsTimed { get; }
 
+        public abstract float Duration { get; }
+        
         public void Start()
         {
             if (isStarted)

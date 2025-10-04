@@ -13,18 +13,21 @@ namespace Jungle.Actions
     [Serializable]
     public class PositionLerpAction : ProcessAction
     {
-        [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeReference] private IVector3Value targetPosition = new Vector3Value(Vector3.zero);
-        [SerializeReference] private IBoolValue useLocalPosition = new BoolValue(true);
+        [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private ITransformValue targetPosition = new TransformLocalValue();
+        [SerializeReference] private bool useLocalPosition ;
         [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
         [SerializeReference] private IAnimationCurveValue interpolation =
             new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
-        [SerializeReference] private IBoolValue returnToInitialOnStop = new BoolValue(true);
+        [SerializeReference] private bool returnToInitialOnStop;
 
         private Vector3 cachedInitialPosition;
         private bool hasCachedInitialPosition;
         private Transform resolvedTransform;
         private Coroutine activeRoutine;
+
+        public override bool IsTimed => duration?.V > 0f;
+        public override float Duration => duration?.V ?? 0f;
 
         public void StartAction()
         {
@@ -39,10 +42,14 @@ namespace Jungle.Actions
         protected override void OnStart()
         {
             resolvedTransform = ResolveTargetTransform();
-            var useLocal = useLocalPosition.V;
+            var useLocal = useLocalPosition;
             var totalDuration = duration.V;
             var curve = interpolation.V;
-            var target = targetPosition.V;
+
+            var targetTransformValue = targetPosition?.V;
+            var target = targetTransformValue != null 
+                ? ReadPosition(targetTransformValue, useLocal) 
+                : Vector3.zero;
 
             CacheInitialPosition(resolvedTransform, useLocal);
 
@@ -68,12 +75,12 @@ namespace Jungle.Actions
 
             StopActiveRoutine();
 
-            if (!returnToInitialOnStop.V || !hasCachedInitialPosition)
+            if (!returnToInitialOnStop || !hasCachedInitialPosition)
             {
                 return;
             }
 
-            var useLocal = useLocalPosition.V;
+            var useLocal = useLocalPosition;
             var totalDuration = duration.V;
             var curve = interpolation.V;
 

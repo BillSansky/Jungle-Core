@@ -18,6 +18,9 @@ namespace Jungle.Actions
 
         private PlayableDirector cachedDirector;
 
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
+
         public void StartAction()
         {
             Start();

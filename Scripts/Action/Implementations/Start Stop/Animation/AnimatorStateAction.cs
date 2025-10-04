@@ -23,6 +23,9 @@ namespace Jungle.Actions
         private float previousNormalizedTime;
         private bool hasPreviousState;
 
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
+
         public void StartAction()
         {
             Start();

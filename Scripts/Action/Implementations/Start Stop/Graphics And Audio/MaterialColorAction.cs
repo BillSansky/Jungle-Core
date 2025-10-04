@@ -28,6 +28,8 @@ namespace Jungle.Actions
 
         private Coroutine colorLerpCoroutine;
 
+        public override bool IsTimed => true;
+        public override float Duration => lerpDuration + lerpBackDuration;
       
         public void StartAction()
         {

@@ -14,6 +14,8 @@ namespace Jungle.Actions
         [SerializeField] private UnityEvent onStop = new();
         [SerializeField] private UnityEvent onOneShot = new();
         
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
 
         public void StartAction()
         {

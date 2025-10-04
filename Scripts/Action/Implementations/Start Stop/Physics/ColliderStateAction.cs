@@ -14,6 +14,8 @@ namespace Jungle.Actions
         private readonly Dictionary<Collider, bool> originalStates = new();
         private bool skipStop;
         
+        public override bool IsTimed => false;
+        public override float Duration => 0f;
 
         public void StartAction()
         {
