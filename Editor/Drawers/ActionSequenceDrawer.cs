@@ -640,12 +640,34 @@ namespace Jungle.Editor
             private static string BuildInfoLabel(TimelineEntry entry)
             {
                 var info = entry.Blocking ? "Blocking" : "Parallel";
-                if (entry.LoopTillEnd)
+
+                if (entry.ModeOverride)
+                {
+                    info += $" • Mode {entry.Mode}";
+                }
+
+                if (entry.ModeLoops)
+                {
+                    if (entry.LoopCount > 0)
+                    {
+                        info += $" • Loops x{entry.LoopCount}";
+                    }
+                    else
+                    {
+                        info += " • Loops";
+                    }
+                }
+                else if (entry.LoopTillEnd)
                 {
                     info += " • Loops";
                 }
 
-                info += entry.TimeLimited ? " • Time-limited" : " • Untimed";
+                if (entry.ModeOverride && entry.Mode == ActionSequence.ProcessMode.TimeLimited && entry.ModeTimeLimit > 0f)
+                {
+                    info += $" • Mode limit {entry.ModeTimeLimit:0.##}s";
+                }
+
+                info += entry.TimeLimited ? " • Step timed" : " • Step untimed";
                 return info;
             }
         }
@@ -655,16 +677,24 @@ namespace Jungle.Editor
             var entries = new List<TimelineEntry>(stepsProp.arraySize);
             var currentTime = Mathf.Max(0f, sequenceStartDelay);
             var timeKnown = true;
+            var modeProp = stepsProp.serializedObject.FindProperty("Mode");
+            var sequenceMode = modeProp != null
+                ? (ActionSequence.ProcessMode)modeProp.enumValueIndex
+                : ActionSequence.ProcessMode.Once;
 
             for (var i = 0; i < stepsProp.arraySize; i++)
             {
                 var stepProp = stepsProp.GetArrayElementAtIndex(i);
                 var blocking = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.blocking)).boolValue;
                 var loopTillEnd = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopTillEnd)).boolValue;
+                var overrideModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.overrideSequenceMode));
+                var stepModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.mode));
+                var loopCountProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopCount));
                 var timeLimitedProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimited));
                 var timeLimited = timeLimitedProp.boolValue;
                 var timeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit));
                 var startDelayProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.startDelay));
+                var modeTimeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.modeTimeLimit));
                 var actionProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.Action));
 
                 var startDelay = Mathf.Max(0f, startDelayProp.floatValue);
@@ -681,11 +711,45 @@ namespace Jungle.Editor
                     }
                 }
 
+                var overrideMode = overrideModeProp.boolValue;
+                var stepMode = overrideMode
+                    ? (ActionSequence.ProcessMode)stepModeProp.enumValueIndex
+                    : sequenceMode;
+                var loopsActive = false;
+                var loopCount = Mathf.Max(0, loopCountProp.intValue);
+                var modeTimeLimit = 0f;
+
+                if (overrideMode)
+                {
+                    switch (stepMode)
+                    {
+                        case ActionSequence.ProcessMode.Loop:
+                            loopsActive = true;
+                            break;
+                        case ActionSequence.ProcessMode.TimeLimited:
+                            modeTimeLimit = Mathf.Max(0f, modeTimeLimitProp.floatValue);
+                            loopsActive = modeTimeLimit > 0f;
+                            break;
+                    }
+                }
+                else if (loopTillEnd)
+                {
+                    if (stepMode == ActionSequence.ProcessMode.Loop || stepMode == ActionSequence.ProcessMode.TimeLimited)
+                    {
+                        loopsActive = true;
+                    }
+                }
+
                 entries.Add(new TimelineEntry
                 {
                     DisplayName = BuildStepDisplayName(actionProp, i),
                     Blocking = blocking,
                     LoopTillEnd = loopTillEnd,
+                    ModeOverride = overrideMode,
+                    Mode = stepMode,
+                    ModeLoops = loopsActive,
+                    LoopCount = loopsActive ? loopCount : 0,
+                    ModeTimeLimit = modeTimeLimit,
                     TimeLimited = timeLimited,
                     BaseStartTime = baseStartTime,
                     StartDelay = startDelay,
@@ -802,6 +866,11 @@ namespace Jungle.Editor
             public string DisplayName = string.Empty;
             public bool Blocking;
             public bool LoopTillEnd;
+            public bool ModeOverride;
+            public ActionSequence.ProcessMode Mode;
+            public bool ModeLoops;
+            public int LoopCount;
+            public float ModeTimeLimit;
             public bool TimeLimited;
             public float? BaseStartTime;
             public float StartDelay;
