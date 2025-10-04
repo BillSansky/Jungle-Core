@@ -37,22 +37,57 @@ namespace Jungle.Editor
             foldout.Add(new PropertyField(finishOnLimitProp));
             foldout.Add(new PropertyField(stepsProp));
 
+            var timelineFoldout = new Foldout
+            {
+                text = "Timeline",
+                value = false
+            };
+
             var timeline = new ActionSequenceTimeline(property);
-            foldout.Add(timeline);
+            timelineFoldout.Add(timeline);
+            foldout.Add(timelineFoldout);
 
             root.Bind(property.serializedObject);
             return root;
         }
 
+
         private sealed class ActionSequenceTimeline : VisualElement
         {
+            private const float PixelsPerSecond = 80f;
+            private const float MinimumTimelineWidth = 480f;
+            private const float MinimumBarWidth = 12f;
+
             private readonly SerializedObject serializedObject;
             private readonly string propertyPath;
 
             private readonly Label headerLabel;
             private readonly VisualElement legendContainer;
+            private readonly ScrollView timelineScrollView;
             private readonly VisualElement rowsContainer;
             private readonly Label modeInfoLabel;
+
+            private float currentTimelineWidth = MinimumTimelineWidth;
+            private DragState currentDrag;
+
+            private sealed class DragState
+            {
+                public TimelineEntry Entry;
+                public DragMode Mode;
+                public VisualElement PointerOwner;
+                public VisualElement BarElement;
+                public Label LabelElement;
+                public int PointerId;
+                public Vector2 StartPosition;
+                public float StartValue;
+                public float BaseStartTime;
+            }
+
+            private enum DragMode
+            {
+                MoveStart,
+                ResizeDuration
+            }
 
             public ActionSequenceTimeline(SerializedProperty property)
             {
@@ -90,9 +125,19 @@ namespace Jungle.Editor
                 legendContainer.style.marginBottom = 6f;
                 legendContainer.style.justifyContent = Justify.FlexStart;
 
+                timelineScrollView = new ScrollView(ScrollViewMode.Horizontal)
+                {
+                    horizontalScrollerVisibility = ScrollerVisibility.Auto,
+                    verticalScrollerVisibility = ScrollerVisibility.Hidden
+                };
+                timelineScrollView.style.flexGrow = 1f;
+                timelineScrollView.style.marginTop = 2f;
+
                 rowsContainer = new VisualElement();
                 rowsContainer.style.flexDirection = FlexDirection.Column;
-                rowsContainer.style.marginTop = 2f;
+                rowsContainer.style.flexGrow = 1f;
+
+                timelineScrollView.Add(rowsContainer);
 
                 modeInfoLabel = new Label();
                 modeInfoLabel.style.unityFontStyleAndWeight = FontStyle.Italic;
@@ -102,7 +147,7 @@ namespace Jungle.Editor
 
                 Add(headerLabel);
                 Add(legendContainer);
-                Add(rowsContainer);
+                Add(timelineScrollView);
                 Add(modeInfoLabel);
 
                 CreateLegend();
@@ -119,6 +164,9 @@ namespace Jungle.Editor
 
                 var sequenceLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit)).Copy();
                 this.TrackPropertyValue(sequenceLimitCopy, _ => Refresh());
+
+                var sequenceStartDelayCopy = property.FindPropertyRelative(nameof(ActionSequence.StartDelay)).Copy();
+                this.TrackPropertyValue(sequenceStartDelayCopy, _ => Refresh());
             }
 
             private void Refresh()
@@ -129,19 +177,30 @@ namespace Jungle.Editor
                 var stepsProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Steps));
                 var modeProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Mode));
                 var sequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
+                var sequenceStartDelayProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.StartDelay));
 
                 rowsContainer.Clear();
+                currentTimelineWidth = MinimumTimelineWidth;
 
                 if (stepsProp.arraySize == 0)
                 {
                     var empty = new Label("No steps defined.");
                     empty.style.unityTextAlign = TextAnchor.MiddleLeft;
                     empty.style.color = EditorGUIUtility.isProSkin ? new Color(0.7f, 0.7f, 0.7f) : new Color(0.3f, 0.3f, 0.3f);
-                    rowsContainer.Add(empty);
+
+                    var messageRow = new VisualElement();
+                    messageRow.style.minWidth = LabelColumnWidth + currentTimelineWidth;
+                    messageRow.style.paddingLeft = 4f;
+                    messageRow.style.paddingTop = 6f;
+                    messageRow.style.paddingBottom = 6f;
+                    messageRow.Add(empty);
+
+                    rowsContainer.Add(messageRow);
                 }
                 else
                 {
-                    var entries = BuildEntries(stepsProp);
+                    var sequenceStartDelay = sequenceStartDelayProp.floatValue;
+                    var entries = BuildEntries(stepsProp, sequenceStartDelay);
                     var totalDuration = DetermineTimelineDuration(entries, modeProp, sequenceTimeLimitProp);
                     BuildRows(entries, totalDuration);
                 }
@@ -201,10 +260,27 @@ namespace Jungle.Editor
                 return entry;
             }
 
-            private void BuildRows(IReadOnlyList<TimelineEntry> entries, float totalDuration)
+            private void BuildRows(List<TimelineEntry> entries, float totalDuration)
             {
-                var fallbackWidthFraction = entries.Count > 0 ? 1f / entries.Count : 1f;
-                var fallbackStartFractions = CalculateFallbackStartFractions(entries, totalDuration, fallbackWidthFraction);
+                var fallbackWidth = entries.Count > 0 ? Mathf.Max(totalDuration / entries.Count, 1f) : 1f;
+                var fallbackStartTimes = CalculateFallbackStartTimes(entries, fallbackWidth);
+                var fallbackDuration = Mathf.Max(fallbackWidth * 0.6f, 0.25f);
+
+                var maxEnd = 0f;
+                for (var i = 0; i < entries.Count; i++)
+                {
+                    var entry = entries[i];
+                    var start = entry.StartTime ?? fallbackStartTimes[i];
+                    var duration = entry.Duration ?? fallbackDuration;
+
+                    entry.DisplayStart = start;
+                    entry.DisplayDuration = duration;
+
+                    maxEnd = Mathf.Max(maxEnd, start + duration);
+                }
+
+                var usableDuration = Mathf.Max(Mathf.Max(totalDuration, maxEnd), 1f);
+                currentTimelineWidth = Mathf.Max(MinimumTimelineWidth, usableDuration * PixelsPerSecond);
 
                 for (var i = 0; i < entries.Count; i++)
                 {
@@ -214,6 +290,7 @@ namespace Jungle.Editor
                     row.style.flexDirection = FlexDirection.Row;
                     row.style.alignItems = Align.Stretch;
                     row.style.marginBottom = 4f;
+                    row.style.minWidth = LabelColumnWidth + currentTimelineWidth + 16f;
 
                     var labelColumn = new VisualElement();
                     labelColumn.style.width = LabelColumnWidth;
@@ -232,8 +309,9 @@ namespace Jungle.Editor
                     labelColumn.Add(info);
 
                     var barColumn = new VisualElement();
-                    barColumn.style.flexGrow = 1f;
-                    barColumn.style.height = 36f;
+                    barColumn.style.width = currentTimelineWidth;
+                    barColumn.style.flexShrink = 0f;
+                    barColumn.style.height = 40f;
                     barColumn.style.position = Position.Relative;
                     barColumn.style.backgroundColor = EditorGUIUtility.isProSkin ? new Color(0.18f, 0.18f, 0.18f) : new Color(0.88f, 0.88f, 0.88f);
                     barColumn.style.borderBottomLeftRadius = 3f;
@@ -242,8 +320,10 @@ namespace Jungle.Editor
                     barColumn.style.borderTopRightRadius = 3f;
                     barColumn.style.overflow = Overflow.Hidden;
 
-                    var bar = CreateBar(entry, totalDuration, fallbackStartFractions[i], fallbackWidthFraction);
+                    var bar = CreateBar(entry, out var label);
                     barColumn.Add(bar);
+
+                    SetupBarInteractions(bar, label, entry);
 
                     row.Add(labelColumn);
                     row.Add(barColumn);
@@ -251,7 +331,7 @@ namespace Jungle.Editor
                 }
             }
 
-            private static float[] CalculateFallbackStartFractions(IReadOnlyList<TimelineEntry> entries, float totalDuration, float fallbackWidthFraction)
+            private static float[] CalculateFallbackStartTimes(IReadOnlyList<TimelineEntry> entries, float fallbackWidth)
             {
                 var result = new float[entries.Count];
                 var hasLastKnownStart = false;
@@ -263,16 +343,16 @@ namespace Jungle.Editor
 
                     if (entry.StartTime.HasValue)
                     {
-                        var fraction = Mathf.Clamp01(totalDuration > 0f ? entry.StartTime.Value / totalDuration : 0f);
-                        result[i] = fraction;
-                        lastKnownStart = fraction;
+                        var value = Mathf.Max(0f, entry.StartTime.Value);
+                        result[i] = value;
+                        lastKnownStart = value;
                         hasLastKnownStart = true;
                     }
                     else if (entry.Blocking)
                     {
-                        var fraction = Mathf.Clamp01(i * fallbackWidthFraction);
-                        result[i] = fraction;
-                        lastKnownStart = fraction;
+                        var fallback = Mathf.Max(0f, i * fallbackWidth);
+                        result[i] = fallback;
+                        lastKnownStart = fallback;
                         hasLastKnownStart = true;
                     }
                     else
@@ -284,16 +364,8 @@ namespace Jungle.Editor
                 return result;
             }
 
-            private static VisualElement CreateBar(TimelineEntry entry, float totalDuration, float fallbackStartFraction, float fallbackWidthFraction)
+            private VisualElement CreateBar(TimelineEntry entry, out Label label)
             {
-                var startFraction = entry.StartTime.HasValue
-                    ? Mathf.Clamp01(entry.StartTime.Value / totalDuration)
-                    : Mathf.Clamp01(fallbackStartFraction);
-
-                var widthFraction = entry.Duration.HasValue
-                    ? Mathf.Clamp01(entry.Duration.Value / totalDuration)
-                    : Mathf.Clamp01(fallbackWidthFraction * 0.6f);
-
                 var baseColor = entry.Blocking
                     ? new Color(0.26f, 0.55f, 0.95f, 0.9f)
                     : new Color(0.3f, 0.8f, 0.45f, 0.9f);
@@ -305,16 +377,17 @@ namespace Jungle.Editor
 
                 var bar = new VisualElement();
                 bar.style.position = Position.Absolute;
-                bar.style.left = new Length(startFraction * 100f, LengthUnit.Percent);
-                bar.style.width = new Length(widthFraction * 100f, LengthUnit.Percent);
                 bar.style.top = 6f;
                 bar.style.bottom = 6f;
-                bar.style.minWidth = 8f;
+                bar.style.minWidth = MinimumBarWidth;
                 bar.style.backgroundColor = baseColor;
                 bar.style.borderBottomLeftRadius = 3f;
                 bar.style.borderBottomRightRadius = 3f;
                 bar.style.borderTopLeftRadius = 3f;
                 bar.style.borderTopRightRadius = 3f;
+                bar.style.cursor = new StyleCursor(MouseCursor.MoveArrow);
+
+                UpdateBarVisual(bar, entry);
 
                 if (entry.LoopTillEnd)
                 {
@@ -333,7 +406,7 @@ namespace Jungle.Editor
                     bar.Add(loopStripe);
                 }
 
-                var label = new Label(BuildTimingLabel(entry));
+                label = new Label(BuildTimingLabel(entry.StartTime, entry.Duration, entry));
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
                 label.style.fontSize = 11;
                 label.style.color = Color.white;
@@ -341,7 +414,210 @@ namespace Jungle.Editor
                 label.style.whiteSpace = WhiteSpace.Normal;
 
                 bar.Add(label);
+
                 return bar;
+            }
+
+            private void SetupBarInteractions(VisualElement bar, Label label, TimelineEntry entry)
+            {
+                if (entry.BaseStartTime.HasValue)
+                {
+                    bar.RegisterCallback<PointerDownEvent>(evt =>
+                    {
+                        if (evt.button != 0)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        BeginDrag(entry, DragMode.MoveStart, bar, label, evt.pointerId, evt.position, entry.StartDelay, bar);
+                    });
+
+                    bar.RegisterCallback<PointerMoveEvent>(evt =>
+                    {
+                        if (currentDrag == null || currentDrag.Entry != entry || currentDrag.Mode != DragMode.MoveStart || evt.pointerId != currentDrag.PointerId)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        UpdateMoveDrag(evt.position);
+                    });
+
+                    bar.RegisterCallback<PointerUpEvent>(evt =>
+                    {
+                        if (currentDrag == null || evt.pointerId != currentDrag.PointerId)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        EndDrag(true);
+                    });
+
+                    bar.RegisterCallback<PointerCaptureOutEvent>(_ =>
+                    {
+                        if (currentDrag != null && currentDrag.Entry == entry && currentDrag.Mode == DragMode.MoveStart)
+                        {
+                            EndDrag(false);
+                        }
+                    });
+                }
+
+                if (entry.DurationEditable)
+                {
+                    var handle = new VisualElement();
+                    handle.style.position = Position.Absolute;
+                    handle.style.right = 0f;
+                    handle.style.top = 0f;
+                    handle.style.bottom = 0f;
+                    handle.style.width = 6f;
+                    handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.3f);
+                    handle.style.cursor = new StyleCursor(MouseCursor.ResizeHorizontal);
+
+                    bar.Add(handle);
+
+                    handle.RegisterCallback<PointerDownEvent>(evt =>
+                    {
+                        if (evt.button != 0)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        BeginDrag(entry, DragMode.ResizeDuration, bar, label, evt.pointerId, evt.position, entry.DisplayDuration, handle);
+                    });
+
+                    handle.RegisterCallback<PointerMoveEvent>(evt =>
+                    {
+                        if (currentDrag == null || currentDrag.Entry != entry || currentDrag.Mode != DragMode.ResizeDuration || evt.pointerId != currentDrag.PointerId)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        UpdateResizeDrag(evt.position);
+                    });
+
+                    handle.RegisterCallback<PointerUpEvent>(evt =>
+                    {
+                        if (currentDrag == null || evt.pointerId != currentDrag.PointerId)
+                        {
+                            return;
+                        }
+
+                        evt.StopPropagation();
+                        EndDrag(true);
+                    });
+
+                    handle.RegisterCallback<PointerCaptureOutEvent>(_ =>
+                    {
+                        if (currentDrag != null && currentDrag.Entry == entry && currentDrag.Mode == DragMode.ResizeDuration)
+                        {
+                            EndDrag(false);
+                        }
+                    });
+                }
+            }
+
+            private void BeginDrag(TimelineEntry entry, DragMode mode, VisualElement bar, Label label, int pointerId, Vector2 position, float startValue, VisualElement pointerOwner)
+            {
+                currentDrag = new DragState
+                {
+                    Entry = entry,
+                    Mode = mode,
+                    PointerOwner = pointerOwner,
+                    BarElement = bar,
+                    LabelElement = label,
+                    PointerId = pointerId,
+                    StartPosition = position,
+                    StartValue = startValue,
+                    BaseStartTime = entry.BaseStartTime ?? 0f
+                };
+
+                pointerOwner.CapturePointer(pointerId);
+
+                var targets = serializedObject.targetObjects;
+                if (targets != null && targets.Length > 0)
+                {
+                    var description = mode == DragMode.MoveStart ? "Adjust Step Start" : "Adjust Step Duration";
+                    Undo.RecordObjects(targets, description);
+                }
+            }
+
+            private void UpdateMoveDrag(Vector2 position)
+            {
+                var drag = currentDrag;
+                if (drag == null)
+                {
+                    return;
+                }
+
+                var deltaPixels = position.x - drag.StartPosition.x;
+                var deltaSeconds = deltaPixels / PixelsPerSecond;
+                var newDelay = Mathf.Max(0f, drag.StartValue + deltaSeconds);
+
+                drag.Entry.StartDelayProperty.floatValue = newDelay;
+                serializedObject.ApplyModifiedProperties();
+
+                drag.Entry.StartDelay = newDelay;
+                var newStartTime = drag.BaseStartTime + newDelay;
+                drag.Entry.StartTime = newStartTime;
+                drag.Entry.DisplayStart = newStartTime;
+
+                UpdateBarVisual(drag.BarElement, drag.Entry);
+                drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
+            }
+
+            private void UpdateResizeDrag(Vector2 position)
+            {
+                var drag = currentDrag;
+                if (drag == null)
+                {
+                    return;
+                }
+
+                var deltaPixels = position.x - drag.StartPosition.x;
+                var deltaSeconds = deltaPixels / PixelsPerSecond;
+                var newDuration = Mathf.Max(0f, drag.StartValue + deltaSeconds);
+
+                drag.Entry.TimeLimitProperty.floatValue = newDuration;
+                serializedObject.ApplyModifiedProperties();
+
+                drag.Entry.Duration = newDuration;
+                drag.Entry.DisplayDuration = newDuration;
+
+                UpdateBarVisual(drag.BarElement, drag.Entry);
+                drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
+            }
+
+            private void EndDrag(bool refresh)
+            {
+                if (currentDrag == null)
+                {
+                    return;
+                }
+
+                if (currentDrag.PointerOwner.HasPointerCapture(currentDrag.PointerId))
+                {
+                    currentDrag.PointerOwner.ReleasePointer(currentDrag.PointerId);
+                }
+
+                currentDrag = null;
+
+                if (refresh)
+                {
+                    Refresh();
+                }
+            }
+
+            private static void UpdateBarVisual(VisualElement bar, TimelineEntry entry)
+            {
+                var startPixels = Mathf.Max(0f, entry.DisplayStart) * PixelsPerSecond;
+                var widthPixels = Mathf.Max(MinimumBarWidth, Mathf.Max(0f, entry.DisplayDuration) * PixelsPerSecond);
+
+                bar.style.left = startPixels;
+                bar.style.width = widthPixels;
             }
 
             private static string BuildInfoLabel(TimelineEntry entry)
@@ -357,10 +633,10 @@ namespace Jungle.Editor
             }
         }
 
-        private static List<TimelineEntry> BuildEntries(SerializedProperty stepsProp)
+        private static List<TimelineEntry> BuildEntries(SerializedProperty stepsProp, float sequenceStartDelay)
         {
             var entries = new List<TimelineEntry>(stepsProp.arraySize);
-            var currentTime = 0f;
+            var currentTime = Mathf.Max(0f, sequenceStartDelay);
             var timeKnown = true;
 
             for (var i = 0; i < stepsProp.arraySize; i++)
@@ -368,12 +644,25 @@ namespace Jungle.Editor
                 var stepProp = stepsProp.GetArrayElementAtIndex(i);
                 var blocking = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.blocking)).boolValue;
                 var loopTillEnd = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopTillEnd)).boolValue;
-                var timeLimited = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimited)).boolValue;
-                var timeLimit = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit)).floatValue;
+                var timeLimitedProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimited));
+                var timeLimited = timeLimitedProp.boolValue;
+                var timeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit));
+                var startDelayProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.startDelay));
                 var actionProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.Action));
 
-                float? startTime = timeKnown ? currentTime : (float?)null;
-                float? duration = timeLimited && timeLimit > 0f ? timeLimit : (float?)null;
+                var startDelay = Mathf.Max(0f, startDelayProp.floatValue);
+                float? baseStartTime = timeKnown ? currentTime : (float?)null;
+                float? startTime = baseStartTime.HasValue ? baseStartTime.Value + startDelay : (float?)null;
+
+                float? duration = null;
+                if (timeLimited)
+                {
+                    var limitValue = timeLimitProp.floatValue;
+                    if (limitValue > 0f)
+                    {
+                        duration = limitValue;
+                    }
+                }
 
                 entries.Add(new TimelineEntry
                 {
@@ -381,19 +670,28 @@ namespace Jungle.Editor
                     Blocking = blocking,
                     LoopTillEnd = loopTillEnd,
                     TimeLimited = timeLimited,
+                    BaseStartTime = baseStartTime,
+                    StartDelay = startDelay,
                     StartTime = startTime,
-                    Duration = duration
+                    Duration = duration,
+                    StartDelayProperty = startDelayProp,
+                    TimeLimitProperty = timeLimitProp,
+                    DurationEditable = timeLimited
                 });
 
-                if (blocking)
+                if (timeKnown && baseStartTime.HasValue)
                 {
-                    if (timeKnown && duration.HasValue)
+                    if (blocking)
                     {
-                        currentTime += duration.Value;
-                    }
-                    else
-                    {
-                        timeKnown = false;
+                        currentTime = baseStartTime.Value + startDelay;
+                        if (duration.HasValue)
+                        {
+                            currentTime += duration.Value;
+                        }
+                        else
+                        {
+                            timeKnown = false;
+                        }
                     }
                 }
             }
@@ -407,9 +705,13 @@ namespace Jungle.Editor
 
             foreach (var entry in entries)
             {
-                if (entry.StartTime.HasValue && entry.Duration.HasValue)
+                if (entry.StartTime.HasValue)
                 {
-                    max = Mathf.Max(max, entry.StartTime.Value + entry.Duration.Value);
+                    max = Mathf.Max(max, entry.StartTime.Value);
+                    if (entry.Duration.HasValue)
+                    {
+                        max = Mathf.Max(max, entry.StartTime.Value + entry.Duration.Value);
+                    }
                 }
             }
 
@@ -453,16 +755,18 @@ namespace Jungle.Editor
             return ObjectNames.NicifyVariableName(displayName);
         }
 
-        private static string BuildTimingLabel(TimelineEntry entry)
+        private static string BuildTimingLabel(float? startTime, float? duration, TimelineEntry entry)
         {
-            var startLabel = entry.StartTime.HasValue
-                ? $"Start T+{entry.StartTime.Value:0.##}s"
+            var startLabel = startTime.HasValue
+                ? $"Start T+{startTime.Value:0.##}s"
                 : "Start T+?";
 
             string durationLabel;
-            if (entry.Duration.HasValue)
+            if (duration.HasValue)
             {
-                durationLabel = $"Runs {entry.Duration.Value:0.##}s";
+                durationLabel = duration.Value > 0f
+                    ? $"Runs {duration.Value:0.##}s"
+                    : "Runs 0s";
             }
             else if (entry.Blocking)
             {
@@ -482,8 +786,15 @@ namespace Jungle.Editor
             public bool Blocking;
             public bool LoopTillEnd;
             public bool TimeLimited;
+            public float? BaseStartTime;
+            public float StartDelay;
             public float? StartTime;
             public float? Duration;
+            public float DisplayStart;
+            public float DisplayDuration;
+            public bool DurationEditable;
+            public SerializedProperty StartDelayProperty;
+            public SerializedProperty TimeLimitProperty;
         }
     }
 }
