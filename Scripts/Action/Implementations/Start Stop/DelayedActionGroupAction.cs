@@ -6,12 +6,12 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class DelayedActionGroupAction : StartStopAction
+    public class DelayedActionGroupAction : ProcessAction
     {
         [SerializeField]
         private float startDelay = 1.0f;
 
-        [SerializeReference] private List<StartStopAction> actionsToExecute = new();
+        [SerializeReference] private List<ProcessAction> actionsToExecute = new();
         [SerializeField] private bool cancelStartOnStop = true;
 
         [SerializeField]
@@ -213,7 +213,7 @@ namespace Jungle.Actions
         public bool ActionsCurrentlyRunning => actionsCurrentlyRunning;
 
         // Methods to modify the action list at runtime
-        public void AddAction(StartStopAction action)
+        public void AddAction(ProcessAction action)
         {
             if (action != null && !actionsToExecute.Contains(action))
             {
@@ -221,7 +221,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void RemoveAction(StartStopAction action)
+        public void RemoveAction(ProcessAction action)
         {
             actionsToExecute.Remove(action);
         }

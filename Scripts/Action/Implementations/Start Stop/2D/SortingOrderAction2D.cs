@@ -10,7 +10,7 @@
 // namespace Jungle.Actions
 // {
 //     [Serializable]
-//     public class SortingOrderAction2D : StartStopAction
+//     public class SortingOrderAction2D : ProcessAction
 //     {
 //         [SerializeReference] private FlexibleSpriteRendererValue targetRenderer = new();
 //         [SerializeField] private int dragSortingOrder = 100;

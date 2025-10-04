@@ -1,88 +1,101 @@
 using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace Jungle.Actions
 {
     [Serializable]
     public abstract class ProcessAction
     {
-
-        [SerializeField]
-        private UnityEvent onProcessStarted = new UnityEvent();
-
-        [SerializeField]
-        private UnityEvent onProcessComplete = new UnityEvent();
-
-        [SerializeField]
-        private UnityEvent onProcessFailed = new UnityEvent();
-        
+        private bool isStarted;
         private bool isInProgress;
         private bool isComplete;
 
-        public UnityEvent OnProcessComplete => onProcessComplete;
+        public event Action ProcessStarted;
+        public event Action ProcessCompleted;
+        public event Action ProcessFailed;
 
-        public UnityEvent OnProcessFailed => onProcessFailed;
-
-        public UnityEvent OnProcessStarted => onProcessStarted;
-
+        public bool IsStarted => isStarted;
         public bool IsInProgress => isInProgress;
-
         public bool IsComplete => isComplete;
 
-        //Does this process have a specific duration?
-       public abstract bool IsTimed { get; }
-        
-        public void Cancel()
+        /// <summary>
+        /// Does this process have a specific duration?
+        /// </summary>
+        public virtual bool IsTimed => false;
+
+        public void Start()
         {
-            var wasRunning = isInProgress;
-            
-            if (!wasRunning)
+            if (isStarted)
             {
                 return;
             }
-        
-            isInProgress = false;
-            isComplete = false;
-            CancelImpl();
-            onProcessFailed.Invoke();
+
+            isStarted = true;
+            OnStart();
         }
 
-        protected abstract void CancelImpl();
-        
-
-        public void Complete()
+        public void Stop()
         {
+            if (!isStarted)
+            {
+                return;
+            }
 
-            isInProgress = false;
-            isComplete = true;
-            
-            CompleteImpl();
-            
-            onProcessComplete.Invoke();
+            isStarted = false;
+            OnStop();
         }
-        
-        protected abstract void CompleteImpl();
 
-     
+        protected virtual void OnStart()
+        {
+        }
 
-      
+        protected virtual void OnStop()
+        {
+        }
 
         public void Begin()
         {
-
             Cancel();
 
             isInProgress = true;
             isComplete = false;
             BeginProcessImpl();
-            onProcessStarted.Invoke();
-
+            ProcessStarted?.Invoke();
         }
-        
-        protected abstract void BeginProcessImpl();
 
-       
+        public void Cancel()
+        {
+            if (!isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = false;
+            isComplete = false;
+            CancelImpl();
+            ProcessFailed?.Invoke();
+        }
+
+        public void Complete()
+        {
+            isInProgress = false;
+            isComplete = true;
+            CompleteImpl();
+            ProcessCompleted?.Invoke();
+        }
+
+        protected virtual void BeginProcessImpl()
+        {
+            Start();
+        }
+
+        protected virtual void CancelImpl()
+        {
+            Stop();
+        }
+
+        protected virtual void CompleteImpl()
+        {
+            Stop();
+        }
     }
 }
