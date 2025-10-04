@@ -203,6 +203,9 @@ namespace Jungle.Editor
 
             private void BuildRows(IReadOnlyList<TimelineEntry> entries, float totalDuration)
             {
+                var fallbackWidthFraction = entries.Count > 0 ? 1f / entries.Count : 1f;
+                var fallbackStartFractions = CalculateFallbackStartFractions(entries, totalDuration, fallbackWidthFraction);
+
                 for (var i = 0; i < entries.Count; i++)
                 {
                     var entry = entries[i];
@@ -239,7 +242,7 @@ namespace Jungle.Editor
                     barColumn.style.borderTopRightRadius = 3f;
                     barColumn.style.overflow = Overflow.Hidden;
 
-                    var bar = CreateBar(entry, totalDuration, i, entries.Count);
+                    var bar = CreateBar(entry, totalDuration, fallbackStartFractions[i], fallbackWidthFraction);
                     barColumn.Add(bar);
 
                     row.Add(labelColumn);
@@ -248,16 +251,48 @@ namespace Jungle.Editor
                 }
             }
 
-            private static VisualElement CreateBar(TimelineEntry entry, float totalDuration, int index, int totalSteps)
+            private static float[] CalculateFallbackStartFractions(IReadOnlyList<TimelineEntry> entries, float totalDuration, float fallbackWidthFraction)
             {
-                var fallbackWidth = totalSteps > 0 ? 1f / totalSteps : 1f;
+                var result = new float[entries.Count];
+                var hasLastKnownStart = false;
+                var lastKnownStart = 0f;
+
+                for (var i = 0; i < entries.Count; i++)
+                {
+                    var entry = entries[i];
+
+                    if (entry.StartTime.HasValue)
+                    {
+                        var fraction = Mathf.Clamp01(totalDuration > 0f ? entry.StartTime.Value / totalDuration : 0f);
+                        result[i] = fraction;
+                        lastKnownStart = fraction;
+                        hasLastKnownStart = true;
+                    }
+                    else if (entry.Blocking)
+                    {
+                        var fraction = Mathf.Clamp01(i * fallbackWidthFraction);
+                        result[i] = fraction;
+                        lastKnownStart = fraction;
+                        hasLastKnownStart = true;
+                    }
+                    else
+                    {
+                        result[i] = hasLastKnownStart ? lastKnownStart : 0f;
+                    }
+                }
+
+                return result;
+            }
+
+            private static VisualElement CreateBar(TimelineEntry entry, float totalDuration, float fallbackStartFraction, float fallbackWidthFraction)
+            {
                 var startFraction = entry.StartTime.HasValue
                     ? Mathf.Clamp01(entry.StartTime.Value / totalDuration)
-                    : Mathf.Clamp01(index * fallbackWidth);
+                    : Mathf.Clamp01(fallbackStartFraction);
 
                 var widthFraction = entry.Duration.HasValue
                     ? Mathf.Clamp01(entry.Duration.Value / totalDuration)
-                    : Mathf.Clamp01(fallbackWidth * 0.6f);
+                    : Mathf.Clamp01(fallbackWidthFraction * 0.6f);
 
                 var baseColor = entry.Blocking
                     ? new Color(0.26f, 0.55f, 0.95f, 0.9f)
