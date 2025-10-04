@@ -254,30 +254,28 @@ namespace Jungle.Editor
             private static float[] CalculateFallbackStartFractions(IReadOnlyList<TimelineEntry> entries, float totalDuration, float fallbackWidthFraction)
             {
                 var result = new float[entries.Count];
-                var hasLastKnownStart = false;
-                var lastKnownStart = 0f;
+                var fallbackPosition = 0f;
 
                 for (var i = 0; i < entries.Count; i++)
                 {
                     var entry = entries[i];
 
+                    float fraction;
                     if (entry.StartTime.HasValue)
                     {
-                        var fraction = Mathf.Clamp01(totalDuration > 0f ? entry.StartTime.Value / totalDuration : 0f);
-                        result[i] = fraction;
-                        lastKnownStart = fraction;
-                        hasLastKnownStart = true;
-                    }
-                    else if (entry.Blocking)
-                    {
-                        var fraction = Mathf.Clamp01(i * fallbackWidthFraction);
-                        result[i] = fraction;
-                        lastKnownStart = fraction;
-                        hasLastKnownStart = true;
+                        fraction = Mathf.Clamp01(totalDuration > 0f ? entry.StartTime.Value / totalDuration : 0f);
+                        fallbackPosition = Mathf.Max(fallbackPosition, fraction);
                     }
                     else
                     {
-                        result[i] = hasLastKnownStart ? lastKnownStart : 0f;
+                        fraction = fallbackPosition;
+                    }
+
+                    result[i] = fraction;
+
+                    if (entry.Blocking)
+                    {
+                        fallbackPosition = Mathf.Clamp01(fraction + fallbackWidthFraction);
                     }
                 }
 
