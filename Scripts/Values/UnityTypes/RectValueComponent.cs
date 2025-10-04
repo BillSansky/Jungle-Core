@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Rect value = new Rect(0f, 0f, 1f, 1f);
 
-        public override Rect GetValue()
+        public override Rect Value()
         {
             return value;
         }

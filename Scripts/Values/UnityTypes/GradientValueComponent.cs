@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Gradient value = new Gradient();
 
-        public override Gradient GetValue()
+        public override Gradient Value()
         {
             return value;
         }

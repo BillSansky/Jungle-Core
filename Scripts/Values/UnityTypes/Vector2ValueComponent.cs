@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Vector2 value;
 
-        public override Vector2 GetValue()
+        public override Vector2 Value()
         {
             return value;
         }

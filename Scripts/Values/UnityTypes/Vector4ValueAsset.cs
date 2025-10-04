@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Vector4 Value", fileName = "Vector4Value")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Vector4 value", fileName = "Vector4Value")]
     public class Vector4ValueAsset : ValueAsset<Vector4>
     {
         [SerializeField]
         private Vector4 value;
 
-        public override Vector4 GetValue()
+        public override Vector4 Value()
         {
             return value;
         }

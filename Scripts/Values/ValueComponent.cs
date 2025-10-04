@@ -9,6 +9,10 @@ namespace Jungle.Values
     public abstract class ValueComponent<T> : MonoBehaviour, IValue<T>
     {
         /// <inheritdoc />
-        public abstract T GetValue();
+        public abstract T Value();
+        
+        public bool HasMultipleValues => false;
+        
+        
     }
 }

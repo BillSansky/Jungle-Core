@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Bounds value = new Bounds(Vector3.zero, Vector3.one);
 
-        public override Bounds GetValue()
+        public override Bounds Value()
         {
             return value;
         }

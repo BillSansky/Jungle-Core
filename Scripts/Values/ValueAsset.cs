@@ -9,6 +9,9 @@ namespace Jungle.Values
     public abstract class ValueAsset<T> : ScriptableObject, IValue<T>
     {
         /// <inheritdoc />
-        public abstract T GetValue();
+        public abstract T Value();
+
+        public bool HasMultipleValues => false;
+
     }
 }

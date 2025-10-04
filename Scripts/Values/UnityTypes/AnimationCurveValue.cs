@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class AnimationCurveValue : LocalValue<AnimationCurve>, IAnimationCurveValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

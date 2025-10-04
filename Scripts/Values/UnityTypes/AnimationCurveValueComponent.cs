@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private AnimationCurve value = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-        public override AnimationCurve GetValue()
+        public override AnimationCurve Value()
         {
             return value;
         }

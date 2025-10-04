@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private AudioClip value;
 
-        public override AudioClip GetValue()
+        public override AudioClip Value()
         {
             return value;
         }

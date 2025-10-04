@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Quaternion Value", fileName = "QuaternionValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Quaternion value", fileName = "QuaternionValue")]
     public class QuaternionValueAsset : ValueAsset<Quaternion>
     {
         [SerializeField]
         private Quaternion value;
 
-        public override Quaternion GetValue()
+        public override Quaternion Value()
         {
             return value;
         }

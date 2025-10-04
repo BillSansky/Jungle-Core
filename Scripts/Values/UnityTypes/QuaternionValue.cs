@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class QuaternionValue : LocalValue<Quaternion>, IQuaternionValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

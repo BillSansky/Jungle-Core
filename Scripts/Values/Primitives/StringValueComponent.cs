@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
         [SerializeField]
         private string value;
 
-        public override string GetValue()
+        public override string Value()
         {
             return value;
         }

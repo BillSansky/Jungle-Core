@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class Color32Value : LocalValue<Color32>, IColor32Value
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

@@ -7,12 +7,12 @@ namespace Jungle.Values
     /// </summary>
     /// <typeparam name="T">Type of value being stored.</typeparam>
     [Serializable]
-    public class LocalValue<T> : IValue<T>
+    public abstract class LocalValue<T> : IValue<T>
     {
         /// <summary>
         /// Local value stored directly on the reference.
         /// </summary>
-        public T Value;
+        private T value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalValue{T}"/> class.
@@ -27,12 +27,14 @@ namespace Jungle.Values
         /// <param name="value">Initial value.</param>
         public LocalValue(T value)
         {
-            Value = value;
+            this.value = value;
         }
         
-        public T GetValue()
+        public T Value()
         {
-            return Value;
+            return value;
         }
+
+        public abstract bool HasMultipleValues { get; }
     }
 }

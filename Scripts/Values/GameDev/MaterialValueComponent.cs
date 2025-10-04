@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private Material value;
 
-        public override Material GetValue()
+        public override Material Value()
         {
             return value;
         }

@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class GradientValue : LocalValue<Gradient>, IGradientValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

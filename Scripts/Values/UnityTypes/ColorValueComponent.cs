@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Color value = Color.white;
 
-        public override Color GetValue()
+        public override Color Value()
         {
             return value;
         }

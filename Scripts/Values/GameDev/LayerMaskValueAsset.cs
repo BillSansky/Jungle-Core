@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/LayerMask Value", fileName = "LayerMaskValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/LayerMask value", fileName = "LayerMaskValue")]
     public class LayerMaskValueAsset : ValueAsset<LayerMask>
     {
         [SerializeField]
         private LayerMask value;
 
-        public override LayerMask GetValue()
+        public override LayerMask Value()
         {
             return value;
         }

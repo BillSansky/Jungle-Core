@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class Vector3IntValue : LocalValue<Vector3Int>, IVector3IntValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

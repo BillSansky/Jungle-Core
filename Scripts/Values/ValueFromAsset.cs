@@ -16,16 +16,18 @@ namespace Jungle.Values
         private TAsset valueAsset;
 
         /// <inheritdoc />
-        public T GetValue()
+        public T Value()
         {
             if (valueAsset == null)
             {
                 Debug.LogError(
-                    $"Value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
+                    $"value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
                 return default;
             }
 
-            return valueAsset.GetValue();
+            return valueAsset.Value();
         }
+
+        public bool HasMultipleValues => valueAsset.HasMultipleValues;
     }
 }

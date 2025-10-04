@@ -9,5 +9,7 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class DoubleValue : LocalValue<double>, IDoubleValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

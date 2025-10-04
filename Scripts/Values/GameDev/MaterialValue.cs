@@ -10,5 +10,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class MaterialValue : LocalValue<Material>, IMaterialValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

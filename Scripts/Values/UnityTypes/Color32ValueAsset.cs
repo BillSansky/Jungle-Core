@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color32 Value", fileName = "Color32Value")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color32 value", fileName = "Color32Value")]
     public class Color32ValueAsset : ValueAsset<Color32>
     {
         [SerializeField]
         private Color32 value = new Color32(255, 255, 255, 255);
 
-        public override Color32 GetValue()
+        public override Color32 Value()
         {
             return value;
         }

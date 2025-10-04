@@ -10,5 +10,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class AnimationClipValue : LocalValue<AnimationClip>, IAnimationClipValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

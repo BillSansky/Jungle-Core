@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool Value", fileName = "BoolValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool value", fileName = "BoolValue")]
     public class BoolValueAsset : ValueAsset<bool>
     {
         [SerializeField]
         private bool value;
 
-        public override bool GetValue()
+        public override bool Value()
         {
             return value;
         }

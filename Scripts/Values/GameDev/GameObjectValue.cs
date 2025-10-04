@@ -10,5 +10,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class GameObjectValue : LocalValue<GameObject>, IGameObjectValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

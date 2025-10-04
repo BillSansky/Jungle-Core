@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient Value", fileName = "GradientValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient value", fileName = "GradientValue")]
     public class GradientValueAsset : ValueAsset<Gradient>
     {
         [SerializeField]
         private Gradient value = new Gradient();
 
-        public override Gradient GetValue()
+        public override Gradient Value()
         {
             return value;
         }

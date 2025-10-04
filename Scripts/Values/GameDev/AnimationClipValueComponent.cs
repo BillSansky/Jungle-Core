@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private AnimationClip value;
 
-        public override AnimationClip GetValue()
+        public override AnimationClip Value()
         {
             return value;
         }

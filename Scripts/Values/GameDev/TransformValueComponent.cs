@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private Transform value;
 
-        public override Transform GetValue()
+        public override Transform Value()
         {
             return value;
         }

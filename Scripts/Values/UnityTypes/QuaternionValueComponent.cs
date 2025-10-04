@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
         [SerializeField]
         private Quaternion value;
 
-        public override Quaternion GetValue()
+        public override Quaternion Value()
         {
             return value;
         }

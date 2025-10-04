@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AudioClip Value", fileName = "AudioClipValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AudioClip value", fileName = "AudioClipValue")]
     public class AudioClipValueAsset : ValueAsset<AudioClip>
     {
         [SerializeField]
         private AudioClip value;
 
-        public override AudioClip GetValue()
+        public override AudioClip Value()
         {
             return value;
         }

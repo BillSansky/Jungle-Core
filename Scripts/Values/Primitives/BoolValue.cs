@@ -9,6 +9,8 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class BoolValue : LocalValue<bool>, IBoolValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 
 }

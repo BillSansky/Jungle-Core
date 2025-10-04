@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
         [SerializeField]
         private bool value;
 
-        public override bool GetValue()
+        public override bool Value()
         {
             return value;
         }

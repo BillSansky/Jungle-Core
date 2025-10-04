@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private Sprite value;
 
-        public override Sprite GetValue()
+        public override Sprite Value()
         {
             return value;
         }

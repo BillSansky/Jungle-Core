@@ -9,5 +9,7 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class LongValue : LocalValue<long>, ILongValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

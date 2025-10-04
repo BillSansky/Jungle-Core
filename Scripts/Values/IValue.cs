@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace Jungle.Values
 {
     /// <summary>
@@ -10,7 +13,15 @@ namespace Jungle.Values
         /// Gets the value represented by the provider.
         /// </summary>
         /// <returns>The value produced by the provider.</returns>
-        T GetValue();
+        T Value();
+
+        T V => Value();
+
+        public bool HasMultipleValues { get; }
+
+        virtual IEnumerable<T> Values
+        {
+            get { yield return Value(); }
+        }
     }
-    
 }

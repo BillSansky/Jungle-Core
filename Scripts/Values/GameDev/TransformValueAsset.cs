@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Transform Value", fileName = "TransformValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Transform value", fileName = "TransformLocalValue")]
     public class TransformValueAsset : ValueAsset<Transform>
     {
         [SerializeField]
         private Transform value;
 
-        public override Transform GetValue()
+        public override Transform Value()
         {
             return value;
         }

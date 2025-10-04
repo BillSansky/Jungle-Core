@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
         [SerializeField]
         private LayerMask value;
 
-        public override LayerMask GetValue()
+        public override LayerMask Value()
         {
             return value;
         }

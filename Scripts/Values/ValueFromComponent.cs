@@ -16,7 +16,7 @@ namespace Jungle.Values
         private TComponent component;
 
         /// <inheritdoc />
-        public T GetValue()
+        public T Value()
         {
             if (component == null)
             {
@@ -25,7 +25,9 @@ namespace Jungle.Values
                 return default;
             }
 
-            return component.GetValue();
+            return component.Value();
         }
+
+        public bool HasMultipleValues =>component.HasMultipleValues;
     }
 }

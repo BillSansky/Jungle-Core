@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Double Value", fileName = "DoubleValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Double value", fileName = "DoubleValue")]
     public class DoubleValueAsset : ValueAsset<double>
     {
         [SerializeField]
         private double value;
 
-        public override double GetValue()
+        public override double Value()
         {
             return value;
         }

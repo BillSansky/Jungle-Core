@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/String Value", fileName = "StringValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/String value", fileName = "StringValue")]
     public class StringValueAsset : ValueAsset<string>
     {
         [SerializeField]
         private string value;
 
-        public override string GetValue()
+        public override string Value()
         {
             return value;
         }

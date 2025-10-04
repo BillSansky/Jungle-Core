@@ -10,5 +10,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class SpriteValue : LocalValue<Sprite>, ISpriteValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

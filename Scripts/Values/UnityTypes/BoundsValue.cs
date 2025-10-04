@@ -10,5 +10,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     public class BoundsValue : LocalValue<Bounds>, IBoundsValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

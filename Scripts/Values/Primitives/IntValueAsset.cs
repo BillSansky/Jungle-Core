@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Jungle.Values.Primitives
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int Value", fileName = "IntValue")]
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int value", fileName = "IntValue")]
     public class IntValueAsset : ValueAsset<int>
     {
         [SerializeField]
         private int value;
 
-        public override int GetValue()
+        public override int Value()
         {
             return value;
         }

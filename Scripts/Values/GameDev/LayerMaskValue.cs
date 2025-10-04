@@ -10,5 +10,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class LayerMaskValue : LocalValue<LayerMask>, ILayerMaskValue
     {
+        public override bool HasMultipleValues => false;
+        
     }
 }

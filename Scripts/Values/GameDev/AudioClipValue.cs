@@ -10,5 +10,8 @@ namespace Jungle.Values.GameDev
     [Serializable]
     public class AudioClipValue : LocalValue<AudioClip>, IAudioClipValue
     {
+        public override bool HasMultipleValues => false;
+        
+        
     }
 }
