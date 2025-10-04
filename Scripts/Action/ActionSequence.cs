@@ -58,6 +58,10 @@ namespace Jungle.Actions
             [Tooltip("If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
             public bool blocking = true;
 
+            [Header("Step Start Delay")]
+            [Tooltip("Delay in seconds before this step begins after it becomes eligible.")]
+            public float startDelay = 0f;
+
             [Header("Step Time Limit")]
             public bool timeLimited;
 
@@ -70,6 +74,9 @@ namespace Jungle.Actions
             // Runtime (not serialized)
             [NonSerialized] internal float TimeLeft;
             [NonSerialized] internal bool Started;
+
+            [NonSerialized] internal bool WaitingForStartDelay;
+            [NonSerialized] internal float StartDelayRemaining;
 
             // Timeout behavior: after a timeout (finishExecutionOnEndTime == true),
             // allow the action to complete naturally, but skip exactly one loop on that completion.
@@ -85,8 +92,6 @@ namespace Jungle.Actions
         [NonSerialized] private int currentIndex;
         [NonSerialized] private float sequenceTimeLeft;
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
-        [NonSerialized] private float startDelayRemaining;
-
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
 
@@ -102,16 +107,13 @@ namespace Jungle.Actions
             currentIndex = 0;
             parallelRunning.Clear();
 
-            startDelayRemaining = StartDelay > 0f ? StartDelay : 0f;
+            InitializeStepStartDelays();
 
             sequenceTimeLeft = (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f)
                 ? SequenceTimeLimit
                 : (Mode == ProcessMode.Loop ? float.PositiveInfinity : float.PositiveInfinity);
 
-            if (startDelayRemaining <= 0f)
-            {
-                StartNextEligibleSteps();
-            }
+            StartNextEligibleSteps();
 
             // drives only time limits via coroutine
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
@@ -133,10 +135,11 @@ namespace Jungle.Actions
                 SafeCancel(s.Action);
                 s.Started = false;
                 s.suppressLoopOnce = false;
+                s.WaitingForStartDelay = false;
+                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
             }
 
             parallelRunning.Clear();
-            startDelayRemaining = 0f;
         }
 
         protected override void CompleteImpl()
@@ -154,10 +157,11 @@ namespace Jungle.Actions
                 DetachStepListeners(s);
                 s.Started = false;
                 s.suppressLoopOnce = false;
+                s.WaitingForStartDelay = false;
+                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
             }
 
             parallelRunning.Clear();
-            startDelayRemaining = 0f;
         }
 
         /// <summary>
@@ -169,16 +173,14 @@ namespace Jungle.Actions
             {
                 var deltaTime = Time.deltaTime;
 
-                if (startDelayRemaining > 0f)
-                {
-                    startDelayRemaining -= deltaTime;
+                var startedSteps = UpdateStartDelays(deltaTime);
 
-                    if (startDelayRemaining <= 0f)
-                    {
-                        StartNextEligibleSteps();
-                    }
+                if (startedSteps)
+                {
+                    StartNextEligibleSteps();
                 }
-                else
+
+                if (!ShouldPauseTimeLimits())
                 {
                     ServiceTimeLimits(deltaTime);
                 }
@@ -247,6 +249,51 @@ namespace Jungle.Actions
 
         // ---------- progression helpers (event-driven) ----------
 
+        private bool UpdateStartDelays(float deltaTime)
+        {
+            var anyElapsed = false;
+
+            for (int i = currentIndex; i < Steps.Count; i++)
+            {
+                var step = Steps[i];
+                if (!step.WaitingForStartDelay)
+                    continue;
+
+                if (step.StartDelayRemaining > 0f)
+                {
+                    step.StartDelayRemaining -= deltaTime;
+                    if (step.StartDelayRemaining <= 0f)
+                    {
+                        step.StartDelayRemaining = 0f;
+                        anyElapsed = true;
+                    }
+                }
+
+                if (step.blocking && step.StartDelayRemaining > 0f)
+                {
+                    break;
+                }
+            }
+
+            return anyElapsed;
+        }
+
+        private bool ShouldPauseTimeLimits()
+        {
+            if (parallelRunning.Count > 0)
+            {
+                return false;
+            }
+
+            if (currentIndex >= Steps.Count)
+            {
+                return false;
+            }
+
+            var step = Steps[currentIndex];
+            return !step.Started && step.WaitingForStartDelay && step.StartDelayRemaining > 0f;
+        }
+
         private void StartNextEligibleSteps()
         {
             while (currentIndex < Steps.Count)
@@ -254,7 +301,24 @@ namespace Jungle.Actions
                 var step = Steps[currentIndex];
 
                 if (!step.Started)
+                {
+                    if (!step.WaitingForStartDelay)
+                    {
+                        step.StartDelayRemaining = Mathf.Max(0f, step.StartDelayRemaining);
+                        if (step.StartDelayRemaining > 0f)
+                        {
+                            step.WaitingForStartDelay = true;
+                            return;
+                        }
+                    }
+                    else if (step.StartDelayRemaining > 0f)
+                    {
+                        return;
+                    }
+
+                    step.WaitingForStartDelay = false;
                     StartStep(step);
+                }
 
                 if (step.blocking)
                 {
@@ -274,6 +338,8 @@ namespace Jungle.Actions
             s.Started = true;
             s.TimeLeft = (s.timeLimited && s.timeLimit > 0f) ? s.timeLimit : float.PositiveInfinity;
             s.suppressLoopOnce = false; // new run ⇒ clear suppression
+            s.WaitingForStartDelay = false;
+            s.StartDelayRemaining = 0f;
 
             AttachStepListeners(s);      // attach before Begin to catch instant-complete
             SafeBegin(s.Action);
@@ -409,14 +475,35 @@ namespace Jungle.Actions
                 s.Started = false;
                 s.TimeLeft = s.timeLimit;      // re-arm step timer for the new pass
                 s.suppressLoopOnce = false;
+                s.WaitingForStartDelay = false;
+                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
             }
 
             parallelRunning.Clear();
             currentIndex = 0;
-            startDelayRemaining = 0f;
+
+            if (Steps.Count > 0)
+            {
+                Steps[0].StartDelayRemaining += Mathf.Max(0f, StartDelay);
+            }
 
             // sequenceTimeLeft is preserved in TimeLimited mode (counting down in coroutine)
             // and left as +inf in Loop mode.
+        }
+
+        private void InitializeStepStartDelays()
+        {
+            for (int i = 0; i < Steps.Count; i++)
+            {
+                var step = Steps[i];
+                step.WaitingForStartDelay = false;
+                step.StartDelayRemaining = Mathf.Max(0f, step.startDelay);
+            }
+
+            if (Steps.Count > 0)
+            {
+                Steps[0].StartDelayRemaining += Mathf.Max(0f, StartDelay);
+            }
         }
 
         // --- safe wrappers (adapt if your ProcessAction API differs) ---
