@@ -32,6 +32,9 @@ namespace Jungle.Actions
         [Header("Sequence Settings")]
         public ProcessMode Mode = ProcessMode.Once;
 
+        [Tooltip("Delay in seconds before the first step starts running when the sequence begins.")]
+        public float StartDelay = 0f;
+
         [Tooltip("Only used when Mode == TimeLimited.")]
         public float SequenceTimeLimit = 0f;
 
@@ -82,6 +85,7 @@ namespace Jungle.Actions
         [NonSerialized] private int currentIndex;
         [NonSerialized] private float sequenceTimeLeft;
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
+        [NonSerialized] private float startDelayRemaining;
 
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
@@ -98,11 +102,16 @@ namespace Jungle.Actions
             currentIndex = 0;
             parallelRunning.Clear();
 
+            startDelayRemaining = StartDelay > 0f ? StartDelay : 0f;
+
             sequenceTimeLeft = (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f)
                 ? SequenceTimeLimit
                 : (Mode == ProcessMode.Loop ? float.PositiveInfinity : float.PositiveInfinity);
 
-            StartNextEligibleSteps();
+            if (startDelayRemaining <= 0f)
+            {
+                StartNextEligibleSteps();
+            }
 
             // drives only time limits via coroutine
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
@@ -127,6 +136,7 @@ namespace Jungle.Actions
             }
 
             parallelRunning.Clear();
+            startDelayRemaining = 0f;
         }
 
         protected override void CompleteImpl()
@@ -147,6 +157,7 @@ namespace Jungle.Actions
             }
 
             parallelRunning.Clear();
+            startDelayRemaining = 0f;
         }
 
         /// <summary>
@@ -156,7 +167,22 @@ namespace Jungle.Actions
         {
             while (running)
             {
-                ServiceTimeLimits(Time.deltaTime);
+                var deltaTime = Time.deltaTime;
+
+                if (startDelayRemaining > 0f)
+                {
+                    startDelayRemaining -= deltaTime;
+
+                    if (startDelayRemaining <= 0f)
+                    {
+                        StartNextEligibleSteps();
+                    }
+                }
+                else
+                {
+                    ServiceTimeLimits(deltaTime);
+                }
+
                 yield return null;
             }
         }
@@ -387,6 +413,7 @@ namespace Jungle.Actions
 
             parallelRunning.Clear();
             currentIndex = 0;
+            startDelayRemaining = 0f;
 
             // sequenceTimeLeft is preserved in TimeLimited mode (counting down in coroutine)
             // and left as +inf in Loop mode.
