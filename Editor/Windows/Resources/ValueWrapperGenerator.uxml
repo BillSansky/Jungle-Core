@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns="UnityEngine.UIElements"
+      xmlns:uie="UnityEditor.UIElements">
+    <VisualElement class="jungle-root" name="value-wrapper-generator-root">
+        <Label class="jungle-section-header" text="Value Wrapper Generator" />
+
+        <VisualElement class="jungle-section" name="type-section">
+            <Label class="jungle-subsection-header" text="Type Selection" />
+            <uie:ObjectField name="script-type-field" label="Script Type" />
+            <uie:TextField name="type-name-field" label="Type Full Name" />
+            <Button name="resolve-type-button" text="Resolve Type" />
+            <uie:HelpBox name="resolved-type-status" message-type="Info" text="" />
+        </VisualElement>
+
+        <VisualElement class="jungle-section" name="naming-section">
+            <Label class="jungle-subsection-header" text="Naming" />
+            <uie:TextField name="wrapper-name-field" label="Wrapper Name" />
+            <uie:TextField name="namespace-field" label="Namespace" />
+            <uie:ObjectField name="output-folder-field" label="Output Folder" />
+        </VisualElement>
+
+        <VisualElement class="jungle-section" name="asset-section">
+            <Label class="jungle-subsection-header" text="Asset Options" />
+            <uie:TextField name="asset-menu-field" label="Asset Menu Path" />
+            <uie:TextField name="asset-file-field" label="Asset File Name" />
+        </VisualElement>
+
+        <VisualElement class="jungle-section" name="generation-section">
+            <Label class="jungle-subsection-header" text="Generate" />
+            <Toggle name="interface-toggle" label="Interface and Local Value" />
+            <Toggle name="component-toggle" label="Component and Component Wrapper" />
+            <Toggle name="asset-toggle" label="Asset and Asset Wrapper" />
+            <Toggle name="array-toggle" label="Local Array Wrapper" />
+        </VisualElement>
+
+        <Button name="generate-button" text="Generate Wrappers" style="height: 36px; margin-top: 8px;" />
+    </VisualElement>
+</UXML>
