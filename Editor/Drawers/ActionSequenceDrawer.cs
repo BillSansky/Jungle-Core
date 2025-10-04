@@ -2,187 +2,324 @@
 using System.Collections.Generic;
 using Jungle.Actions;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
-    /// <summary>
-    /// Custom drawer for <see cref="ActionSequence"/> that renders a timeline preview
-    /// illustrating how each step is expected to execute.
-    /// </summary>
     [CustomPropertyDrawer(typeof(ActionSequence))]
     public class ActionSequenceDrawer : PropertyDrawer
     {
-        private const float HeaderHeight = 18f;
-        private const float LegendHeight = 20f;
-        private const float RowPadding = 4f;
-        private const float RowHeight = 20f;
-        private const float TimelineMargin = 6f;
+        private const float LabelColumnWidth = 220f;
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var height = EditorGUIUtility.singleLineHeight;
+            var root = new VisualElement();
+            root.style.flexDirection = FlexDirection.Column;
 
-            if (!property.isExpanded)
+            var foldout = new Foldout
             {
-                return height;
-            }
+                text = property.displayName,
+                value = property.isExpanded
+            };
 
-            height += EditorGUIUtility.standardVerticalSpacing;
-
-            height += EditorGUIUtility.singleLineHeight * 3f;
-            height += EditorGUIUtility.standardVerticalSpacing * 3f;
-
-            var stepsProp = property.FindPropertyRelative(nameof(ActionSequence.Steps));
-            height += EditorGUI.GetPropertyHeight(stepsProp, true);
-            height += EditorGUIUtility.standardVerticalSpacing;
-
-            height += CalculateTimelineHeight(stepsProp);
-
-            return height;
-        }
-
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-
-            var foldoutRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-            property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, label, true);
-
-            if (!property.isExpanded)
-            {
-                EditorGUI.EndProperty();
-                return;
-            }
-
-            EditorGUI.indentLevel++;
-
-            var contentY = foldoutRect.yMax + EditorGUIUtility.standardVerticalSpacing;
-            var lineRect = new Rect(position.x, contentY, position.width, EditorGUIUtility.singleLineHeight);
+            foldout.RegisterValueChangedCallback(evt => property.isExpanded = evt.newValue);
+            root.Add(foldout);
 
             var modeProp = property.FindPropertyRelative(nameof(ActionSequence.Mode));
             var sequenceTimeLimitProp = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
             var finishOnLimitProp = property.FindPropertyRelative(nameof(ActionSequence.FinishOnSequenceTimeLimit));
             var stepsProp = property.FindPropertyRelative(nameof(ActionSequence.Steps));
 
-            EditorGUI.PropertyField(lineRect, modeProp);
-            lineRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            foldout.Add(new PropertyField(modeProp));
+            foldout.Add(new PropertyField(sequenceTimeLimitProp));
+            foldout.Add(new PropertyField(finishOnLimitProp));
+            foldout.Add(new PropertyField(stepsProp));
 
-            EditorGUI.PropertyField(lineRect, sequenceTimeLimitProp);
-            lineRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            var timeline = new ActionSequenceTimeline(property);
+            foldout.Add(timeline);
 
-            EditorGUI.PropertyField(lineRect, finishOnLimitProp);
-            lineRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-
-            var stepsHeight = EditorGUI.GetPropertyHeight(stepsProp, true);
-            lineRect.height = stepsHeight;
-            EditorGUI.PropertyField(lineRect, stepsProp, true);
-            lineRect.y += stepsHeight + EditorGUIUtility.standardVerticalSpacing;
-
-            var timelineHeight = CalculateTimelineHeight(stepsProp);
-            lineRect.height = timelineHeight;
-            DrawTimeline(lineRect, stepsProp, modeProp, sequenceTimeLimitProp);
-
-            EditorGUI.indentLevel--;
-
-            EditorGUI.EndProperty();
+            root.Bind(property.serializedObject);
+            return root;
         }
 
-        private static float CalculateTimelineHeight(SerializedProperty stepsProp)
+        private sealed class ActionSequenceTimeline : VisualElement
         {
-            var rowCount = Mathf.Max(stepsProp.arraySize, 1);
-            return HeaderHeight + LegendHeight + (RowHeight + RowPadding) * rowCount + TimelineMargin * 2f;
-        }
+            private readonly SerializedObject serializedObject;
+            private readonly string propertyPath;
 
-        private static void DrawTimeline(Rect rect, SerializedProperty stepsProp, SerializedProperty modeProp, SerializedProperty sequenceTimeLimitProp)
-        {
-            EditorGUI.DrawRect(rect, EditorGUIUtility.isProSkin
-                ? new Color(0.13f, 0.13f, 0.13f, 0.9f)
-                : new Color(0.9f, 0.9f, 0.9f, 0.9f));
+            private readonly Label headerLabel;
+            private readonly VisualElement legendContainer;
+            private readonly VisualElement rowsContainer;
+            private readonly Label modeInfoLabel;
 
-            var headerRect = new Rect(rect.x + TimelineMargin, rect.y + TimelineMargin, rect.width - TimelineMargin * 2f, HeaderHeight);
-            var rowsStartY = headerRect.yMax + LegendHeight + RowPadding;
-
-            var title = new GUIContent("Timeline Preview", "Approximate start time and execution mode for each step.");
-            EditorGUI.LabelField(headerRect, title, EditorStyles.boldLabel);
-
-            if (stepsProp.arraySize == 0)
+            public ActionSequenceTimeline(SerializedProperty property)
             {
-                var emptyRect = new Rect(headerRect.x, rowsStartY, headerRect.width, EditorGUIUtility.singleLineHeight);
-                EditorGUI.LabelField(emptyRect, "No steps defined.", EditorStyles.centeredGreyMiniLabel);
-                return;
+                serializedObject = property.serializedObject;
+                propertyPath = property.propertyPath;
+
+                style.marginTop = 6f;
+                style.paddingTop = 6f;
+                style.paddingBottom = 8f;
+                style.paddingLeft = 8f;
+                style.paddingRight = 8f;
+                style.borderTopLeftRadius = 4f;
+                style.borderTopRightRadius = 4f;
+                style.borderBottomLeftRadius = 4f;
+                style.borderBottomRightRadius = 4f;
+                style.borderBottomWidth = 1f;
+                style.borderTopWidth = 1f;
+                style.borderLeftWidth = 1f;
+                style.borderRightWidth = 1f;
+                style.borderBottomColor = EditorGUIUtility.isProSkin ? new Color(0.25f, 0.25f, 0.25f) : new Color(0.7f, 0.7f, 0.7f);
+                style.borderTopColor = style.borderBottomColor;
+                style.borderLeftColor = style.borderBottomColor;
+                style.borderRightColor = style.borderBottomColor;
+                style.backgroundColor = EditorGUIUtility.isProSkin
+                    ? new Color(0.13f, 0.13f, 0.13f, 0.9f)
+                    : new Color(0.92f, 0.92f, 0.92f, 0.9f);
+
+                headerLabel = new Label("Timeline Preview");
+                headerLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                headerLabel.style.marginBottom = 4f;
+
+                legendContainer = new VisualElement();
+                legendContainer.style.flexDirection = FlexDirection.Row;
+                legendContainer.style.flexWrap = Wrap.Wrap;
+                legendContainer.style.marginBottom = 6f;
+                legendContainer.style.justifyContent = Justify.FlexStart;
+
+                rowsContainer = new VisualElement();
+                rowsContainer.style.flexDirection = FlexDirection.Column;
+                rowsContainer.style.marginTop = 2f;
+
+                modeInfoLabel = new Label();
+                modeInfoLabel.style.unityFontStyleAndWeight = FontStyle.Italic;
+                modeInfoLabel.style.marginTop = 6f;
+                modeInfoLabel.style.fontSize = 11;
+                modeInfoLabel.style.color = EditorGUIUtility.isProSkin ? new Color(0.8f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.2f);
+
+                Add(headerLabel);
+                Add(legendContainer);
+                Add(rowsContainer);
+                Add(modeInfoLabel);
+
+                CreateLegend();
+                Refresh();
+
+                var propertyCopy = property.Copy();
+                this.TrackPropertyValue(propertyCopy, _ => Refresh());
+
+                var stepsCopy = property.FindPropertyRelative(nameof(ActionSequence.Steps)).Copy();
+                this.TrackPropertyValue(stepsCopy, _ => Refresh());
+
+                var modeCopy = property.FindPropertyRelative(nameof(ActionSequence.Mode)).Copy();
+                this.TrackPropertyValue(modeCopy, _ => Refresh());
+
+                var sequenceLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit)).Copy();
+                this.TrackPropertyValue(sequenceLimitCopy, _ => Refresh());
             }
 
-            var entries = BuildEntries(stepsProp);
-            DrawLegend(headerRect);
-
-            var totalDuration = DetermineTimelineDuration(entries, modeProp, sequenceTimeLimitProp);
-            var rowsRect = new Rect(headerRect.x, rowsStartY, headerRect.width, entries.Count * (RowHeight + RowPadding));
-
-            var labelWidth = Mathf.Min(220f, rowsRect.width * 0.45f);
-            var barsRect = new Rect(rowsRect.x + labelWidth + RowPadding, rowsRect.y, rowsRect.width - labelWidth - RowPadding, rowsRect.height);
-
-            Handles.color = new Color(0f, 0f, 0f, 0.3f);
-            Handles.DrawLine(new Vector2(barsRect.x, rowsRect.y - RowPadding * 0.5f), new Vector2(barsRect.xMax, rowsRect.y - RowPadding * 0.5f));
-
-            for (var i = 0; i < entries.Count; i++)
+            private void Refresh()
             {
-                var entry = entries[i];
-                var rowY = rowsRect.y + i * (RowHeight + RowPadding);
+                serializedObject.UpdateIfRequiredOrScript();
 
-                var labelRect = new Rect(rowsRect.x, rowY, labelWidth, RowHeight);
-                DrawStepLabel(labelRect, i, entry);
+                var rootProperty = serializedObject.FindProperty(propertyPath);
+                var stepsProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Steps));
+                var modeProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Mode));
+                var sequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
 
-                var barRect = new Rect(barsRect.x, rowY + 2f, barsRect.width, RowHeight - 4f);
-                DrawStepBar(barRect, entry, totalDuration, i, entries.Count);
+                rowsContainer.Clear();
+
+                if (stepsProp.arraySize == 0)
+                {
+                    var empty = new Label("No steps defined.");
+                    empty.style.unityTextAlign = TextAnchor.MiddleLeft;
+                    empty.style.color = EditorGUIUtility.isProSkin ? new Color(0.7f, 0.7f, 0.7f) : new Color(0.3f, 0.3f, 0.3f);
+                    rowsContainer.Add(empty);
+                }
+                else
+                {
+                    var entries = BuildEntries(stepsProp);
+                    var totalDuration = DetermineTimelineDuration(entries, modeProp, sequenceTimeLimitProp);
+                    BuildRows(entries, totalDuration);
+                }
+
+                var mode = (ActionSequence.ProcessMode)modeProp.enumValueIndex;
+                if (mode == ActionSequence.ProcessMode.Once)
+                {
+                    modeInfoLabel.text = string.Empty;
+                }
+                else if (mode == ActionSequence.ProcessMode.Loop)
+                {
+                    modeInfoLabel.text = "Sequence loops indefinitely.";
+                }
+                else
+                {
+                    var limit = sequenceTimeLimitProp.floatValue;
+                    modeInfoLabel.text = limit > 0f
+                        ? $"Sequence repeats until T+{limit:0.##}s." : "Sequence repeats while time remains.";
+                }
             }
 
-            var mode = (ActionSequence.ProcessMode)modeProp.enumValueIndex;
-            if (mode != ActionSequence.ProcessMode.Once)
+            private void CreateLegend()
             {
-                var infoRect = new Rect(headerRect.x, rect.yMax - TimelineMargin - EditorGUIUtility.singleLineHeight, headerRect.width, EditorGUIUtility.singleLineHeight);
-                var info = mode == ActionSequence.ProcessMode.Loop
-                    ? "Sequence loops indefinitely."
-                    : "Sequence repeats while time remains.";
-                EditorGUI.LabelField(infoRect, info, EditorStyles.miniLabel);
-            }
-        }
+                legendContainer.Clear();
 
-        private static void DrawLegend(Rect headerRect)
-        {
-            var legendY = headerRect.y + headerRect.height + 2f;
-            var legendX = headerRect.x;
-            var iconSize = new Vector2(12f, 12f);
-            var style = EditorStyles.miniLabel;
-
-            legendX = DrawLegendEntry(legendX, legendY, iconSize, style, new Color(0.26f, 0.55f, 0.95f, 0.9f), "Blocking");
-            legendX = DrawLegendEntry(legendX, legendY, iconSize, style, new Color(0.3f, 0.8f, 0.45f, 0.9f), "Parallel");
-            legendX = DrawLegendEntry(legendX, legendY, iconSize, style, new Color(0.95f, 0.67f, 0.25f, 0.9f), "Loops", true);
-            DrawLegendEntry(legendX, legendY, iconSize, style, new Color(0.4f, 0.4f, 0.4f, 0.9f), "Unknown duration", false, true);
-        }
-
-        private static float DrawLegendEntry(float startX, float y, Vector2 size, GUIStyle style, Color color, string label, bool striped = false, bool dotted = false)
-        {
-            var rect = new Rect(startX, y, size.x, size.y);
-            EditorGUI.DrawRect(rect, color);
-
-            if (striped)
-            {
-                Handles.color = new Color(0.98f, 0.98f, 0.98f, 0.7f);
-                var stripeY = rect.y + rect.height * 0.5f;
-                Handles.DrawLine(new Vector2(rect.x, stripeY), new Vector2(rect.xMax, stripeY));
+                legendContainer.Add(CreateLegendEntry(new Color(0.26f, 0.55f, 0.95f, 0.9f), "Blocking"));
+                legendContainer.Add(CreateLegendEntry(new Color(0.3f, 0.8f, 0.45f, 0.9f), "Parallel"));
+                legendContainer.Add(CreateLegendEntry(new Color(0.95f, 0.67f, 0.25f, 0.9f), "Loops"));
+                legendContainer.Add(CreateLegendEntry(new Color(0.4f, 0.4f, 0.4f, 0.9f), "Unknown duration"));
             }
 
-            if (dotted)
+            private static VisualElement CreateLegendEntry(Color color, string label)
             {
-                Handles.color = new Color(0.1f, 0.1f, 0.1f, 0.7f);
-                var mid = rect.y + rect.height * 0.5f;
-                Handles.DrawDottedLine(new Vector2(rect.x, mid), new Vector2(rect.xMax, mid), 2f);
+                var entry = new VisualElement();
+                entry.style.flexDirection = FlexDirection.Row;
+                entry.style.alignItems = Align.Center;
+
+                var swatch = new VisualElement();
+                swatch.style.width = 12f;
+                swatch.style.height = 12f;
+                swatch.style.backgroundColor = color;
+                swatch.style.borderBottomLeftRadius = 2f;
+                swatch.style.borderBottomRightRadius = 2f;
+                swatch.style.borderTopLeftRadius = 2f;
+                swatch.style.borderTopRightRadius = 2f;
+                swatch.style.marginRight = 4f;
+
+                var labelElement = new Label(label);
+                labelElement.style.fontSize = 11;
+                labelElement.style.color = EditorGUIUtility.isProSkin ? new Color(0.8f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.2f);
+
+                entry.style.marginRight = 8f;
+                entry.style.marginBottom = 4f;
+
+                entry.Add(swatch);
+                entry.Add(labelElement);
+                return entry;
             }
 
-            var labelRect = new Rect(rect.xMax + 4f, y - (style.lineHeight - size.y) * 0.5f, 90f, style.lineHeight);
-            EditorGUI.LabelField(labelRect, label, style);
-            return labelRect.xMax + 12f;
+            private void BuildRows(IReadOnlyList<TimelineEntry> entries, float totalDuration)
+            {
+                for (var i = 0; i < entries.Count; i++)
+                {
+                    var entry = entries[i];
+
+                    var row = new VisualElement();
+                    row.style.flexDirection = FlexDirection.Row;
+                    row.style.alignItems = Align.Stretch;
+                    row.style.marginBottom = 4f;
+
+                    var labelColumn = new VisualElement();
+                    labelColumn.style.width = LabelColumnWidth;
+                    labelColumn.style.flexShrink = 0f;
+                    labelColumn.style.flexDirection = FlexDirection.Column;
+
+                    var title = new Label($"{i + 1}. {entry.DisplayName}");
+                    title.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    title.style.fontSize = 12;
+
+                    var info = new Label(BuildInfoLabel(entry));
+                    info.style.fontSize = 11;
+                    info.style.color = EditorGUIUtility.isProSkin ? new Color(0.75f, 0.75f, 0.75f) : new Color(0.25f, 0.25f, 0.25f);
+
+                    labelColumn.Add(title);
+                    labelColumn.Add(info);
+
+                    var barColumn = new VisualElement();
+                    barColumn.style.flexGrow = 1f;
+                    barColumn.style.height = 36f;
+                    barColumn.style.position = Position.Relative;
+                    barColumn.style.backgroundColor = EditorGUIUtility.isProSkin ? new Color(0.18f, 0.18f, 0.18f) : new Color(0.88f, 0.88f, 0.88f);
+                    barColumn.style.borderBottomLeftRadius = 3f;
+                    barColumn.style.borderBottomRightRadius = 3f;
+                    barColumn.style.borderTopLeftRadius = 3f;
+                    barColumn.style.borderTopRightRadius = 3f;
+                    barColumn.style.overflow = Overflow.Hidden;
+
+                    var bar = CreateBar(entry, totalDuration, i, entries.Count);
+                    barColumn.Add(bar);
+
+                    row.Add(labelColumn);
+                    row.Add(barColumn);
+                    rowsContainer.Add(row);
+                }
+            }
+
+            private static VisualElement CreateBar(TimelineEntry entry, float totalDuration, int index, int totalSteps)
+            {
+                var fallbackWidth = totalSteps > 0 ? 1f / totalSteps : 1f;
+                var startFraction = entry.StartTime.HasValue
+                    ? Mathf.Clamp01(entry.StartTime.Value / totalDuration)
+                    : Mathf.Clamp01(index * fallbackWidth);
+
+                var widthFraction = entry.Duration.HasValue
+                    ? Mathf.Clamp01(entry.Duration.Value / totalDuration)
+                    : Mathf.Clamp01(fallbackWidth * 0.6f);
+
+                var baseColor = entry.Blocking
+                    ? new Color(0.26f, 0.55f, 0.95f, 0.9f)
+                    : new Color(0.3f, 0.8f, 0.45f, 0.9f);
+
+                if (!entry.Duration.HasValue)
+                {
+                    baseColor = Color.Lerp(baseColor, new Color(0.35f, 0.35f, 0.35f, 0.9f), 0.35f);
+                }
+
+                var bar = new VisualElement();
+                bar.style.position = Position.Absolute;
+                bar.style.left = new Length(startFraction * 100f, LengthUnit.Percent);
+                bar.style.width = new Length(widthFraction * 100f, LengthUnit.Percent);
+                bar.style.top = 6f;
+                bar.style.bottom = 6f;
+                bar.style.minWidth = 8f;
+                bar.style.backgroundColor = baseColor;
+                bar.style.borderBottomLeftRadius = 3f;
+                bar.style.borderBottomRightRadius = 3f;
+                bar.style.borderTopLeftRadius = 3f;
+                bar.style.borderTopRightRadius = 3f;
+
+                if (entry.LoopTillEnd)
+                {
+                    var loopStripe = new VisualElement
+                    {
+                        style =
+                        {
+                            position = Position.Absolute,
+                            left = 2f,
+                            right = 2f,
+                            top = 0f,
+                            height = 2f,
+                            backgroundColor = new Color(1f, 1f, 1f, 0.75f)
+                        }
+                    };
+                    bar.Add(loopStripe);
+                }
+
+                var label = new Label(BuildTimingLabel(entry));
+                label.style.unityTextAlign = TextAnchor.MiddleCenter;
+                label.style.fontSize = 11;
+                label.style.color = Color.white;
+                label.style.unityFontStyleAndWeight = FontStyle.Bold;
+                label.style.whiteSpace = WhiteSpace.Normal;
+
+                bar.Add(label);
+                return bar;
+            }
+
+            private static string BuildInfoLabel(TimelineEntry entry)
+            {
+                var info = entry.Blocking ? "Blocking" : "Parallel";
+                if (entry.LoopTillEnd)
+                {
+                    info += " • Loops";
+                }
+
+                info += entry.TimeLimited ? " • Time-limited" : " • Untimed";
+                return info;
+            }
         }
 
         private static List<TimelineEntry> BuildEntries(SerializedProperty stepsProp)
@@ -200,7 +337,7 @@ namespace Jungle.Editor
                 var timeLimit = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit)).floatValue;
                 var actionProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.Action));
 
-                float? startTime = timeKnown ? currentTime : null;
+                float? startTime = timeKnown ? currentTime : (float?)null;
                 float? duration = timeLimited && timeLimit > 0f ? timeLimit : (float?)null;
 
                 entries.Add(new TimelineEntry
@@ -256,70 +393,6 @@ namespace Jungle.Editor
             }
 
             return max;
-        }
-
-        private static void DrawStepLabel(Rect rect, int index, TimelineEntry entry)
-        {
-            var title = $"{index + 1}. {entry.DisplayName}";
-            EditorGUI.LabelField(rect, title, EditorStyles.label);
-
-            var info = entry.Blocking ? "Blocking" : "Parallel";
-            if (entry.LoopTillEnd)
-            {
-                info += " • Loops";
-            }
-
-            info += entry.TimeLimited ? " • Time-limited" : " • Untimed";
-
-            var infoRect = new Rect(rect.x, rect.yMax - EditorGUIUtility.singleLineHeight + 2f, rect.width, EditorGUIUtility.singleLineHeight);
-            EditorGUI.LabelField(infoRect, info, EditorStyles.miniLabel);
-        }
-
-        private static void DrawStepBar(Rect rect, TimelineEntry entry, float totalDuration, int index, int totalSteps)
-        {
-            var fallbackWidth = rect.width / Mathf.Max(totalSteps, 1);
-            var startX = entry.StartTime.HasValue
-                ? rect.x + Mathf.Clamp01(entry.StartTime.Value / totalDuration) * rect.width
-                : rect.x + index * fallbackWidth;
-
-            var width = entry.Duration.HasValue
-                ? Mathf.Max(8f, (entry.Duration.Value / totalDuration) * rect.width)
-                : Mathf.Max(8f, fallbackWidth * 0.6f);
-
-            var barRect = new Rect(startX, rect.y, Mathf.Min(width, rect.xMax - startX), rect.height);
-
-            var color = entry.Blocking
-                ? new Color(0.26f, 0.55f, 0.95f, 0.9f)
-                : new Color(0.3f, 0.8f, 0.45f, 0.9f);
-
-            if (!entry.Duration.HasValue)
-            {
-                color = Color.Lerp(color, new Color(0.35f, 0.35f, 0.35f, 0.9f), 0.35f);
-            }
-
-            EditorGUI.DrawRect(barRect, color);
-
-            if (entry.LoopTillEnd)
-            {
-                Handles.color = new Color(0.98f, 0.98f, 0.98f, 0.7f);
-                var y = barRect.y + barRect.height * 0.5f;
-                Handles.DrawLine(new Vector2(barRect.x + 2f, y), new Vector2(barRect.xMax - 2f, y));
-            }
-
-            if (!entry.Duration.HasValue)
-            {
-                Handles.color = new Color(0.1f, 0.1f, 0.1f, 0.7f);
-                var centerY = barRect.y + barRect.height * 0.5f;
-                Handles.DrawDottedLine(new Vector2(barRect.x + 2f, centerY), new Vector2(barRect.xMax - 2f, centerY), 3f);
-            }
-
-            var label = BuildTimingLabel(entry);
-            var labelStyle = new GUIStyle(EditorStyles.centeredGreyMiniLabel)
-            {
-                normal = { textColor = EditorGUIUtility.isProSkin ? Color.white : Color.black }
-            };
-
-            GUI.Label(barRect, label, labelStyle);
         }
 
         private static string BuildStepDisplayName(SerializedProperty actionProp, int index)
