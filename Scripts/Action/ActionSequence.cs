@@ -43,7 +43,9 @@ namespace Jungle.Actions
         /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
         public override bool IsTimed =>
             (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f) ||
-            (Steps != null && Steps.Exists(s => s.timeLimited && s.timeLimit > 0f));
+            (Steps != null && Steps.Exists(s =>
+                (s.timeLimited && s.timeLimit > 0f) ||
+                (s.overrideSequenceMode && s.mode == ProcessMode.TimeLimited && s.modeTimeLimit > 0f)));
 
         [Serializable]
         public class Step
@@ -51,8 +53,19 @@ namespace Jungle.Actions
             [JungleClassSelection] [SerializeReference]
             public ProcessAction Action;
 
+            [Header("Mode Override")]
+            [Tooltip("If true, this step can override the sequence mode.")]
+            public bool overrideSequenceMode;
+
+            [Tooltip("Mode that will be used when overrideSequenceMode is true.")]
+            public ProcessMode mode = ProcessMode.Once;
+
             [Tooltip("If true, when the action completes it restarts until the entire sequence ends.")]
             public bool loopTillEnd;
+
+            [Tooltip("When looping, limits how many times this step can run. Zero or negative means unlimited loops.")]
+            [Min(0)]
+            public int loopCount = 0;
 
             [Tooltip("If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
             public bool blocking = true;
@@ -60,6 +73,13 @@ namespace Jungle.Actions
             [Header("Step Start Delay")]
             [Tooltip("Delay in seconds before this step begins after it becomes eligible.")]
             public float startDelay = 0f;
+
+            [Header("Mode Time Limit")]
+            [Tooltip("Only used when overriding the mode to TimeLimited. Total seconds this step is allowed to run across all loops.")]
+            public float modeTimeLimit = 0f;
+
+            [Tooltip("Only used when overriding the mode to TimeLimited. If true the step is forced complete when the mode time expires; otherwise it is canceled.")]
+            public bool finishOnModeTimeLimit = true;
 
             [Header("Step Time Limit")]
             public bool timeLimited;
@@ -80,6 +100,11 @@ namespace Jungle.Actions
             // Timeout behavior: after a timeout (finishExecutionOnEndTime == true),
             // allow the action to complete naturally, but skip exactly one loop on that completion.
             [NonSerialized] internal bool suppressLoopOnce;
+
+            [NonSerialized] internal int loopsCompleted;
+
+            [NonSerialized] internal bool ModeTimeActive;
+            [NonSerialized] internal float ModeTimeLeft;
 
             // Event handlers to detach safely
             [NonSerialized] internal Action completedHandler;
@@ -106,7 +131,7 @@ namespace Jungle.Actions
             currentIndex = 0;
             parallelRunning.Clear();
 
-            InitializeStepStartDelays();
+            InitializeStepRuntime();
 
             sequenceTimeLeft = (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f)
                 ? SequenceTimeLimit
@@ -132,10 +157,7 @@ namespace Jungle.Actions
             {
                 DetachStepListeners(s);
                 SafeCancel(s.Action);
-                s.Started = false;
-                s.suppressLoopOnce = false;
-                s.WaitingForStartDelay = false;
-                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
+                ResetStepRuntimeState(s, true);
             }
 
             parallelRunning.Clear();
@@ -154,10 +176,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                s.Started = false;
-                s.suppressLoopOnce = false;
-                s.WaitingForStartDelay = false;
-                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
+                ResetStepRuntimeState(s, true);
             }
 
             parallelRunning.Clear();
@@ -243,6 +262,31 @@ namespace Jungle.Actions
                 // Reset the per-step timer so we don't keep firing every frame.
                 // If we want "single-shot" timeout per run, set to +inf; otherwise re-arm.
                 step.TimeLeft = float.PositiveInfinity;
+            }
+
+            for (int i = 0; i < Steps.Count; i++)
+            {
+                var step = Steps[i];
+                if (!step.overrideSequenceMode || step.mode != ProcessMode.TimeLimited)
+                    continue;
+
+                if (!step.ModeTimeActive || step.modeTimeLimit <= 0f)
+                    continue;
+
+                step.ModeTimeLeft -= deltaTime;
+                if (step.ModeTimeLeft > 0f)
+                    continue;
+
+                step.ModeTimeLeft = 0f;
+                step.ModeTimeActive = false;
+
+                if (step.Action == null)
+                    continue;
+
+                if (step.finishOnModeTimeLimit)
+                    SafeForceComplete(step.Action);
+                else
+                    SafeCancel(step.Action);
             }
         }
 
@@ -339,6 +383,14 @@ namespace Jungle.Actions
             s.suppressLoopOnce = false; // new run ⇒ clear suppression
             s.WaitingForStartDelay = false;
             s.StartDelayRemaining = 0f;
+            if (s.overrideSequenceMode && s.mode == ProcessMode.TimeLimited)
+            {
+                s.ModeTimeActive = s.modeTimeLimit > 0f && s.ModeTimeLeft > 0f;
+            }
+            else
+            {
+                s.ModeTimeActive = false;
+            }
 
             AttachStepListeners(s);      // attach before Begin to catch instant-complete
             SafeBegin(s.Action);
@@ -352,7 +404,9 @@ namespace Jungle.Actions
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
             SafeCancel(s.Action);
+            parallelRunning.Remove(s);
             s.Started = false;
+            s.ModeTimeActive = false;
 
             StartStep(s);
         }
@@ -361,6 +415,7 @@ namespace Jungle.Actions
         {
             DetachStepListeners(s);
             parallelRunning.Remove(s);
+            s.ModeTimeActive = false;
 
             if (s.blocking)
             {
@@ -424,7 +479,7 @@ namespace Jungle.Actions
             {
                 if (!running) return;
 
-                if (s.loopTillEnd && !s.suppressLoopOnce)
+                if (ShouldRestartStep(s))
                 {
                     RestartStep(s);
                 }
@@ -441,6 +496,7 @@ namespace Jungle.Actions
                 if (!running) return;
 
                 // Treat failure as terminal for progression.
+                s.ModeTimeActive = false;
                 HandleStepTerminal(s);
             };
 
@@ -471,11 +527,7 @@ namespace Jungle.Actions
             {
                 DetachStepListeners(s);
                 SafeCancel(s.Action);
-                s.Started = false;
-                s.TimeLeft = s.timeLimit;      // re-arm step timer for the new pass
-                s.suppressLoopOnce = false;
-                s.WaitingForStartDelay = false;
-                s.StartDelayRemaining = Mathf.Max(0f, s.startDelay);
+                ResetStepRuntimeState(s, true);
             }
 
             parallelRunning.Clear();
@@ -490,19 +542,100 @@ namespace Jungle.Actions
             // and left as +inf in Loop mode.
         }
 
-        private void InitializeStepStartDelays()
+        private void InitializeStepRuntime()
         {
             for (int i = 0; i < Steps.Count; i++)
             {
-                var step = Steps[i];
-                step.WaitingForStartDelay = false;
-                step.StartDelayRemaining = Mathf.Max(0f, step.startDelay);
+                ResetStepRuntimeState(Steps[i], true);
             }
 
             if (Steps.Count > 0)
             {
                 Steps[0].StartDelayRemaining += Mathf.Max(0f, StartDelay);
             }
+        }
+
+        private ProcessMode GetEffectiveMode(Step step)
+        {
+            return step.overrideSequenceMode ? step.mode : Mode;
+        }
+
+        private void ResetStepRuntimeState(Step step, bool resetModeState)
+        {
+            step.Started = false;
+            step.suppressLoopOnce = false;
+            step.WaitingForStartDelay = false;
+            step.StartDelayRemaining = Mathf.Max(0f, step.startDelay);
+            step.TimeLeft = (step.timeLimited && step.timeLimit > 0f) ? step.timeLimit : float.PositiveInfinity;
+
+            if (resetModeState)
+            {
+                step.loopsCompleted = 0;
+                var effectiveMode = GetEffectiveMode(step);
+                if (step.overrideSequenceMode && effectiveMode == ProcessMode.TimeLimited)
+                {
+                    step.ModeTimeLeft = Mathf.Max(0f, step.modeTimeLimit);
+                }
+                else
+                {
+                    step.ModeTimeLeft = 0f;
+                }
+            }
+
+            step.ModeTimeActive = false;
+        }
+
+        private bool ShouldRestartStep(Step step)
+        {
+            if (step.suppressLoopOnce)
+            {
+                step.suppressLoopOnce = false;
+                return false;
+            }
+
+            var effectiveMode = GetEffectiveMode(step);
+            var loopsAllowed = false;
+
+            if (step.overrideSequenceMode)
+            {
+                switch (effectiveMode)
+                {
+                    case ProcessMode.Loop:
+                        loopsAllowed = true;
+                        break;
+                    case ProcessMode.TimeLimited:
+                        loopsAllowed = step.modeTimeLimit > 0f && step.ModeTimeLeft > 0f;
+                        break;
+                }
+            }
+            else
+            {
+                if (!step.loopTillEnd)
+                {
+                    return false;
+                }
+
+                if (effectiveMode == ProcessMode.Loop || effectiveMode == ProcessMode.TimeLimited)
+                {
+                    loopsAllowed = true;
+                }
+            }
+
+            if (!loopsAllowed)
+            {
+                return false;
+            }
+
+            if (step.loopCount > 0)
+            {
+                step.loopsCompleted++;
+                if (step.loopsCompleted >= step.loopCount)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // --- safe wrappers (adapt if your ProcessAction API differs) ---
