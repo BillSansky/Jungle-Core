@@ -5,19 +5,19 @@ namespace Jungle.Utils
 {
     public class CoroutineRunner : MonoBehaviour
     {
-        private static CoroutineRunner _instance;
+        private static CoroutineRunner instance;
 
         public static CoroutineRunner Instance
         {
             get
             {
-                if (_instance == null)
+                if (instance == null)
                 {
                     var go = new GameObject("CoroutineRunner");
-                    _instance = go.AddComponent<CoroutineRunner>();
+                    instance = go.AddComponent<CoroutineRunner>();
                     DontDestroyOnLoad(go);
                 }
-                return _instance;
+                return instance;
             }
         }
 
@@ -44,12 +44,12 @@ namespace Jungle.Utils
 
         private void Awake()
         {
-            if (_instance == null)
+            if (instance == null)
             {
-                _instance = this;
+                instance = this;
                 DontDestroyOnLoad(gameObject);
             }
-            else if (_instance != this)
+            else if (instance != this)
             {
                 Destroy(gameObject);
             }

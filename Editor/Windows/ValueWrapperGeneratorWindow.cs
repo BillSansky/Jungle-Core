@@ -8,10 +8,12 @@ using Jungle.Values;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
+   
     public class ValueWrapperGeneratorWindow : EditorWindow
     {
         private static readonly Dictionary<string, Type> TypeAliases = new(StringComparer.OrdinalIgnoreCase)
@@ -90,35 +92,31 @@ namespace Jungle.Editor
 
         private Type resolvedType;
 
-        [MenuItem("Jungle/Values/Value Wrapper Generator", priority = 1100)]
+        [MenuItem("Jungle/Value Wrapper Generator")]
         public static void ShowWindow()
         {
-            var window = GetWindow<ValueWrapperGeneratorWindow>();
-            window.titleContent = new GUIContent("Value Wrapper Generator");
-            window.minSize = new Vector2(420f, 420f);
-            window.Show();
+            var wnd = GetWindow<ValueWrapperGeneratorWindow>();
+            wnd.titleContent = new GUIContent("Value Wrapper Generator");
+            wnd.minSize = new Vector2(420, 320);
+            wnd.Show();
         }
 
         public void CreateGUI()
         {
             rootVisualElement.Clear();
 
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(WindowUxmlPath);
-            if (visualTree != null)
-            {
-                visualTree.CloneTree(rootVisualElement);
-            }
-            else
-            {
-                Debug.LogError($"Unable to load Value Wrapper Generator layout at '{WindowUxmlPath}'.");
-                return;
-            }
+            var visualTree = Resources.Load<VisualTreeAsset>("ValueWrapperGenerator");
+            Assert.IsNotNull(
+                visualTree,
+                "ValueWrapperGenerator.uxml not found. Make sure it is inside a Resources folder and named 'ValueWrapperGenerator.uxml'."
+            );
 
-            var editorStyles = AssetDatabase.LoadAssetAtPath<StyleSheet>(EditorStylesPath);
+            if (visualTree != null)
+                visualTree.CloneTree(rootVisualElement);
+
+            var editorStyles = Resources.Load<StyleSheet>("JungleEditorStyles");
             if (editorStyles != null)
-            {
                 rootVisualElement.styleSheets.Add(editorStyles);
-            }
 
             CacheControls();
             BindInitialValues();

@@ -19,7 +19,7 @@ namespace Jungle.Actions
         private UnityEvent onProcessFailed = new UnityEvent();
         
         private bool isInProgress;
-        private bool isProcessComplete;
+        private bool isComplete;
 
         public UnityEvent OnProcessComplete => onProcessComplete;
 
@@ -29,9 +29,11 @@ namespace Jungle.Actions
 
         public bool IsInProgress => isInProgress;
 
-        public bool IsProcessComplete => isProcessComplete;
+        public bool IsComplete => isComplete;
 
-       
+        //Does this process have a specific duration?
+       public abstract bool IsTimed { get; }
+        
         public void Cancel()
         {
             var wasRunning = isInProgress;
@@ -42,7 +44,7 @@ namespace Jungle.Actions
             }
         
             isInProgress = false;
-            isProcessComplete = false;
+            isComplete = false;
             CancelImpl();
             onProcessFailed.Invoke();
         }
@@ -54,7 +56,7 @@ namespace Jungle.Actions
         {
 
             isInProgress = false;
-            isProcessComplete = true;
+            isComplete = true;
             
             CompleteImpl();
             
@@ -67,13 +69,13 @@ namespace Jungle.Actions
 
       
 
-        private void BeginProcess()
+        public void Begin()
         {
 
             Cancel();
 
             isInProgress = true;
-            isProcessComplete = false;
+            isComplete = false;
             BeginProcessImpl();
             onProcessStarted.Invoke();
 

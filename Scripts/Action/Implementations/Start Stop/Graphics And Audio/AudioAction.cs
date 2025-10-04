@@ -1,5 +1,5 @@
 using Jungle.Actions;
-
+using Jungle.Values.GameDev;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -7,7 +7,7 @@ namespace Jungle.Actions
     [System.Serializable]
     public class AudioAction : StartStopAction
     {
-        [SerializeReference] private FlexibleAudioSourceValue audioSource;
+        [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;
         [SerializeField] private AudioClip dragEndSound;
         [SerializeField] private AudioClip targetReachedSound;
@@ -28,7 +28,7 @@ namespace Jungle.Actions
         {
             if (!dragStartSound) return;
 
-            foreach (var source in audioSource.Value)
+            foreach (var source in audioSource.Values)
             {
                 if (source != null)
                     source.PlayOneShot(dragStartSound);
@@ -39,29 +39,12 @@ namespace Jungle.Actions
         {
             if (!dragEndSound) return;
 
-            foreach (var source in audioSource.Value)
+            foreach (var source in audioSource.Values)
             {
                 if (source != null)
                     source.PlayOneShot(dragEndSound);
             }
         }
 
-        // Additional method for target reached functionality
-        public override void OneShot(DraggableObject draggableInContext, DragZone dragZoneInContext)
-        {
-            UpdateContext(dragZoneInContext, draggableInContext);
-            if (!targetReachedSound) return;
-
-            foreach (var source in audioSource.Value)
-            {
-                if (source != null)
-                    source.PlayOneShot(targetReachedSound);
-            }
-        }
-
-        public override void UpdateContext(DragZone dragZone, DraggableObject draggable)
-        {
-            audioSource.UpdateContext(dragZone, draggable);
-        }
     }
 }

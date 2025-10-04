@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Jungle.Actions;
 
 using Jungle.Utils;
+using Jungle.Values;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -21,7 +22,7 @@ namespace Jungle.Actions
 
         [SerializeField] private int materialIndex = -1; // -1 means all materials, 0+ targets specific material index
 
-        [SerializeReference] private Irenderer targetRenderer;
+        [SerializeReference] private IRendererValue targetRenderer;
 
         private Dictionary<Renderer, Color[]> originalColorsMap = new();
 
@@ -44,7 +45,7 @@ namespace Jungle.Actions
             {
                 CoroutineRunner.StopManagedCoroutine(colorLerpCoroutine);
 
-                foreach (var renderer in targetRenderer.Value)
+                foreach (var renderer in targetRenderer.Values)
                 {
                     if (originalColorsMap.TryGetValue(renderer, out var originalColors))
                     {
@@ -64,7 +65,7 @@ namespace Jungle.Actions
                 }
             }
 
-            foreach (var renderer in targetRenderer.Value)
+            foreach (var renderer in targetRenderer.Values)
             {
                 var materials = renderer.materials;
                 var originalColors = new Color[materials.Length];
@@ -98,7 +99,7 @@ namespace Jungle.Actions
                 float normalizedTime = elapsedTime / lerpDuration;
                 float currentIntensity = lerpCurve.Evaluate(normalizedTime) * highlightIntensity;
 
-                foreach (var renderer in targetRenderer.Value)
+                foreach (var renderer in targetRenderer.Values)
                 {
                     if (renderer == null) continue;
 
@@ -146,7 +147,7 @@ namespace Jungle.Actions
             float elapsedTime = 0;
             Dictionary<Renderer, Color[]> currentColors = new Dictionary<Renderer, Color[]>();
 
-            foreach (var renderer in targetRenderer.Value)
+            foreach (var renderer in targetRenderer.Values)
             {
                 var materials = renderer.materials;
                 var colors = new Color[materials.Length];
@@ -163,7 +164,7 @@ namespace Jungle.Actions
                 float normalizedTime = elapsedTime / lerpBackDuration;
                 float currentIntensity = lerpBackCurve.Evaluate(normalizedTime);
 
-                foreach (var renderer in targetRenderer.Value)
+                foreach (var renderer in targetRenderer.Values)
                 {
                     if (renderer == null || !originalColorsMap.ContainsKey(renderer)) continue;
 
@@ -179,7 +180,7 @@ namespace Jungle.Actions
                 yield return null;
             }
 
-            foreach (var renderer in targetRenderer.Value)
+            foreach (var renderer in targetRenderer.Values)
             {
                 if (renderer && originalColorsMap.ContainsKey(renderer))
                 {
