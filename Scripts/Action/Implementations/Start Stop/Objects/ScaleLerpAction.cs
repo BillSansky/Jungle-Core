@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
-
+using Jungle.Values.Primitives;
+using Jungle.Values.UnityTypes;
 using Jungle.Utils;
 using UnityEngine;
 
@@ -13,10 +14,11 @@ namespace Jungle.Actions
     public class ScaleLerpAction : ProcessAction
     {
         [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeField] private Vector3 targetScale = Vector3.one;
-        [SerializeField] private float duration = 1f;
-        [SerializeField] private bool LerpBackToInitialValueOnStop = true;
-        [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [SerializeReference] private IVector3Value targetScale = new Vector3Value(Vector3.one);
+        [SerializeReference] private IFloatValue duration = new FloatValue(1f);
+        [SerializeReference] private IBoolValue lerpBackToInitialValueOnStop = new BoolValue(true);
+        [SerializeReference] private IAnimationCurveValue scaleCurve =
+            new AnimationCurveValue(AnimationCurve.EaseInOut(0, 0, 1, 1));
 
         private Vector3 originalScale;
 
@@ -37,17 +39,23 @@ namespace Jungle.Actions
             Stop();
         }
 
-        private IEnumerator ScaleCoroutine(Transform transform)
+        private IEnumerator ScaleCoroutine(Transform transform, Vector3 endScale, float durationValue, AnimationCurve curve)
         {
             var start = transform.localScale;
-            var end = targetScale;
+
+            if (durationValue <= 0f)
+            {
+                transform.localScale = endScale;
+                isLerping = false;
+                yield break;
+            }
 
             while (currentLerpTime < 1.0f)
             {
-                currentLerpTime += Time.deltaTime / duration;
-                float t = scaleCurve.Evaluate(Mathf.Clamp01(currentLerpTime));
+                currentLerpTime += Time.deltaTime / durationValue;
+                float t = curve.Evaluate(Mathf.Clamp01(currentLerpTime));
 
-                transform.localScale = Vector3.Lerp(start, end, t);
+                transform.localScale = Vector3.Lerp(start, endScale, t);
 
                 yield return null;
             }
@@ -57,7 +65,7 @@ namespace Jungle.Actions
 
         protected override void OnStart()
         {
-            var transform = (Transform)targetTransform;
+            var transform = targetTransform?.V;
             if (!transform) return;
 
             CleanupAction();
@@ -68,22 +76,34 @@ namespace Jungle.Actions
             isLerping = true;
             wasInitialized = true;
 
-            routine = CoroutineRunner.StartManagedCoroutine(ScaleCoroutine(transform));
+            var target = targetScale.V;
+            var durationValue = Mathf.Max(0f, duration.V);
+            var curve = scaleCurve.V;
+
+            if (durationValue <= 0f)
+            {
+                transform.localScale = target;
+                isLerping = false;
+                return;
+            }
+
+            routine = CoroutineRunner.StartManagedCoroutine(ScaleCoroutine(transform, target, durationValue, curve));
         }
 
         protected override void OnStop()
         {
-            var transform = (Transform)targetTransform;
+            var transform = targetTransform?.V;
             if (!transform) return;
 
             CleanupAction();
 
-            if (LerpBackToInitialValueOnStop)
+            if (lerpBackToInitialValueOnStop.V)
             {
                 currentLerpTime = 0f;
                 isLerping = true;
 
-                CoroutineRunner.StartManagedCoroutine(RevertScaleCoroutine(transform));
+                CoroutineRunner.StartManagedCoroutine(
+                    RevertScaleCoroutine(transform, Mathf.Max(0f, duration.V), scaleCurve.V));
             }
             else
             {
@@ -117,15 +137,22 @@ namespace Jungle.Actions
             StopAction();
         }
 
-        private IEnumerator RevertScaleCoroutine(Transform transform)
+        private IEnumerator RevertScaleCoroutine(Transform transform, float durationValue, AnimationCurve curve)
         {
             var target = originalScale;
             var start = transform.localScale;
 
+            if (durationValue <= 0f)
+            {
+                transform.localScale = target;
+                isLerping = false;
+                yield break;
+            }
+
             while (currentLerpTime < 1.0f)
             {
-                currentLerpTime += Time.deltaTime / duration;
-                float t = scaleCurve.Evaluate(Mathf.Clamp01(currentLerpTime));
+                currentLerpTime += Time.deltaTime / durationValue;
+                float t = curve.Evaluate(Mathf.Clamp01(currentLerpTime));
 
                 transform.localScale = Vector3.Lerp(start, target, t);
 

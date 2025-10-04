@@ -3,6 +3,8 @@ using System.Collections;
 using Jungle.Attributes;
 using Jungle.Utils;
 using Jungle.Values.GameDev;
+using Jungle.Values.Primitives;
+using Jungle.Values.UnityTypes;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -12,11 +14,12 @@ namespace Jungle.Actions
     public class AnimatorFloatLerpAction : ProcessAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
-        [SerializeField] private string parameterName = "Blend";
-        [SerializeField] private float targetValue = 1f;
-        [SerializeField] private float duration = 0.35f;
-        [SerializeField] private AnimationCurve interpolation = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-        [SerializeField] private bool returnToInitialOnStop = true;
+        [SerializeReference] private IStringValue parameterName = new StringValue("Blend");
+        [SerializeReference] private IFloatValue targetValue = new FloatValue(1f);
+        [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
+        [SerializeReference] private IAnimationCurveValue interpolation =
+            new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
+        [SerializeReference] private IBoolValue returnToInitialOnStop = new BoolValue(true);
 
         private Animator cachedAnimator;
         private float cachedInitialValue;
@@ -36,58 +39,81 @@ namespace Jungle.Actions
         protected override void OnStart()
         {
             var animator = ResolveAnimator();
-            ValidateParameter(animator);
+            var parameter = ResolveParameterName();
+            ValidateParameter(animator, parameter);
 
-            CacheInitialValue(animator);
+            CacheInitialValue(animator, parameter);
 
             StopActiveRoutine();
 
-            if (duration <= 0f)
+            var totalDuration = duration.V;
+            var target = targetValue.V;
+            var curve = interpolation.V;
+
+            if (totalDuration <= 0f)
             {
-                animator.SetFloat(parameterName, targetValue);
+                animator.SetFloat(parameter, target);
                 return;
             }
 
-            var start = animator.GetFloat(parameterName);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpValue(animator, start, targetValue));
+            var start = animator.GetFloat(parameter);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpValue(animator, parameter, start, target, totalDuration, curve));
         }
 
         protected override void OnStop()
         {
-            if (!returnToInitialOnStop || !hasCachedInitialValue)
+            if (!returnToInitialOnStop.V || !hasCachedInitialValue)
             {
                 return;
             }
 
             var animator = cachedAnimator ?? ResolveAnimator();
+            var parameter = ResolveParameterName();
 
             StopActiveRoutine();
 
-            if (duration <= 0f)
+            var totalDuration = duration.V;
+            var curve = interpolation.V;
+
+            if (totalDuration <= 0f)
             {
-                animator.SetFloat(parameterName, cachedInitialValue);
+                animator.SetFloat(parameter, cachedInitialValue);
                 return;
             }
 
-            var start = animator.GetFloat(parameterName);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpValue(animator, start, cachedInitialValue));
+            var start = animator.GetFloat(parameter);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpValue(animator, parameter, start, cachedInitialValue, totalDuration, curve));
         }
 
-        private IEnumerator LerpValue(Animator animator, float start, float end)
+        private IEnumerator LerpValue(
+            Animator animator,
+            string parameter,
+            float start,
+            float end,
+            float totalDuration,
+            AnimationCurve curve)
         {
-            float time = 0f;
-            var totalDuration = Mathf.Max(0.0001f, duration);
+            if (totalDuration <= 0f)
+            {
+                animator.SetFloat(parameter, end);
+                yield break;
+            }
 
-            while (time < totalDuration)
+            float time = 0f;
+            var durationClamp = Mathf.Max(0.0001f, totalDuration);
+
+            while (time < durationClamp)
             {
                 time += Time.deltaTime;
-                var t = Mathf.Clamp01(time / totalDuration);
-                var curved = interpolation.Evaluate(t);
-                animator.SetFloat(parameterName, Mathf.LerpUnclamped(start, end, curved));
+                var t = Mathf.Clamp01(time / durationClamp);
+                var curved = curve.Evaluate(t);
+                animator.SetFloat(parameter, Mathf.LerpUnclamped(start, end, curved));
                 yield return null;
             }
 
-            animator.SetFloat(parameterName, end);
+            animator.SetFloat(parameter, end);
         }
 
         private Animator ResolveAnimator()
@@ -112,27 +138,32 @@ namespace Jungle.Actions
             return cachedAnimator;
         }
 
-        private void ValidateParameter(Animator animator)
+        private string ResolveParameterName()
         {
-            if (string.IsNullOrEmpty(parameterName))
+            return parameterName?.V ?? string.Empty;
+        }
+
+        private void ValidateParameter(Animator animator, string parameter)
+        {
+            if (string.IsNullOrEmpty(parameter))
             {
                 throw new InvalidOperationException("Animator float parameter name must be provided before starting the action.");
             }
 
-            foreach (var parameter in animator.parameters)
+            foreach (var animatorParameter in animator.parameters)
             {
-                if (parameter.type == AnimatorControllerParameterType.Float && parameter.name == parameterName)
+                if (animatorParameter.type == AnimatorControllerParameterType.Float && animatorParameter.name == parameter)
                 {
                     return;
                 }
             }
 
-            throw new InvalidOperationException($"Animator parameter '{parameterName}' was not found or is not of type float.");
+            throw new InvalidOperationException($"Animator parameter '{parameter}' was not found or is not of type float.");
         }
 
-        private void CacheInitialValue(Animator animator)
+        private void CacheInitialValue(Animator animator, string parameter)
         {
-            cachedInitialValue = animator.GetFloat(parameterName);
+            cachedInitialValue = animator.GetFloat(parameter);
             hasCachedInitialValue = true;
         }
 
