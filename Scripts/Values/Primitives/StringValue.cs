@@ -9,7 +9,16 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class StringValue : LocalValue<string>, IStringValue
     {
+        public StringValue()
+        {
+        }
+
+        public StringValue(string value)
+            : base(value)
+        {
+        }
+
         public override bool HasMultipleValues => false;
-        
+
     }
 }

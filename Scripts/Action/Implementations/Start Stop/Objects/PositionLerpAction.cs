@@ -3,6 +3,8 @@ using System.Collections;
 using Jungle.Attributes;
 using Jungle.Utils;
 using Jungle.Values.GameDev;
+using Jungle.Values.Primitives;
+using Jungle.Values.UnityTypes;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -12,11 +14,12 @@ namespace Jungle.Actions
     public class PositionLerpAction : ProcessAction
     {
         [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeField] private Vector3 targetPosition = Vector3.zero;
-        [SerializeField] private bool useLocalPosition = true;
-        [SerializeField] private float duration = 0.35f;
-        [SerializeField] private AnimationCurve interpolation = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-        [SerializeField] private bool returnToInitialOnStop = true;
+        [SerializeReference] private IVector3Value targetPosition = new Vector3Value(Vector3.zero);
+        [SerializeReference] private IBoolValue useLocalPosition = new BoolValue(true);
+        [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
+        [SerializeReference] private IAnimationCurveValue interpolation =
+            new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
+        [SerializeReference] private IBoolValue returnToInitialOnStop = new BoolValue(true);
 
         private Vector3 cachedInitialPosition;
         private bool hasCachedInitialPosition;
@@ -36,18 +39,24 @@ namespace Jungle.Actions
         protected override void OnStart()
         {
             resolvedTransform = ResolveTargetTransform();
-            CacheInitialPosition(resolvedTransform);
+            var useLocal = useLocalPosition.V;
+            var totalDuration = duration.V;
+            var curve = interpolation.V;
+            var target = targetPosition.V;
+
+            CacheInitialPosition(resolvedTransform, useLocal);
 
             StopActiveRoutine();
 
-            if (duration <= 0f)
+            if (totalDuration <= 0f)
             {
-                ApplyPosition(resolvedTransform, targetPosition);
+                ApplyPosition(resolvedTransform, target, useLocal);
                 return;
             }
 
-            var start = ReadPosition(resolvedTransform);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpPosition(start, targetPosition));
+            var start = ReadPosition(resolvedTransform, useLocal);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpPosition(resolvedTransform, start, target, totalDuration, curve, useLocal));
         }
 
         protected override void OnStop()
@@ -59,37 +68,53 @@ namespace Jungle.Actions
 
             StopActiveRoutine();
 
-            if (!returnToInitialOnStop || !hasCachedInitialPosition)
+            if (!returnToInitialOnStop.V || !hasCachedInitialPosition)
             {
                 return;
             }
 
-            if (duration <= 0f)
+            var useLocal = useLocalPosition.V;
+            var totalDuration = duration.V;
+            var curve = interpolation.V;
+
+            if (totalDuration <= 0f)
             {
-                ApplyPosition(resolvedTransform, cachedInitialPosition);
+                ApplyPosition(resolvedTransform, cachedInitialPosition, useLocal);
                 return;
             }
 
-            var current = ReadPosition(resolvedTransform);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpPosition(current, cachedInitialPosition));
+            var current = ReadPosition(resolvedTransform, useLocal);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpPosition(resolvedTransform, current, cachedInitialPosition, totalDuration, curve, useLocal));
         }
 
-        private IEnumerator LerpPosition(Vector3 start, Vector3 end)
+        private IEnumerator LerpPosition(
+            Transform transform,
+            Vector3 start,
+            Vector3 end,
+            float totalDuration,
+            AnimationCurve curve,
+            bool useLocal)
         {
-            var transform = ResolveTargetTransform();
-            float time = 0f;
-            var totalDuration = Mathf.Max(0.0001f, duration);
+            if (totalDuration <= 0f)
+            {
+                ApplyPosition(transform, end, useLocal);
+                yield break;
+            }
 
-            while (time < totalDuration)
+            float time = 0f;
+            var durationClamp = Mathf.Max(0.0001f, totalDuration);
+
+            while (time < durationClamp)
             {
                 time += Time.deltaTime;
-                var t = Mathf.Clamp01(time / totalDuration);
-                var curved = interpolation.Evaluate(t);
-                ApplyPosition(transform, Vector3.LerpUnclamped(start, end, curved));
+                var t = Mathf.Clamp01(time / durationClamp);
+                var curved = curve.Evaluate(t);
+                ApplyPosition(transform, Vector3.LerpUnclamped(start, end, curved), useLocal);
                 yield return null;
             }
 
-            ApplyPosition(transform, end);
+            ApplyPosition(transform, end, useLocal);
         }
 
         private Transform ResolveTargetTransform()
@@ -108,20 +133,20 @@ namespace Jungle.Actions
             return transform;
         }
 
-        private void CacheInitialPosition(Transform transform)
+        private void CacheInitialPosition(Transform transform, bool useLocal)
         {
-            cachedInitialPosition = ReadPosition(transform);
+            cachedInitialPosition = ReadPosition(transform, useLocal);
             hasCachedInitialPosition = true;
         }
 
-        private Vector3 ReadPosition(Transform transform)
+        private Vector3 ReadPosition(Transform transform, bool useLocal)
         {
-            return useLocalPosition ? transform.localPosition : transform.position;
+            return useLocal ? transform.localPosition : transform.position;
         }
 
-        private void ApplyPosition(Transform transform, Vector3 position)
+        private void ApplyPosition(Transform transform, Vector3 position, bool useLocal)
         {
-            if (useLocalPosition)
+            if (useLocal)
             {
                 transform.localPosition = position;
             }

@@ -9,7 +9,16 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class FloatValue : LocalValue<float>, IFloatValue
     {
+        public FloatValue()
+        {
+        }
+
+        public FloatValue(float value)
+            : base(value)
+        {
+        }
+
         public override bool HasMultipleValues => false;
-        
+
     }
 }

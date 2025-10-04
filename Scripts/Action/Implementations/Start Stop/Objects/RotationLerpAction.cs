@@ -3,6 +3,8 @@ using System.Collections;
 using Jungle.Attributes;
 using Jungle.Utils;
 using Jungle.Values.GameDev;
+using Jungle.Values.Primitives;
+using Jungle.Values.UnityTypes;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -12,11 +14,12 @@ namespace Jungle.Actions
     public class RotationLerpAction : ProcessAction
     {
         [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeField] private Vector3 targetEulerAngles = Vector3.zero;
-        [SerializeField] private bool useLocalRotation = true;
-        [SerializeField] private float duration = 0.35f;
-        [SerializeField] private AnimationCurve interpolation = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-        [SerializeField] private bool returnToInitialOnStop = true;
+        [SerializeReference] private IVector3Value targetEulerAngles = new Vector3Value(Vector3.zero);
+        [SerializeReference] private IBoolValue useLocalRotation = new BoolValue(true);
+        [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
+        [SerializeReference] private IAnimationCurveValue interpolation =
+            new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
+        [SerializeReference] private IBoolValue returnToInitialOnStop = new BoolValue(true);
 
         private Quaternion cachedInitialRotation;
         private bool hasCachedInitialRotation;
@@ -36,20 +39,24 @@ namespace Jungle.Actions
         protected override void OnStart()
         {
             resolvedTransform = ResolveTargetTransform();
-            CacheInitialRotation(resolvedTransform);
+            var target = Quaternion.Euler(targetEulerAngles.V);
+            var totalDuration = duration.V;
+            var curve = interpolation.V;
+            var useLocal = useLocalRotation.V;
+
+            CacheInitialRotation(resolvedTransform, useLocal);
 
             StopActiveRoutine();
 
-            var target = Quaternion.Euler(targetEulerAngles);
-
-            if (duration <= 0f)
+            if (totalDuration <= 0f)
             {
-                ApplyRotation(resolvedTransform, target);
+                ApplyRotation(resolvedTransform, target, useLocal);
                 return;
             }
 
-            var start = ReadRotation(resolvedTransform);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpRotation(start, target));
+            var start = ReadRotation(resolvedTransform, useLocal);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpRotation(resolvedTransform, start, target, totalDuration, curve, useLocal));
         }
 
         protected override void OnStop()
@@ -61,37 +68,53 @@ namespace Jungle.Actions
 
             StopActiveRoutine();
 
-            if (!returnToInitialOnStop || !hasCachedInitialRotation)
+            if (!returnToInitialOnStop.V || !hasCachedInitialRotation)
             {
                 return;
             }
 
-            if (duration <= 0f)
+            var useLocal = useLocalRotation.V;
+            var totalDuration = duration.V;
+            var curve = interpolation.V;
+
+            if (totalDuration <= 0f)
             {
-                ApplyRotation(resolvedTransform, cachedInitialRotation);
+                ApplyRotation(resolvedTransform, cachedInitialRotation, useLocal);
                 return;
             }
 
-            var current = ReadRotation(resolvedTransform);
-            activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpRotation(current, cachedInitialRotation));
+            var current = ReadRotation(resolvedTransform, useLocal);
+            activeRoutine = CoroutineRunner.StartManagedCoroutine(
+                LerpRotation(resolvedTransform, current, cachedInitialRotation, totalDuration, curve, useLocal));
         }
 
-        private IEnumerator LerpRotation(Quaternion start, Quaternion end)
+        private IEnumerator LerpRotation(
+            Transform transform,
+            Quaternion start,
+            Quaternion end,
+            float totalDuration,
+            AnimationCurve curve,
+            bool useLocal)
         {
-            var transform = ResolveTargetTransform();
-            float time = 0f;
-            var totalDuration = Mathf.Max(0.0001f, duration);
+            if (totalDuration <= 0f)
+            {
+                ApplyRotation(transform, end, useLocal);
+                yield break;
+            }
 
-            while (time < totalDuration)
+            float time = 0f;
+            var durationClamp = Mathf.Max(0.0001f, totalDuration);
+
+            while (time < durationClamp)
             {
                 time += Time.deltaTime;
-                var t = Mathf.Clamp01(time / totalDuration);
-                var curved = interpolation.Evaluate(t);
-                ApplyRotation(transform, Quaternion.LerpUnclamped(start, end, curved));
+                var t = Mathf.Clamp01(time / durationClamp);
+                var curved = curve.Evaluate(t);
+                ApplyRotation(transform, Quaternion.LerpUnclamped(start, end, curved), useLocal);
                 yield return null;
             }
 
-            ApplyRotation(transform, end);
+            ApplyRotation(transform, end, useLocal);
         }
 
         private Transform ResolveTargetTransform()
@@ -110,20 +133,20 @@ namespace Jungle.Actions
             return transform;
         }
 
-        private void CacheInitialRotation(Transform transform)
+        private void CacheInitialRotation(Transform transform, bool useLocal)
         {
-            cachedInitialRotation = ReadRotation(transform);
+            cachedInitialRotation = ReadRotation(transform, useLocal);
             hasCachedInitialRotation = true;
         }
 
-        private Quaternion ReadRotation(Transform transform)
+        private Quaternion ReadRotation(Transform transform, bool useLocal)
         {
-            return useLocalRotation ? transform.localRotation : transform.rotation;
+            return useLocal ? transform.localRotation : transform.rotation;
         }
 
-        private void ApplyRotation(Transform transform, Quaternion rotation)
+        private void ApplyRotation(Transform transform, Quaternion rotation, bool useLocal)
         {
-            if (useLocalRotation)
+            if (useLocal)
             {
                 transform.localRotation = rotation;
             }
