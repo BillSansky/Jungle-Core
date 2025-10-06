@@ -31,15 +31,7 @@ namespace Jungle.Actions
         public override bool IsTimed => duration?.V > 0f;
         public override float Duration => duration?.V ?? 0f;
     
-        public void StartAction()
-        {
-            Start();
-        }
-
-        public void StopAction()
-        {
-            Stop();
-        }
+       
 
         private IEnumerator ScaleCoroutine(Transform transform, Vector3 endScale, float durationValue, AnimationCurve curve)
         {
@@ -65,7 +57,7 @@ namespace Jungle.Actions
             isLerping = false;
         }
 
-        protected override void OnStart()
+        protected override void BeginImpl()
         {
             var transform = targetTransform?.V;
             if (!transform) return;
@@ -92,7 +84,7 @@ namespace Jungle.Actions
             routine = CoroutineRunner.StartManagedCoroutine(ScaleCoroutine(transform, target, durationValue, curve));
         }
 
-        protected override void OnStop()
+        protected override void CompleteImpl()
         {
             var transform = targetTransform?.V;
             if (!transform) return;
@@ -128,16 +120,7 @@ namespace Jungle.Actions
 
        
 
-        private IEnumerator OneShotRoutine()
-        {
-            StartAction();
-            while (isLerping)
-            {
-                yield return null;
-            }
-
-            StopAction();
-        }
+       
 
         private IEnumerator RevertScaleCoroutine(Transform transform, float durationValue, AnimationCurve curve)
         {

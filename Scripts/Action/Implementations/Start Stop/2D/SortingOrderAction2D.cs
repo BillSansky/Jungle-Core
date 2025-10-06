@@ -35,7 +35,7 @@
 //             Stop();
 //         }
 //
-//         protected override void OnStart()
+//         protected override void BeginImpl()
 //         {
 //             var renderers = targetRenderer.Value;
 //
@@ -56,7 +56,7 @@
 //             }
 //         }
 //
-//         protected override void OnStop()
+//         protected override void CompleteImpl()
 //         {
 //             if (skipStop)
 //             {

@@ -9,7 +9,7 @@ namespace Jungle.Actions
 {
     /// <summary>
     /// Event-driven sequence of child ProcessActions that runs once through all steps.
-    /// - Progression listens to child ProcessCompleted/ProcessFailed (no polling).
+    /// - Progression listens to child ProcessCompleted/ProcessCancelled (no polling).
     /// - Coroutine only services time limits (sequence & per-step).
     /// - Optional sequence time limit can be set to constrain the entire sequence duration.
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
@@ -153,7 +153,7 @@ namespace Jungle.Actions
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
 
-        protected override void BeginProcessImpl()
+        protected override void BeginImpl()
         {
             if (Steps == null || Steps.Count == 0)
             {
@@ -190,7 +190,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                SafeCancel(s.Action);
+                s.Action.Cancel();
                 ResetStepRuntimeState(s, true);
             }
 
@@ -280,7 +280,7 @@ namespace Jungle.Actions
                 else
                 {
                     // Cancel-on-timeout behavior:
-                    SafeCancel(step.Action);
+                    step.Action.Cancel();
                     HandleStepTerminal(step);
                 }
 
@@ -385,7 +385,7 @@ namespace Jungle.Actions
             s.StartDelayRemaining = 0f;
 
             AttachStepListeners(s);      // attach before Begin to catch instant-complete
-            SafeBegin(s.Action);
+            s.Action.Begin();
 
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
@@ -395,7 +395,7 @@ namespace Jungle.Actions
         {
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
-            SafeCancel(s.Action);
+            s.Action.Cancel();
             parallelRunning.Remove(s);
             s.Started = false;
 
@@ -465,7 +465,7 @@ namespace Jungle.Actions
             };
 
             s.Action.ProcessCompleted += s.completedHandler;
-            s.Action.ProcessFailed += s.failedHandler;
+            s.Action.ProcessCancelled += s.failedHandler;
         }
 
         private void DetachStepListeners(Step s)
@@ -480,7 +480,7 @@ namespace Jungle.Actions
 
             if (s.failedHandler != null)
             {
-                s.Action.ProcessFailed -= s.failedHandler;
+                s.Action.ProcessCancelled -= s.failedHandler;
                 s.failedHandler = null;
             }
         }
@@ -490,7 +490,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                SafeCancel(s.Action);
+                 s.Action.Cancel();
                 ResetStepRuntimeState(s, true);
             }
 
@@ -548,24 +548,8 @@ namespace Jungle.Actions
             }
         }
 
-        // --- safe wrappers (adapt if your ProcessAction API differs) ---
-
-        private static void SafeBegin(ProcessAction a)
-        {
         
-            a.Begin();
-        }
 
-        private static void SafeCancel(ProcessAction a)
-        {
-          
-            if (a.IsInProgress) a.Cancel();
-        }
-
-        private static void SafeForceComplete(ProcessAction a)
-        {
-          
-            if (!a.IsComplete) a.Complete();
-        }
+       
     }
 }

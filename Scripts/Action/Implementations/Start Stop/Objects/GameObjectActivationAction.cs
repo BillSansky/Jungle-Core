@@ -29,23 +29,15 @@ namespace Jungle.Actions
         public override bool IsTimed => false;
         public override float Duration => 0f;
 
-        public void StartAction()
-        {
-            Start();
-        }
+        
 
-        public void StopAction()
-        {
-            Stop();
-        }
-
-        protected override void OnStart()
+        protected override void BeginImpl()
         {
             StoreOriginalStates();
             SetObjectStates();
         }
 
-        protected override void OnStop()
+        protected override void CompleteImpl()
         {
             RestoreOriginalStates();
         }

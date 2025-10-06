@@ -29,17 +29,8 @@ namespace Jungle.Actions
         public override bool IsTimed => duration?.V > 0f;
         public override float Duration => duration?.V ?? 0f;
 
-        public void StartAction()
-        {
-            Start();
-        }
-
-        public void StopAction()
-        {
-            Stop();
-        }
-
-        protected override void OnStart()
+       
+        protected override void BeginImpl()
         {
             resolvedTransform = ResolveTargetTransform();
             var target = Quaternion.Euler(targetEulerAngles.V);
@@ -62,7 +53,7 @@ namespace Jungle.Actions
                 LerpRotation(resolvedTransform, start, target, totalDuration, curve, useLocal));
         }
 
-        protected override void OnStop()
+        protected override void CompleteImpl()
         {
             if (resolvedTransform == null)
             {

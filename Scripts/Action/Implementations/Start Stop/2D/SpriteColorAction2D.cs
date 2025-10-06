@@ -49,7 +49,7 @@
 //             }
 //         }
 //
-//         protected override void OnStart()
+//         protected override void BeginImpl()
 //         {
 //             originalColors.Clear();
 //             foreach (var renderer in targetRenderer.Value)
@@ -72,7 +72,7 @@
 //             isHighlighted = anyRendererFound;
 //         }
 //
-//         protected override void OnStop()
+//         protected override void CompleteImpl()
 //         {
 //             if (skipStop)
 //             {

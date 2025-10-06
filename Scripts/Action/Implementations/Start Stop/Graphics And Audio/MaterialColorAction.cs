@@ -30,18 +30,8 @@ namespace Jungle.Actions
 
         public override bool IsTimed => true;
         public override float Duration => lerpDuration + lerpBackDuration;
-      
-        public void StartAction()
-        {
-            Start();
-        }
 
-        public void StopAction()
-        {
-            Stop();
-        }
-
-        protected override void OnStart()
+        protected override void BeginImpl()
         {
             if (colorLerpCoroutine != null)
             {
@@ -126,7 +116,7 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void OnStop()
+        protected override void CompleteImpl()
         {
             if (colorLerpCoroutine != null)
             {
@@ -137,12 +127,7 @@ namespace Jungle.Actions
             colorLerpCoroutine = CoroutineRunner.StartManagedCoroutine(LerpBackColors());
         }
 
-        private IEnumerator OneShotRoutine()
-        {
-            StartAction();
-            yield return new WaitForSeconds(lerpDuration);
-            StopAction();
-        }
+       
 
         private IEnumerator LerpBackColors()
         {

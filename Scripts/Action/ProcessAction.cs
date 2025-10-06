@@ -5,15 +5,14 @@ namespace Jungle.Actions
     [Serializable]
     public abstract class ProcessAction
     {
-        private bool isStarted;
+
         private bool isInProgress;
         private bool isComplete;
 
         public event Action ProcessStarted;
         public event Action ProcessCompleted;
-        public event Action ProcessFailed;
-
-        public bool IsStarted => isStarted;
+        public event Action ProcessCancelled;
+        
         public bool IsInProgress => isInProgress;
         public bool IsComplete => isComplete;
 
@@ -23,36 +22,19 @@ namespace Jungle.Actions
         public abstract bool IsTimed { get; }
 
         public abstract float Duration { get; }
+
+
+        protected abstract void BeginImpl();
+
+
+        protected abstract void CompleteImpl();
         
-        public void Start()
+        
+        protected virtual void CancelImpl()
         {
-            if (isStarted)
-            {
-                return;
-            }
-
-            isStarted = true;
-            OnStart();
+            CompleteImpl();
         }
 
-        public void Stop()
-        {
-            if (!isStarted)
-            {
-                return;
-            }
-
-            isStarted = false;
-            OnStop();
-        }
-
-        protected virtual void OnStart()
-        {
-        }
-
-        protected virtual void OnStop()
-        {
-        }
 
         public void Begin()
         {
@@ -60,7 +42,7 @@ namespace Jungle.Actions
 
             isInProgress = true;
             isComplete = false;
-            BeginProcessImpl();
+            BeginImpl();
             ProcessStarted?.Invoke();
         }
 
@@ -74,7 +56,7 @@ namespace Jungle.Actions
             isInProgress = false;
             isComplete = false;
             CancelImpl();
-            ProcessFailed?.Invoke();
+            ProcessCancelled?.Invoke();
         }
 
         public void Complete()
@@ -85,19 +67,8 @@ namespace Jungle.Actions
             ProcessCompleted?.Invoke();
         }
 
-        protected virtual void BeginProcessImpl()
-        {
-            Start();
-        }
+    
 
-        protected virtual void CancelImpl()
-        {
-            Stop();
-        }
-
-        protected virtual void CompleteImpl()
-        {
-            Stop();
-        }
+     
     }
 }

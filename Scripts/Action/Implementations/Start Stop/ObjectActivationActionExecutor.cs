@@ -13,7 +13,7 @@ namespace Jungle.Actions
         {
             foreach (var action in actions)
             {
-                action.Start();
+                action.Begin();
             }
         }
 
@@ -21,7 +21,7 @@ namespace Jungle.Actions
         {
             foreach (var action in actions)
             {
-               action.Stop();
+               action.Complete();
             }
         }
     }

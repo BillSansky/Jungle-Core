@@ -30,20 +30,10 @@ namespace Jungle.Actions
 
         public override bool IsTimed => true;
         public override float Duration => startDelay + (useStopDelay ? stopDelay : 0f);
-      
-        public void StartAction()
-        {
-            Start();
-        }
-
-        public void StopAction()
-        {
-            Stop();
-        }
-
+        
       
 
-        protected override void OnStart()
+        protected override void BeginImpl()
         {
             // Cancel any pending stop operation if configured to do so
             if (cancelStopOnStart && stopDelayCoroutine != null)
@@ -62,7 +52,7 @@ namespace Jungle.Actions
             startDelayCoroutine = CoroutineRunner.StartManagedCoroutine(StartDelayedExecutionCoroutine());
         }
 
-        protected override void OnStop()
+        protected override void CompleteImpl()
         {
             // Cancel any pending start operation if configured to do so
             if (cancelStartOnStop && startDelayCoroutine != null)
@@ -163,7 +153,7 @@ namespace Jungle.Actions
 
             foreach (var action in actionsToExecute)
             {
-               action.Start();
+               action.Begin();
             }
         }
 
@@ -173,7 +163,7 @@ namespace Jungle.Actions
 
             foreach (var action in actionsToExecute)
             {
-               action.Stop();
+               action.Complete();
             }
 
             actionsCurrentlyRunning = false;
