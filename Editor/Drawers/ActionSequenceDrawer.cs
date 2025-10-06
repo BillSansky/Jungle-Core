@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using System.Diagnostics;
 using Jungle.Actions;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.UIElements.Cursor;
+using Debug = UnityEngine.Debug;
 
 namespace Jungle.Editor
 {
@@ -28,14 +30,12 @@ namespace Jungle.Editor
             foldout.RegisterValueChangedCallback(evt => property.isExpanded = evt.newValue);
             root.Add(foldout);
 
-            var modeProp = property.FindPropertyRelative(nameof(ActionSequence.Mode));
+            var hasSequenceTimeLimitProp = property.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit));
             var sequenceTimeLimitProp = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
-            var finishOnLimitProp = property.FindPropertyRelative(nameof(ActionSequence.FinishOnSequenceTimeLimit));
             var stepsProp = property.FindPropertyRelative(nameof(ActionSequence.Steps));
 
-            foldout.Add(new PropertyField(modeProp));
+            foldout.Add(new PropertyField(hasSequenceTimeLimitProp));
             foldout.Add(new PropertyField(sequenceTimeLimitProp));
-            foldout.Add(new PropertyField(finishOnLimitProp));
             foldout.Add(new PropertyField(stepsProp));
 
             var timelineFoldout = new Foldout
@@ -160,14 +160,11 @@ namespace Jungle.Editor
                 var stepsCopy = property.FindPropertyRelative(nameof(ActionSequence.Steps)).Copy();
                 this.TrackPropertyValue(stepsCopy, _ => Refresh());
 
-                var modeCopy = property.FindPropertyRelative(nameof(ActionSequence.Mode)).Copy();
-                this.TrackPropertyValue(modeCopy, _ => Refresh());
+                var hasSequenceTimeLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit)).Copy();
+                this.TrackPropertyValue(hasSequenceTimeLimitCopy, _ => Refresh());
 
                 var sequenceLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit)).Copy();
                 this.TrackPropertyValue(sequenceLimitCopy, _ => Refresh());
-
-                var sequenceStartDelayCopy = property.FindPropertyRelative(nameof(ActionSequence.StartDelay)).Copy();
-                this.TrackPropertyValue(sequenceStartDelayCopy, _ => Refresh());
             }
 
             private void Refresh()
@@ -176,12 +173,13 @@ namespace Jungle.Editor
 
                 var rootProperty = serializedObject.FindProperty(propertyPath);
                 var stepsProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Steps));
-                var modeProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Mode));
+                var hasSequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit));
                 var sequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
-                var sequenceStartDelayProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.StartDelay));
 
                 rowsContainer.Clear();
                 currentTimelineWidth = MinimumTimelineWidth;
+
+                var hasSequenceTimeLimit = hasSequenceTimeLimitProp.boolValue;
 
                 if (stepsProp.arraySize == 0)
                 {
@@ -200,26 +198,20 @@ namespace Jungle.Editor
                 }
                 else
                 {
-                    var sequenceStartDelay = sequenceStartDelayProp.floatValue;
-                    var entries = BuildEntries(stepsProp, sequenceStartDelay);
-                    var totalDuration = DetermineTimelineDuration(entries, modeProp, sequenceTimeLimitProp);
-                    BuildRows(entries, totalDuration);
+                    var entries = BuildEntries(stepsProp, 0f);
+                    var totalDuration = DetermineTimelineDuration(entries, hasSequenceTimeLimitProp, sequenceTimeLimitProp);
+                    var sequenceTimeLimit = sequenceTimeLimitProp.floatValue;
+                    BuildRows(entries, totalDuration, sequenceTimeLimit > 0f ? (float?)sequenceTimeLimit : null, hasSequenceTimeLimit);
                 }
 
-                var mode = (ActionSequence.ProcessMode)modeProp.enumValueIndex;
-                if (mode == ActionSequence.ProcessMode.Once)
+                if (hasSequenceTimeLimit && sequenceTimeLimitProp.floatValue > 0f)
                 {
-                    modeInfoLabel.text = string.Empty;
-                }
-                else if (mode == ActionSequence.ProcessMode.Loop)
-                {
-                    modeInfoLabel.text = "Sequence loops indefinitely.";
+                    var limit = sequenceTimeLimitProp.floatValue;
+                    modeInfoLabel.text = $"Sequence runs once with time limit of {limit:0.##}s.";
                 }
                 else
                 {
-                    var limit = sequenceTimeLimitProp.floatValue;
-                    modeInfoLabel.text = limit > 0f
-                        ? $"Sequence repeats until T+{limit:0.##}s." : "Sequence repeats while time remains.";
+                    modeInfoLabel.text = "Sequence runs once through all steps.";
                 }
             }
 
@@ -261,7 +253,7 @@ namespace Jungle.Editor
                 return entry;
             }
 
-            private void BuildRows(List<TimelineEntry> entries, float totalDuration)
+            private void BuildRows(List<TimelineEntry> entries, float totalDuration, float? sequenceTimeLimit, bool hasSequenceTimeLimit)
             {
                 var fallbackWidth = entries.Count > 0 ? Mathf.Max(totalDuration / entries.Count, 1f) : 1f;
                 var fallbackStartTimes = CalculateFallbackStartTimes(entries, fallbackWidth);
@@ -277,11 +269,65 @@ namespace Jungle.Editor
                     entry.DisplayStart = start;
                     entry.DisplayDuration = duration;
 
-                    maxEnd = Mathf.Max(maxEnd, start + duration);
+                    // Calculate the actual end time for looped steps
+                    if (entry.LoopsActive && entry.BaseDuration.HasValue)
+                    {
+                        if (entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                        {
+                            // For limited loops, the end is start + (baseDuration * loopCount)
+                            maxEnd = Mathf.Max(maxEnd, start + (entry.BaseDuration.Value * entry.LoopCount));
+                        }
+                        else if (entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                        {
+                            // For infinite loops, extend to sequence time limit if available
+                            if (hasSequenceTimeLimit && sequenceTimeLimit.HasValue && sequenceTimeLimit.Value > 0f)
+                            {
+                                maxEnd = Mathf.Max(maxEnd, sequenceTimeLimit.Value);
+                            }
+                            else
+                            {
+                                // Otherwise, show at least 5 iterations or until totalDuration
+                                var estimatedEnd = start + (entry.BaseDuration.Value * 5f);
+                                maxEnd = Mathf.Max(maxEnd, Mathf.Min(estimatedEnd, totalDuration * 1.5f));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        maxEnd = Mathf.Max(maxEnd, start + duration);
+                    }
                 }
 
                 var usableDuration = Mathf.Max(Mathf.Max(totalDuration, maxEnd), 1f);
                 currentTimelineWidth = Mathf.Max(MinimumTimelineWidth, usableDuration * PixelsPerSecond);
+
+                // Create a container for the timeline area with time limit overlay
+                var timelineContainer = new VisualElement();
+                timelineContainer.style.position = Position.Relative;
+                timelineContainer.style.flexDirection = FlexDirection.Column;
+                timelineContainer.style.flexGrow = 1f;
+
+                // Add global sequence time limit indicator (rendered across all rows)
+                if (hasSequenceTimeLimit && sequenceTimeLimit.HasValue && sequenceTimeLimit.Value > 0f)
+                {
+                    var limitLine = new VisualElement();
+                    limitLine.style.position = Position.Absolute;
+                    limitLine.style.left = LabelColumnWidth + (sequenceTimeLimit.Value * PixelsPerSecond);
+                    limitLine.style.top = 0f;
+                    limitLine.style.bottom = 0f;
+                    limitLine.style.width = 2f;
+                    limitLine.style.backgroundColor = new Color(1f, 0.3f, 0.3f, 0.8f);
+                    timelineContainer.Add(limitLine);
+
+                    var limitLabel = new Label($"Sequence Limit: {sequenceTimeLimit.Value:0.##}s");
+                    limitLabel.style.position = Position.Absolute;
+                    limitLabel.style.left = LabelColumnWidth + (sequenceTimeLimit.Value * PixelsPerSecond) + 4f;
+                    limitLabel.style.top = 2f;
+                    limitLabel.style.fontSize = 10;
+                    limitLabel.style.color = new Color(1f, 0.3f, 0.3f, 0.9f);
+                    limitLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    timelineContainer.Add(limitLabel);
+                }
 
                 for (var i = 0; i < entries.Count; i++)
                 {
@@ -321,15 +367,120 @@ namespace Jungle.Editor
                     barColumn.style.borderTopRightRadius = 3f;
                     barColumn.style.overflow = Overflow.Hidden;
 
-                    var bar = CreateBar(entry, out var label);
-                    barColumn.Add(bar);
+                    // Create bars for loop iterations or single bar for non-looped steps
+                    if (entry.LoopsActive && entry.BaseDuration.HasValue && entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                    {
+                        // Create individual bars for each loop iteration on the same horizontal line
+                        var iterationStart = entry.DisplayStart;
+                        for (int loopIndex = 0; loopIndex < entry.LoopCount; loopIndex++)
+                        {
+                            var iterationEntry = CreateLoopIterationEntry(entry, loopIndex, iterationStart);
+                            var bar = CreateBar(iterationEntry, out var label);
+                            barColumn.Add(bar);
 
-                    SetupBarInteractions(bar, label, entry);
+                            if (loopIndex == 0)
+                            {
+                                SetupBarInteractions(bar, label, entry);
+                            }
+
+                            iterationStart += entry.BaseDuration.Value;
+                        }
+                    }
+                    else if (entry.LoopsActive && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                    {
+                        // For infinite loops, show iterations until time limit or end of timeline
+                        var iterationStart = entry.DisplayStart;
+                        var endPoint = usableDuration;
+
+                        // If there's a sequence time limit, use that as the end point
+                        if (hasSequenceTimeLimit && sequenceTimeLimit.HasValue && sequenceTimeLimit.Value > 0f)
+                        {
+                            endPoint = sequenceTimeLimit.Value;
+                        }
+
+                        var maxIterations = 0;
+                        if (entry.BaseDuration.HasValue && entry.BaseDuration.Value > 0f)
+                        {
+                            maxIterations = Mathf.CeilToInt((endPoint - entry.DisplayStart) / entry.BaseDuration.Value);
+                            maxIterations = Mathf.Max(1, Mathf.Min(maxIterations, 50)); // Cap at 50 iterations for performance
+                        }
+
+                        for (int loopIndex = 0; loopIndex < maxIterations; loopIndex++)
+                        {
+                            // Stop if we've reached the end point
+                            if (iterationStart >= endPoint)
+                            {
+                                break;
+                            }
+
+                            var iterationEntry = CreateLoopIterationEntry(entry, loopIndex, iterationStart);
+
+                            // Clamp the duration if it would exceed the end point
+                            if (iterationEntry.BaseDuration.HasValue && iterationStart + iterationEntry.BaseDuration.Value > endPoint)
+                            {
+                                iterationEntry.Duration = endPoint - iterationStart;
+                                iterationEntry.DisplayDuration = iterationEntry.Duration.Value;
+                            }
+
+                            var bar = CreateBar(iterationEntry, out var label);
+                            barColumn.Add(bar);
+
+                            if (loopIndex == 0)
+                            {
+                                SetupBarInteractions(bar, label, entry);
+                            }
+
+                            if (entry.BaseDuration.HasValue)
+                            {
+                                iterationStart += entry.BaseDuration.Value;
+                            }
+                            else
+                            {
+                                break; // Can't continue without knowing duration
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Single bar for non-looped steps
+                        var bar = CreateBar(entry, out var label);
+                        barColumn.Add(bar);
+                        SetupBarInteractions(bar, label, entry);
+                    }
 
                     row.Add(labelColumn);
                     row.Add(barColumn);
-                    rowsContainer.Add(row);
+                    timelineContainer.Add(row);
                 }
+
+                rowsContainer.Add(timelineContainer);
+            }
+
+            private static TimelineEntry CreateLoopIterationEntry(TimelineEntry originalEntry, int iterationIndex, float iterationStart)
+            {
+                var iterationEntry = new TimelineEntry
+                {
+                    DisplayName = originalEntry.DisplayName + $" #{iterationIndex + 1}",
+                    Blocking = originalEntry.Blocking,
+                    LoopMode = originalEntry.LoopMode,
+                    LoopsActive = originalEntry.LoopsActive,
+                    LoopCount = originalEntry.LoopCount,
+                    TimeLimited = originalEntry.TimeLimited,
+                    BaseStartTime = originalEntry.BaseStartTime,
+                    StartDelay = originalEntry.StartDelay,
+                    StartTime = iterationStart,
+                    Duration = originalEntry.BaseDuration,
+                    BaseDuration = originalEntry.BaseDuration,
+                    DisplayStart = iterationStart,
+                    DisplayDuration = originalEntry.BaseDuration ?? 0.5f,
+                    StartDelayProperty = originalEntry.StartDelayProperty,
+                    TimeLimitProperty = originalEntry.TimeLimitProperty,
+                    DurationEditable = originalEntry.DurationEditable,
+                    IsLoopIteration = true,
+                    LoopIterationIndex = iterationIndex
+                };
+
+                return iterationEntry;
             }
 
             // Fixed, deterministic fallback placement without undefined variables.
@@ -355,15 +506,21 @@ namespace Jungle.Editor
                     }
                     else
                     {
-                        // If no known start, place at current cursor (sequential feel for blocking chains)
-                        // Non-blocking items start at cursor too (parallel look), which is acceptable for a preview.
-                        var start = Mathf.Max(0f, cursor);
+                        // Add delay visualization: non-blocking items with delays start at cursor + delay
+                        var baseStart = Mathf.Max(0f, cursor);
+                        var delayOffset = e.StartDelay > 0f ? e.StartDelay : 0f;
+                        var start = baseStart + delayOffset;
                         result[i] = start;
 
                         if (e.Blocking)
                         {
                             var dur = e.Duration.HasValue ? Mathf.Max(0f, e.Duration.Value) : Mathf.Max(0.25f, fallbackWidth * 0.6f);
                             cursor = start + dur;
+                        }
+                        else if (e.StartDelay > 0f)
+                        {
+                            // For parallel steps with delays, ensure cursor accounts for the delay
+                            cursor = Mathf.Max(cursor, start);
                         }
                     }
                 }
@@ -373,13 +530,39 @@ namespace Jungle.Editor
 
             private VisualElement CreateBar(TimelineEntry entry, out Label label)
             {
+                // Determine base color from properties
                 var baseColor = entry.Blocking
-                    ? new Color(0.26f, 0.55f, 0.95f, 0.9f)
-                    : new Color(0.3f, 0.8f, 0.45f, 0.9f);
+                    ? new Color(0.26f, 0.55f, 0.95f, 0.9f)  // Blue for blocking
+                    : new Color(0.3f, 0.8f, 0.45f, 0.9f);   // Green for parallel
 
+                // Looping steps get orange tint
+                if (entry.LoopsActive)
+                {
+                    baseColor = new Color(0.95f, 0.67f, 0.25f, 0.9f);
+                }
+
+                // Loop iterations get progressive fade for infinite loops
+                if (entry.IsLoopIteration && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                {
+                    var fadeAmount = Mathf.Min(0.6f, entry.LoopIterationIndex * 0.1f);
+                    baseColor = Color.Lerp(baseColor, new Color(0.5f, 0.5f, 0.5f, 0.4f), fadeAmount);
+                }
+                else if (entry.IsLoopIteration)
+                {
+                    // Limited loop iterations get slight dimming
+                    baseColor = Color.Lerp(baseColor, new Color(0.5f, 0.5f, 0.5f, 0.9f), 0.15f);
+                }
+
+                // Unknown duration gets gray overlay
                 if (!entry.Duration.HasValue)
                 {
-                    baseColor = Color.Lerp(baseColor, new Color(0.35f, 0.35f, 0.35f, 0.9f), 0.35f);
+                    baseColor = Color.Lerp(baseColor, new Color(0.4f, 0.4f, 0.4f, 0.9f), 0.5f);
+                }
+
+                // Time-limited steps get a slight red tint
+                if (entry.TimeLimited)
+                {
+                    baseColor = Color.Lerp(baseColor, new Color(1f, 0.4f, 0.4f, 0.9f), 0.15f);
                 }
 
                 var bar = new VisualElement();
@@ -392,12 +575,19 @@ namespace Jungle.Editor
                 bar.style.borderBottomRightRadius = 3f;
                 bar.style.borderTopLeftRadius = 3f;
                 bar.style.borderTopRightRadius = 3f;
-             
+                bar.style.borderBottomWidth = 1f;
+                bar.style.borderTopWidth = 1f;
+                bar.style.borderLeftWidth = 1f;
+                bar.style.borderRightWidth = 1f;
+                bar.style.borderBottomColor = new Color(0f, 0f, 0f, 0.3f);
+                bar.style.borderTopColor = new Color(0f, 0f, 0f, 0.3f);
+                bar.style.borderLeftColor = new Color(0f, 0f, 0f, 0.3f);
+                bar.style.borderRightColor = new Color(0f, 0f, 0f, 0.3f);
                 bar.style.cursor = new StyleCursor(StyleKeyword.Auto);
 
                 UpdateBarVisual(bar, entry);
 
-                if (entry.LoopTillEnd)
+                if (entry.LoopsActive && !entry.IsLoopIteration)
                 {
                     var loopStripe = new VisualElement
                     {
@@ -407,11 +597,38 @@ namespace Jungle.Editor
                             left = 2f,
                             right = 2f,
                             top = 0f,
-                            height = 2f,
-                            backgroundColor = new Color(1f, 1f, 1f, 0.75f)
+                            height = 3f,
+                            backgroundColor = new Color(1f, 1f, 1f, 0.85f),
+                            borderBottomLeftRadius = 1f,
+                            borderBottomRightRadius = 1f
                         }
                     };
                     bar.Add(loopStripe);
+                }
+
+                // Add iteration number for loop iterations
+                if (entry.IsLoopIteration)
+                {
+                    var iterationLabel = new Label($"{entry.LoopIterationIndex + 1}");
+                    iterationLabel.style.position = Position.Absolute;
+                    iterationLabel.style.right = 3f;
+                    iterationLabel.style.top = 1f;
+                    iterationLabel.style.fontSize = 9;
+                    iterationLabel.style.color = new Color(1f, 1f, 1f, 0.8f);
+                    iterationLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    bar.Add(iterationLabel);
+                }
+                else if (entry.LoopsActive && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                {
+                    // Add infinity symbol for the first iteration of infinite loops
+                    var infinityLabel = new Label("∞");
+                    infinityLabel.style.position = Position.Absolute;
+                    infinityLabel.style.right = 4f;
+                    infinityLabel.style.top = 2f;
+                    infinityLabel.style.fontSize = 14;
+                    infinityLabel.style.color = new Color(1f, 1f, 1f, 0.9f);
+                    infinityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    bar.Add(infinityLabel);
                 }
 
                 label = new Label(BuildTimingLabel(entry.StartTime, entry.Duration, entry));
@@ -420,6 +637,12 @@ namespace Jungle.Editor
                 label.style.color = Color.white;
                 label.style.unityFontStyleAndWeight = FontStyle.Bold;
                 label.style.whiteSpace = WhiteSpace.Normal;
+                label.style.textShadow = new TextShadow
+                {
+                    offset = new Vector2(1f, 1f),
+                    blurRadius = 2f,
+                    color = new Color(0f, 0f, 0f, 0.5f)
+                };
 
                 bar.Add(label);
 
@@ -428,13 +651,39 @@ namespace Jungle.Editor
 
             private void SetupBarInteractions(VisualElement bar, Label label, TimelineEntry entry)
             {
-                if (entry.BaseStartTime.HasValue)
+                if (entry.BaseStartTime.HasValue && !entry.IsLoopIteration && entry.StartDelayProperty != null)
                 {
+                    bar.RegisterCallback<PointerEnterEvent>(_ =>
+                    {
+                        if (currentDrag == null)
+                        {
+                            bar.style.borderBottomColor = new Color(1f, 1f, 1f, 0.6f);
+                            bar.style.borderTopColor = new Color(1f, 1f, 1f, 0.6f);
+                            bar.style.borderLeftColor = new Color(1f, 1f, 1f, 0.6f);
+                            bar.style.borderRightColor = new Color(1f, 1f, 1f, 0.6f);
+                        }
+                    });
+
+                    bar.RegisterCallback<PointerLeaveEvent>(_ =>
+                    {
+                        if (currentDrag == null)
+                        {
+                            bar.style.borderBottomColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderTopColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderLeftColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderRightColor = new Color(0f, 0f, 0f, 0.3f);
+                        }
+                    });
+
                     bar.RegisterCallback<PointerDownEvent>(evt =>
                     {
                         if (evt.button != 0) return;
 
                         evt.StopPropagation();
+                        bar.style.borderBottomColor = new Color(1f, 1f, 0f, 0.9f);
+                        bar.style.borderTopColor = new Color(1f, 1f, 0f, 0.9f);
+                        bar.style.borderLeftColor = new Color(1f, 1f, 0f, 0.9f);
+                        bar.style.borderRightColor = new Color(1f, 1f, 0f, 0.9f);
                         BeginDrag(entry, DragMode.MoveStart, bar, label, evt.pointerId, evt.position, entry.StartDelay, bar);
                     });
 
@@ -462,6 +711,10 @@ namespace Jungle.Editor
                         if (shouldHandle)
                         {
                             evt.StopPropagation();
+                            bar.style.borderBottomColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderTopColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderLeftColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderRightColor = new Color(0f, 0f, 0f, 0.3f);
                             EndDrag(true);
                         }
                     });
@@ -473,6 +726,10 @@ namespace Jungle.Editor
 
                         if (shouldHandle)
                         {
+                            bar.style.borderBottomColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderTopColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderLeftColor = new Color(0f, 0f, 0f, 0.3f);
+                            bar.style.borderRightColor = new Color(0f, 0f, 0f, 0.3f);
                             EndDrag(false);
                         }
                     });
@@ -485,17 +742,36 @@ namespace Jungle.Editor
                     handle.style.right = 0f;
                     handle.style.top = 0f;
                     handle.style.bottom = 0f;
-                    handle.style.width = 6f;
-                    handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.3f);
+                    handle.style.width = 8f;
+                    handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.4f);
                     handle.style.cursor = new StyleCursor(StyleKeyword.Auto);
+                    handle.style.borderTopRightRadius = 3f;
+                    handle.style.borderBottomRightRadius = 3f;
 
                     bar.Add(handle);
+
+                    handle.RegisterCallback<PointerEnterEvent>(_ =>
+                    {
+                        if (currentDrag == null)
+                        {
+                            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.7f);
+                        }
+                    });
+
+                    handle.RegisterCallback<PointerLeaveEvent>(_ =>
+                    {
+                        if (currentDrag == null)
+                        {
+                            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.4f);
+                        }
+                    });
 
                     handle.RegisterCallback<PointerDownEvent>(evt =>
                     {
                         if (evt.button != 0) return;
 
                         evt.StopPropagation();
+                        handle.style.backgroundColor = new Color(1f, 1f, 0f, 0.9f);
                         BeginDrag(entry, DragMode.ResizeDuration, bar, label, evt.pointerId, evt.position, entry.DisplayDuration, handle);
                     });
 
@@ -523,6 +799,7 @@ namespace Jungle.Editor
                         if (shouldHandle)
                         {
                             evt.StopPropagation();
+                            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.4f);
                             EndDrag(true);
                         }
                     });
@@ -534,6 +811,7 @@ namespace Jungle.Editor
 
                         if (shouldHandle)
                         {
+                            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.4f);
                             EndDrag(false);
                         }
                     });
@@ -641,123 +919,123 @@ namespace Jungle.Editor
             {
                 var info = entry.Blocking ? "Blocking" : "Parallel";
 
-                if (entry.ModeOverride)
+                if (entry.StartDelay > 0f)
                 {
-                    info += $" • Mode {entry.Mode}";
+                    info += $" • Delay: {entry.StartDelay:0.##}s";
                 }
 
-                if (entry.ModeLoops)
+                if (entry.LoopsActive)
                 {
-                    if (entry.LoopCount > 0)
+                    switch (entry.LoopMode)
                     {
-                        info += $" • Loops x{entry.LoopCount}";
+                        case ActionSequence.StepLoopMode.Infinite:
+                            info += " • Loops: ∞";
+                            if (entry.BaseDuration.HasValue)
+                            {
+                                info += $" ({entry.BaseDuration.Value:0.##}s each)";
+                            }
+                            break;
+                        case ActionSequence.StepLoopMode.Limited:
+                            info += $" • Loops: {entry.LoopCount}x";
+                            if (entry.BaseDuration.HasValue)
+                            {
+                                info += $" ({entry.BaseDuration.Value:0.##}s each)";
+                            }
+                            break;
                     }
-                    else
-                    {
-                        info += " • Loops";
-                    }
-                }
-                else if (entry.LoopTillEnd)
-                {
-                    info += " • Loops";
                 }
 
-                if (entry.ModeOverride && entry.Mode == ActionSequence.ProcessMode.TimeLimited && entry.ModeTimeLimit > 0f)
+                if (entry.TimeLimited)
                 {
-                    info += $" • Mode limit {entry.ModeTimeLimit:0.##}s";
+                    var durationText = entry.LoopsActive && entry.Duration.HasValue ? 
+                        $"{entry.Duration.Value:0.##}s total" : 
+                        (entry.Duration.HasValue ? entry.Duration.Value.ToString("0.##") : "?") + "s";
+                    info += $" • Time limit: {durationText}";
                 }
 
-                info += entry.TimeLimited ? " • Step timed" : " • Step untimed";
                 return info;
             }
         }
 
         private static List<TimelineEntry> BuildEntries(SerializedProperty stepsProp, float sequenceStartDelay)
         {
-            var entries = new List<TimelineEntry>(stepsProp.arraySize);
+            var entries = new List<TimelineEntry>();
             var currentTime = Mathf.Max(0f, sequenceStartDelay);
             var timeKnown = true;
-            var modeProp = stepsProp.serializedObject.FindProperty("Mode");
-            var sequenceMode = modeProp != null
-                ? (ActionSequence.ProcessMode)modeProp.enumValueIndex
-                : ActionSequence.ProcessMode.Once;
 
             for (var i = 0; i < stepsProp.arraySize; i++)
             {
                 var stepProp = stepsProp.GetArrayElementAtIndex(i);
                 var blocking = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.blocking)).boolValue;
-                var loopTillEnd = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopTillEnd)).boolValue;
-                var overrideModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.overrideSequenceMode));
-                var stepModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.mode));
+                var loopModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopMode));
                 var loopCountProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopCount));
                 var timeLimitedProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimited));
                 var timeLimited = timeLimitedProp.boolValue;
                 var timeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit));
                 var startDelayProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.startDelay));
-                var modeTimeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.modeTimeLimit));
                 var actionProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.Action));
 
                 var startDelay = Mathf.Max(0f, startDelayProp.floatValue);
+                var loopMode = (ActionSequence.StepLoopMode)loopModeProp.enumValueIndex;
+                var loopsActive = loopMode != ActionSequence.StepLoopMode.Once;
+                var loopCount = Mathf.Max(1, loopCountProp.intValue);
+                
+
+                // Create a temporary step instance to use GetDuration method
+                var tempStep = new ActionSequence.Step();
+                tempStep.Action = actionProp.managedReferenceValue as ProcessAction;
+                tempStep.timeLimited = timeLimited;
+                tempStep.timeLimit = timeLimitProp.floatValue;
+
+                float? baseDuration = tempStep.GetDuration();
+
+                // Apply fallback logic if GetDuration returns null
+                if (!baseDuration.HasValue)
+                {
+                    if (tempStep.Action == null)
+                    {
+                        baseDuration = 0.5f; // Default fallback for unassigned actions
+                    }
+                    else
+                    {
+                        baseDuration = 1f; // Fallback for actions without known duration
+                    }
+                }
+
+                // Calculate total duration for looped steps
+                float? totalDuration = baseDuration;
+                if (loopsActive && baseDuration.HasValue)
+                {
+                    if (loopMode == ActionSequence.StepLoopMode.Limited)
+                    {
+                        totalDuration = baseDuration.Value * loopCount;
+                    }
+                    // For infinite loops, keep the single iteration duration for display
+                }
+
                 float? baseStartTime = timeKnown ? currentTime : (float?)null;
                 float? startTime = baseStartTime.HasValue ? baseStartTime.Value + startDelay : (float?)null;
 
-                float? duration = null;
-                if (timeLimited)
-                {
-                    var limitValue = timeLimitProp.floatValue;
-                    if (limitValue > 0f)
-                    {
-                        duration = limitValue;
-                    }
-                }
-
-                var overrideMode = overrideModeProp.boolValue;
-                var stepMode = overrideMode
-                    ? (ActionSequence.ProcessMode)stepModeProp.enumValueIndex
-                    : sequenceMode;
-                var loopsActive = false;
-                var loopCount = Mathf.Max(0, loopCountProp.intValue);
-                var modeTimeLimit = 0f;
-
-                if (overrideMode)
-                {
-                    switch (stepMode)
-                    {
-                        case ActionSequence.ProcessMode.Loop:
-                            loopsActive = true;
-                            break;
-                        case ActionSequence.ProcessMode.TimeLimited:
-                            modeTimeLimit = Mathf.Max(0f, modeTimeLimitProp.floatValue);
-                            loopsActive = modeTimeLimit > 0f;
-                            break;
-                    }
-                }
-                else if (loopTillEnd)
-                {
-                    if (stepMode == ActionSequence.ProcessMode.Loop || stepMode == ActionSequence.ProcessMode.TimeLimited)
-                    {
-                        loopsActive = true;
-                    }
-                }
+                var displayName = BuildStepDisplayName(actionProp, i);
 
                 entries.Add(new TimelineEntry
                 {
-                    DisplayName = BuildStepDisplayName(actionProp, i),
+                    DisplayName = displayName,
                     Blocking = blocking,
-                    LoopTillEnd = loopTillEnd,
-                    ModeOverride = overrideMode,
-                    Mode = stepMode,
-                    ModeLoops = loopsActive,
-                    LoopCount = loopsActive ? loopCount : 0,
-                    ModeTimeLimit = modeTimeLimit,
+                    LoopMode = loopMode,
+                    LoopsActive = loopsActive,
+                    LoopCount = loopCount,
                     TimeLimited = timeLimited,
                     BaseStartTime = baseStartTime,
                     StartDelay = startDelay,
                     StartTime = startTime,
-                    Duration = duration,
+                    Duration = totalDuration,
+                    BaseDuration = baseDuration, // Store the single iteration duration
                     StartDelayProperty = startDelayProp,
                     TimeLimitProperty = timeLimitProp,
-                    DurationEditable = timeLimited
+                    DurationEditable = timeLimited,
+                    IsLoopIteration = false,
+                    LoopIterationIndex = 0
                 });
 
                 if (timeKnown && baseStartTime.HasValue)
@@ -765,9 +1043,9 @@ namespace Jungle.Editor
                     if (blocking)
                     {
                         currentTime = baseStartTime.Value + startDelay;
-                        if (duration.HasValue)
+                        if (totalDuration.HasValue)
                         {
-                            currentTime += duration.Value;
+                            currentTime += totalDuration.Value;
                         }
                         else
                         {
@@ -780,23 +1058,26 @@ namespace Jungle.Editor
             return entries;
         }
 
-        private static float DetermineTimelineDuration(List<TimelineEntry> entries, SerializedProperty modeProp, SerializedProperty sequenceTimeLimitProp)
+        private static float DetermineTimelineDuration(List<TimelineEntry> entries, SerializedProperty hasSequenceTimeLimitProp, SerializedProperty sequenceTimeLimitProp)
         {
             var max = 0f;
 
             foreach (var entry in entries)
             {
-                if (entry.StartTime.HasValue)
+                // Calculate the end time for this entry
+                if (entry.StartTime.HasValue && entry.Duration.HasValue)
                 {
+                    var endTime = entry.StartTime.Value + entry.Duration.Value;
+                    max = Mathf.Max(max, endTime);
+                }
+                else if (entry.StartTime.HasValue)
+                {
+                    // If no duration is known, at least account for the start time
                     max = Mathf.Max(max, entry.StartTime.Value);
-                    if (entry.Duration.HasValue)
-                    {
-                        max = Mathf.Max(max, entry.StartTime.Value + entry.Duration.Value);
-                    }
                 }
             }
 
-            if ((ActionSequence.ProcessMode)modeProp.enumValueIndex == ActionSequence.ProcessMode.TimeLimited)
+            if (hasSequenceTimeLimitProp.boolValue)
             {
                 var sequenceLimit = sequenceTimeLimitProp.floatValue;
                 if (sequenceLimit > 0f)
@@ -845,9 +1126,29 @@ namespace Jungle.Editor
             string durationLabel;
             if (duration.HasValue)
             {
-                durationLabel = duration.Value > 0f
-                    ? $"Runs {duration.Value:0.##}s"
-                    : "Runs 0s";
+                if (entry.IsLoopIteration)
+                {
+                    durationLabel = $"Iter {entry.LoopIterationIndex + 1}\n{duration.Value:0.##}s";
+                }
+                else if (entry.LoopsActive && entry.BaseDuration.HasValue && !entry.IsLoopIteration)
+                {
+                    if (entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                    {
+                        durationLabel = $"∞ × {entry.BaseDuration.Value:0.##}s";
+                    }
+                    else if (entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                    {
+                        durationLabel = $"{entry.LoopCount}× {entry.BaseDuration.Value:0.##}s = {duration.Value:0.##}s";
+                    }
+                    else
+                    {
+                        durationLabel = duration.Value > 0f ? $"Runs {duration.Value:0.##}s" : "Runs 0s";
+                    }
+                }
+                else
+                {
+                    durationLabel = duration.Value > 0f ? $"Runs {duration.Value:0.##}s" : "Runs 0s";
+                }
             }
             else if (entry.Blocking)
             {
@@ -858,29 +1159,29 @@ namespace Jungle.Editor
                 durationLabel = "Runs alongside";
             }
 
-            return $"{startLabel}\n{durationLabel}";
+            return entry.IsLoopIteration ? durationLabel : $"{startLabel}\n{durationLabel}";
         }
 
         private sealed class TimelineEntry
         {
             public string DisplayName = string.Empty;
             public bool Blocking;
-            public bool LoopTillEnd;
-            public bool ModeOverride;
-            public ActionSequence.ProcessMode Mode;
-            public bool ModeLoops;
+            public ActionSequence.StepLoopMode LoopMode;
+            public bool LoopsActive;
             public int LoopCount;
-            public float ModeTimeLimit;
             public bool TimeLimited;
             public float? BaseStartTime;
             public float StartDelay;
             public float? StartTime;
             public float? Duration;
+            public float? BaseDuration; // Single iteration duration for looped steps
             public float DisplayStart;
             public float DisplayDuration;
             public bool DurationEditable;
             public SerializedProperty StartDelayProperty;
             public SerializedProperty TimeLimitProperty;
+            public bool IsLoopIteration;
+            public int LoopIterationIndex;
         }
     }
 }

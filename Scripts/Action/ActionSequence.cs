@@ -8,11 +8,10 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Event-driven sequence of child ProcessActions.
+    /// Event-driven sequence of child ProcessActions that runs once through all steps.
     /// - Progression listens to child ProcessCompleted/ProcessFailed (no polling).
     /// - Coroutine only services time limits (sequence & per-step).
-    /// - In Loop mode: restarts when all steps finish.
-    /// - In TimeLimited mode: restarts when all steps finish while time remains; completes/cancels only when time expires.
+    /// - Optional sequence time limit can be set to constrain the entire sequence duration.
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
     /// </summary>
     [Serializable]
@@ -21,62 +20,50 @@ namespace Jungle.Actions
         [SerializeField]
         public List<Step> Steps = new List<Step>();
 
-        public enum ProcessMode
-        {
-            TimeLimited, // Repeats the whole sequence until SequenceTimeLimit elapses.
-            Loop,        // Repeats the whole sequence indefinitely until externally completed/canceled.
-            Once         // Runs once through all steps.
-        }
-
         [Header("Sequence Settings")]
-        public ProcessMode Mode = ProcessMode.Once;
+        [Tooltip("Enable to set a time limit for the entire sequence.")]
+        public bool hasSequenceTimeLimit = false;
 
-        [Tooltip("Delay in seconds before the first step starts running when the sequence begins.")]
-        public float StartDelay = 0f;
-
-        [Tooltip("Only used when Mode == TimeLimited.")]
+        [Tooltip("Time limit for the entire sequence in seconds.")]
         public float SequenceTimeLimit = 0f;
-
-        [Tooltip("When the sequence time expires (Mode == TimeLimited), mark the sequence as complete instead of canceled.")]
-        public bool FinishOnSequenceTimeLimit = true;
 
         /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
         public override bool IsTimed =>
-            (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f) ||
-            (Steps != null && Steps.Exists(s =>
-                (s.timeLimited && s.timeLimit > 0f) ||
-                (s.overrideSequenceMode && s.mode == ProcessMode.TimeLimited && s.modeTimeLimit > 0f)));
+            (hasSequenceTimeLimit && SequenceTimeLimit > 0f) ||
+            (Steps != null && Steps.Exists(s => s.timeLimited && s.timeLimit > 0f));
 
         public override float Duration
         {
             get
             {
-                if (Mode == ProcessMode.TimeLimited)
+                // If sequence has a time limit, return the shorter of sequence time limit or total step duration
+                float totalDuration = 0f;
+                if (Steps != null && Steps.Count > 0)
                 {
-                    return SequenceTimeLimit;
-                }
-
-                if (Mode == ProcessMode.Loop)
-                {
-                    return 0f; // Infinite loop has no specific duration
-                }
-
-                // Mode == Once: calculate total duration of all steps
-                float totalDuration = StartDelay;
-                if (Steps == null || Steps.Count == 0)
-                    return totalDuration;
-
-                foreach (var step in Steps)
-                {
-                    totalDuration += step.startDelay;
-                    if (step.Action != null && step.Action.IsTimed)
+                    foreach (var step in Steps)
                     {
-                        totalDuration += step.Action.Duration;
+                        totalDuration += step.startDelay;
+                        if (step.Action != null && step.Action.IsTimed)
+                        {
+                            totalDuration += step.Action.Duration;
+                        }
                     }
+                }
+
+                if (hasSequenceTimeLimit && SequenceTimeLimit > 0f)
+                {
+                    return totalDuration > 0f ? Mathf.Min(totalDuration, SequenceTimeLimit) : SequenceTimeLimit;
                 }
 
                 return totalDuration;
             }
+        }
+
+        public enum StepLoopMode
+        {
+            Once,    // Execute only once
+            Infinite,    // Infinite indefinitely
+            Limited  // Infinite a specific number of times
         }
 
         [Serializable]
@@ -85,19 +72,13 @@ namespace Jungle.Actions
             [JungleClassSelection] [SerializeReference]
             public ProcessAction Action;
 
-            [Header("Mode Override")]
-            [Tooltip("If true, this step can override the sequence mode.")]
-            public bool overrideSequenceMode;
+            [Header("Infinite Settings")]
+            [Tooltip("Controls how this step loops: Once (no loop), Infinite (infinite), or Limited (specific number of loops).")]
+            public StepLoopMode loopMode = StepLoopMode.Once;
 
-            [Tooltip("Mode that will be used when overrideSequenceMode is true.")]
-            public ProcessMode mode = ProcessMode.Once;
-
-            [Tooltip("If true, when the action completes it restarts until the entire sequence ends.")]
-            public bool loopTillEnd;
-
-            [Tooltip("When looping, limits how many times this step can run. Zero or negative means unlimited loops.")]
-            [Min(0)]
-            public int loopCount = 0;
+            [Tooltip("Number of times to execute this step when loopMode is Limited.")]
+            [Min(1)]
+            public int loopCount = 1;
 
             [Tooltip("If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
             public bool blocking = true;
@@ -105,13 +86,6 @@ namespace Jungle.Actions
             [Header("Step Start Delay")]
             [Tooltip("Delay in seconds before this step begins after it becomes eligible.")]
             public float startDelay = 0f;
-
-            [Header("Mode Time Limit")]
-            [Tooltip("Only used when overriding the mode to TimeLimited. Total seconds this step is allowed to run across all loops.")]
-            public float modeTimeLimit = 0f;
-
-            [Tooltip("Only used when overriding the mode to TimeLimited. If true the step is forced complete when the mode time expires; otherwise it is canceled.")]
-            public bool finishOnModeTimeLimit = true;
 
             [Header("Step Time Limit")]
             public bool timeLimited;
@@ -135,12 +109,40 @@ namespace Jungle.Actions
 
             [NonSerialized] internal int loopsCompleted;
 
-            [NonSerialized] internal bool ModeTimeActive;
-            [NonSerialized] internal float ModeTimeLeft;
-
             // Event handlers to detach safely
             [NonSerialized] internal Action completedHandler;
             [NonSerialized] internal Action failedHandler;
+
+            /// <summary>
+            /// Gets the duration of this step based on time limit or action duration.
+            /// Returns the shorter of the two if both are available.
+            /// Returns null if no duration can be determined.
+            /// </summary>
+            public float? GetDuration()
+            {
+                float? actionDuration = null;
+                float? stepTimeLimit = null;
+
+                // Get action duration if available
+                if (Action != null && Action.IsTimed && Action.Duration > 0f)
+                {
+                    actionDuration = Action.Duration;
+                }
+
+                // Get time limit if set
+                if (timeLimited && timeLimit > 0f)
+                {
+                    stepTimeLimit = timeLimit;
+                }
+
+                // Return the shorter of the two, or whichever is available
+                if (actionDuration.HasValue && stepTimeLimit.HasValue)
+                {
+                    return Mathf.Min(actionDuration.Value, stepTimeLimit.Value);
+                }
+
+                return actionDuration ?? stepTimeLimit;
+            }
         }
 
         // Runtime state
@@ -165,9 +167,9 @@ namespace Jungle.Actions
 
             InitializeStepRuntime();
 
-            sequenceTimeLeft = (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f)
+            sequenceTimeLeft = (hasSequenceTimeLimit && SequenceTimeLimit > 0f)
                 ? SequenceTimeLimit
-                : (Mode == ProcessMode.Loop ? float.PositiveInfinity : float.PositiveInfinity);
+                : float.PositiveInfinity;
 
             StartNextEligibleSteps();
 
@@ -246,14 +248,13 @@ namespace Jungle.Actions
         {
             if (!running) return;
 
-            // Sequence time limiting
-            if (Mode == ProcessMode.TimeLimited && SequenceTimeLimit > 0f)
+            // Sequence time limiting (if enabled)
+            if (hasSequenceTimeLimit && SequenceTimeLimit > 0f)
             {
                 sequenceTimeLeft -= deltaTime;
                 if (sequenceTimeLeft <= 0f)
                 {
-                    if (FinishOnSequenceTimeLimit) Complete();
-                    else Cancel();
+                    Complete();
                     return;
                 }
             }
@@ -280,45 +281,12 @@ namespace Jungle.Actions
                 {
                     // Cancel-on-timeout behavior:
                     SafeCancel(step.Action);
-
-                    if (step.loopTillEnd)
-                    {
-                        RestartStep(step);
-                    }
-                    else
-                    {
-                        HandleStepTerminal(step);
-                    }
+                    HandleStepTerminal(step);
                 }
 
                 // Reset the per-step timer so we don't keep firing every frame.
                 // If we want "single-shot" timeout per run, set to +inf; otherwise re-arm.
                 step.TimeLeft = float.PositiveInfinity;
-            }
-
-            for (int i = 0; i < Steps.Count; i++)
-            {
-                var step = Steps[i];
-                if (!step.overrideSequenceMode || step.mode != ProcessMode.TimeLimited)
-                    continue;
-
-                if (!step.ModeTimeActive || step.modeTimeLimit <= 0f)
-                    continue;
-
-                step.ModeTimeLeft -= deltaTime;
-                if (step.ModeTimeLeft > 0f)
-                    continue;
-
-                step.ModeTimeLeft = 0f;
-                step.ModeTimeActive = false;
-
-                if (step.Action == null)
-                    continue;
-
-                if (step.finishOnModeTimeLimit)
-                    SafeForceComplete(step.Action);
-                else
-                    SafeCancel(step.Action);
             }
         }
 
@@ -415,14 +383,6 @@ namespace Jungle.Actions
             s.suppressLoopOnce = false; // new run ⇒ clear suppression
             s.WaitingForStartDelay = false;
             s.StartDelayRemaining = 0f;
-            if (s.overrideSequenceMode && s.mode == ProcessMode.TimeLimited)
-            {
-                s.ModeTimeActive = s.modeTimeLimit > 0f && s.ModeTimeLeft > 0f;
-            }
-            else
-            {
-                s.ModeTimeActive = false;
-            }
 
             AttachStepListeners(s);      // attach before Begin to catch instant-complete
             SafeBegin(s.Action);
@@ -438,7 +398,6 @@ namespace Jungle.Actions
             SafeCancel(s.Action);
             parallelRunning.Remove(s);
             s.Started = false;
-            s.ModeTimeActive = false;
 
             StartStep(s);
         }
@@ -447,7 +406,6 @@ namespace Jungle.Actions
         {
             DetachStepListeners(s);
             parallelRunning.Remove(s);
-            s.ModeTimeActive = false;
 
             if (s.blocking)
             {
@@ -462,39 +420,14 @@ namespace Jungle.Actions
         }
 
         /// <summary>
-        /// Decide whether to restart the whole sequence or complete it,
-        /// based on mode and remaining time.
+        /// Complete the sequence when all steps are finished.
         /// </summary>
         private void MaybeRestartOrComplete()
         {
             if (currentIndex < Steps.Count || parallelRunning.Count > 0)
                 return; // still running steps
 
-            // All steps finished
-            if (Mode == ProcessMode.Loop)
-            {
-                ResetAllForRepeat();
-                StartNextEligibleSteps();
-                return;
-            }
-
-            if (Mode == ProcessMode.TimeLimited)
-            {
-                // If time remains, immediately start the sequence again.
-                if (sequenceTimeLeft > 0f)
-                {
-                    ResetAllForRepeat();
-                    StartNextEligibleSteps();
-                    return;
-                }
-
-                // No time left – end handled by ServiceTimeLimits, but be safe:
-                if (FinishOnSequenceTimeLimit) Complete();
-                else Cancel();
-                return;
-            }
-
-            // Once
+            // All steps finished - sequence runs only once
             Complete();
         }
 
@@ -528,7 +461,6 @@ namespace Jungle.Actions
                 if (!running) return;
 
                 // Treat failure as terminal for progression.
-                s.ModeTimeActive = false;
                 HandleStepTerminal(s);
             };
 
@@ -565,13 +497,8 @@ namespace Jungle.Actions
             parallelRunning.Clear();
             currentIndex = 0;
 
-            if (Steps.Count > 0)
-            {
-                Steps[0].StartDelayRemaining += Mathf.Max(0f, StartDelay);
-            }
-
             // sequenceTimeLeft is preserved in TimeLimited mode (counting down in coroutine)
-            // and left as +inf in Loop mode.
+            // and left as +inf in Infinite mode.
         }
 
         private void InitializeStepRuntime()
@@ -580,19 +507,9 @@ namespace Jungle.Actions
             {
                 ResetStepRuntimeState(Steps[i], true);
             }
-
-            if (Steps.Count > 0)
-            {
-                Steps[0].StartDelayRemaining += Mathf.Max(0f, StartDelay);
-            }
         }
 
-        private ProcessMode GetEffectiveMode(Step step)
-        {
-            return step.overrideSequenceMode ? step.mode : Mode;
-        }
-
-        private void ResetStepRuntimeState(Step step, bool resetModeState)
+        private void ResetStepRuntimeState(Step step, bool resetLoopCount)
         {
             step.Started = false;
             step.suppressLoopOnce = false;
@@ -600,21 +517,10 @@ namespace Jungle.Actions
             step.StartDelayRemaining = Mathf.Max(0f, step.startDelay);
             step.TimeLeft = (step.timeLimited && step.timeLimit > 0f) ? step.timeLimit : float.PositiveInfinity;
 
-            if (resetModeState)
+            if (resetLoopCount)
             {
                 step.loopsCompleted = 0;
-                var effectiveMode = GetEffectiveMode(step);
-                if (step.overrideSequenceMode && effectiveMode == ProcessMode.TimeLimited)
-                {
-                    step.ModeTimeLeft = Mathf.Max(0f, step.modeTimeLimit);
-                }
-                else
-                {
-                    step.ModeTimeLeft = 0f;
-                }
             }
-
-            step.ModeTimeActive = false;
         }
 
         private bool ShouldRestartStep(Step step)
@@ -625,49 +531,21 @@ namespace Jungle.Actions
                 return false;
             }
 
-            var effectiveMode = GetEffectiveMode(step);
-            var loopsAllowed = false;
-
-            if (step.overrideSequenceMode)
+            switch (step.loopMode)
             {
-                switch (effectiveMode)
-                {
-                    case ProcessMode.Loop:
-                        loopsAllowed = true;
-                        break;
-                    case ProcessMode.TimeLimited:
-                        loopsAllowed = step.modeTimeLimit > 0f && step.ModeTimeLeft > 0f;
-                        break;
-                }
-            }
-            else
-            {
-                if (!step.loopTillEnd)
-                {
+                case StepLoopMode.Once:
                     return false;
-                }
 
-                if (effectiveMode == ProcessMode.Loop || effectiveMode == ProcessMode.TimeLimited)
-                {
-                    loopsAllowed = true;
-                }
-            }
+                case StepLoopMode.Infinite:
+                    return true;
 
-            if (!loopsAllowed)
-            {
-                return false;
-            }
+                case StepLoopMode.Limited:
+                    step.loopsCompleted++;
+                    return step.loopsCompleted < step.loopCount;
 
-            if (step.loopCount > 0)
-            {
-                step.loopsCompleted++;
-                if (step.loopsCompleted >= step.loopCount)
-                {
+                default:
                     return false;
-                }
             }
-
-            return true;
         }
 
         // --- safe wrappers (adapt if your ProcessAction API differs) ---

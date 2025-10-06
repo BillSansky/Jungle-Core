@@ -3,6 +3,8 @@ using System;
 using Jungle.Actions;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Jungle.Editor
@@ -20,43 +22,48 @@ namespace Jungle.Editor
             root.Add(foldout);
 
             var actionProperty = RequireRelativeProperty(property, "Action");
-            var overrideModeProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.overrideSequenceMode));
-            var stepModeProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.mode));
-            var loopProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.loopTillEnd));
+            var loopModeProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.loopMode));
             var loopCountProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.loopCount));
             var blockingProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.blocking));
             var startDelayProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.startDelay));
             var timeLimitedProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.timeLimited));
             var finishOnTimeoutProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.finishExecutionOnEndTime));
             var timeLimitProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.timeLimit));
-            var modeTimeLimitProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.modeTimeLimit));
-            var finishOnModeLimitProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.finishOnModeTimeLimit));
-
-            var modeProp = property.serializedObject.FindProperty("Mode");
 
             var actionField = new PropertyField(actionProperty);
             actionField.BindProperty(actionProperty);
             actionField.RegisterValueChangeCallback(_ => foldout.text = BuildFoldoutLabel(property));
             foldout.Add(actionField);
 
-            var overrideModeField = new PropertyField(overrideModeProperty);
-            overrideModeField.BindProperty(overrideModeProperty);
-            foldout.Add(overrideModeField);
-
-            var stepModeField = new PropertyField(stepModeProperty);
-            stepModeField.BindProperty(stepModeProperty);
-            foldout.Add(stepModeField);
-
-            var loopContainer = new VisualElement();
-            var loopField = new PropertyField(loopProperty);
-            loopField.BindProperty(loopProperty);
-            loopContainer.Add(loopField);
-            foldout.Add(loopContainer);
+            // Add loop count display
+            var loopInfoLabel = new Label();
+            loopInfoLabel.style.fontSize = 11;
+            loopInfoLabel.style.color = new StyleColor(new Color(0.7f, 0.7f, 0.7f));
+            loopInfoLabel.style.marginTop = 2;
+            loopInfoLabel.style.marginBottom = 4;
+            foldout.Add(loopInfoLabel);
 
             var loopCountContainer = new VisualElement();
+
+            var loopModeField = new PropertyField(loopModeProperty);
+            loopModeField.BindProperty(loopModeProperty);
+            // Update UI and foldout label immediately when loop mode changes
+            loopModeField.RegisterValueChangeCallback(_ =>
+            {
+                UpdateLoopModeUI();
+                foldout.text = BuildFoldoutLabel(property);
+            });
+            foldout.Add(loopModeField);
+
             loopCountContainer.style.marginLeft = 16f;
             var loopCountField = new PropertyField(loopCountProperty);
             loopCountField.BindProperty(loopCountProperty);
+            // Update foldout label when loop count changes
+            loopCountField.RegisterValueChangeCallback(_ => 
+            {
+                UpdateLoopInfoLabel();
+                foldout.text = BuildFoldoutLabel(property);
+            });
             loopCountContainer.Add(loopCountField);
             foldout.Add(loopCountContainer);
 
@@ -85,60 +92,53 @@ namespace Jungle.Editor
 
             foldout.Add(timeOptionsContainer);
 
-            var modeTimeLimitContainer = new VisualElement();
-            modeTimeLimitContainer.style.marginLeft = 16f;
-
-            var modeTimeLimitField = new PropertyField(modeTimeLimitProperty);
-            modeTimeLimitField.BindProperty(modeTimeLimitProperty);
-            modeTimeLimitContainer.Add(modeTimeLimitField);
-
-            var finishOnModeLimitField = new PropertyField(finishOnModeLimitProperty);
-            finishOnModeLimitField.BindProperty(finishOnModeLimitProperty);
-            modeTimeLimitContainer.Add(finishOnModeLimitField);
-
-            foldout.Add(modeTimeLimitContainer);
-
             void UpdateTimeLimitedVisibility()
             {
                 SetElementDisplay(timeOptionsContainer, timeLimitedProperty.boolValue);
             }
 
-            void UpdateModeUI()
+            void UpdateLoopModeUI()
             {
-                var overrideMode = overrideModeProperty.boolValue;
-                var stepMode = (ActionSequence.ProcessMode)stepModeProperty.enumValueIndex;
-                var sequenceMode = modeProp != null
-                    ? (ActionSequence.ProcessMode)modeProp.enumValueIndex
-                    : ActionSequence.ProcessMode.Once;
-
-                var effectiveMode = overrideMode ? stepMode : sequenceMode;
-
-                stepModeField.SetEnabled(overrideMode);
-
-                var loopsRelevant = effectiveMode != ActionSequence.ProcessMode.Once;
-                SetElementDisplay(loopContainer, !overrideMode && loopsRelevant);
-
-                var showLoopCount = loopsRelevant;
+                var loopMode = (ActionSequence.StepLoopMode)loopModeProperty.enumValueIndex;
+                var showLoopCount = loopMode == ActionSequence.StepLoopMode.Limited;
                 SetElementDisplay(loopCountContainer, showLoopCount);
-                loopCountField.SetEnabled(loopsRelevant && (overrideMode || loopProperty.boolValue));
+                UpdateLoopInfoLabel();
+            }
 
-                var showModeTimeLimit = overrideMode && stepMode == ActionSequence.ProcessMode.TimeLimited;
-                SetElementDisplay(modeTimeLimitContainer, showModeTimeLimit);
+            void UpdateLoopInfoLabel()
+            {
+                var loopMode = (ActionSequence.StepLoopMode)loopModeProperty.enumValueIndex;
+                switch (loopMode)
+                {
+                    case ActionSequence.StepLoopMode.Once:
+                        loopInfoLabel.text = "Executes once";
+                        break;
+                    case ActionSequence.StepLoopMode.Infinite:
+                        loopInfoLabel.text = "Loops infinitely (∞)";
+                        break;
+                    case ActionSequence.StepLoopMode.Limited:
+                        var loopCount = Mathf.Max(1, loopCountProperty.intValue);
+                        loopInfoLabel.text = $"Loops {loopCount} times";
+                        break;
+                }
             }
 
             UpdateTimeLimitedVisibility();
-            UpdateModeUI();
+            UpdateLoopModeUI();
 
             root.TrackPropertyValue(timeLimitedProperty, _ => UpdateTimeLimitedVisibility());
             root.TrackPropertyValue(actionProperty, _ => foldout.text = BuildFoldoutLabel(property));
-            root.TrackPropertyValue(overrideModeProperty, _ => UpdateModeUI());
-            root.TrackPropertyValue(stepModeProperty, _ => UpdateModeUI());
-            root.TrackPropertyValue(loopProperty, _ => UpdateModeUI());
-
-            if (modeProp != null)
+            // Refresh foldout text when loop mode or loop count change so loop info is always visible
+            root.TrackPropertyValue(loopModeProperty, _ =>
             {
-                root.TrackPropertyValue(modeProp, _ => UpdateModeUI());
-            }
+                UpdateLoopModeUI();
+                foldout.text = BuildFoldoutLabel(property);
+            });
+            root.TrackPropertyValue(loopCountProperty, _ => 
+            {
+                UpdateLoopInfoLabel();
+                foldout.text = BuildFoldoutLabel(property);
+            });
 
             return root;
         }
@@ -163,7 +163,25 @@ namespace Jungle.Editor
                 displayName = type.Name;
             }
 
-            return $"Step: {displayName}";
+            // Add loop information (if applicable) to the foldout label
+            var loopInfo = string.Empty;
+            var loopModeProp = property.FindPropertyRelative(nameof(ActionSequence.Step.loopMode));
+            var loopCountProp = property.FindPropertyRelative(nameof(ActionSequence.Step.loopCount));
+            if (loopModeProp != null)
+            {
+                var loopMode = (ActionSequence.StepLoopMode)loopModeProp.enumValueIndex;
+                if (loopMode == ActionSequence.StepLoopMode.Infinite)
+                {
+                    loopInfo = " (Loops ∞)";
+                }
+                else if (loopMode == ActionSequence.StepLoopMode.Limited && loopCountProp != null)
+                {
+                    var loopCount = Mathf.Max(1, loopCountProp.intValue);
+                    loopInfo = $" (Loops {loopCount}x)";
+                }
+            }
+
+            return $"Step: {displayName}{loopInfo}";
         }
 
         private static Type ResolveManagedReferenceType(SerializedProperty property)

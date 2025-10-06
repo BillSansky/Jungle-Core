@@ -38,64 +38,81 @@ namespace Jungle.Editor
 
         public TypeSelectableField()
         {
-           // AddToClassList("jungle-editor");
-            
-            var input1 = new VisualElement();
-            Add(input1);
+            // Load Unity-style stylesheet
+            // The stylesheet should be placed in a Resources folder, e.g., "Assets/Plugins/Jungle Core/Editor/Resources/TypeSelectableFieldStyle.uss"
+            var styleSheet = Resources.Load<StyleSheet>("TypeSelectableFieldStyle");
+            if (styleSheet != null)
+                styleSheets.Add(styleSheet);
 
-            var row1 = new VisualElement();
-            row1.AddToClassList("jungle-section");
-            row1.AddToClassList("jungle-inline-wrapper");
+            AddToClassList("tsf-root");
 
+            var rootContainer = new VisualElement();
+            Add(rootContainer);
+
+            var row = new VisualElement();
+            row.AddToClassList("tsf-row");
+            row.name = "tsf-row";
+
+            // Foldout toggle (arrow)
             expandToggle = new Toggle { value = false, text = "", focusable = false, tooltip = "Show details" };
             expandToggle.AddToClassList("tsf__toggle");
             expandToggle.AddToClassList("unity-foldout__toggle");
-            row1.Add(expandToggle); // first in row
+            row.Add(expandToggle);
 
-            // Label next to the toggle
+            // Property label
             label = new Label();
-            label.AddToClassList("unity-base-field__label");
-            row1.Add(label);
+            label.AddToClassList("tsf__label");
+            label.AddToClassList("unity-property-field__label");
+            row.Add(label);
 
-            // Right content host (summary)
+            // Content area (ObjectField or type summary)
             content = new VisualElement { name = "tsf-content" };
-            content.AddToClassList("jungle-inline-content");
-            row1.Add(content);
+            content.AddToClassList("tsf__content");
+            row.Add(content);
 
-            // Buttons on the far right (keep your class)
-            var btns1 = new VisualElement();
-            btns1.AddToClassList("jungle-inline-button-group");
-            row1.Add(btns1);
+            // Button group (pick/swap and clear)
+            var buttonGroup = new VisualElement();
+            buttonGroup.AddToClassList("tsf__button-group");
+            row.Add(buttonGroup);
 
             btnPickOrSwap = new Button(OnPickOrSwapClicked) { text = "+" };
             btnPickOrSwap.tooltip = "Pick or change the type";
-            btnPickOrSwap.AddToClassList("jungle-button");
-            btns1.Add(btnPickOrSwap);
+            btnPickOrSwap.AddToClassList("tsf__button");
+            buttonGroup.Add(btnPickOrSwap);
 
             btnClear = new Button(OnClearClicked) { text = "✕" };
             btnClear.tooltip = "Clear";
-            btnClear.style.fontSize = 10;
-            btnClear.AddToClassList("jungle-button");
-            btns1.Add(btnClear);
+            btnClear.AddToClassList("tsf__button");
+            buttonGroup.Add(btnClear);
 
-            input1.Add(row1);
-            
+            rootContainer.Add(row);
+
+            // Foldout details container
             underRowHost = new VisualElement();
-            underRowHost.AddToClassList("jungle-foldout-group");
-            input1.Add(underRowHost);
+            underRowHost.AddToClassList("tsf__details");
+            underRowHost.name = "tsf-details";
+            rootContainer.Add(underRowHost);
 
-
-            row1.RegisterCallback<ClickEvent>(evt =>
+            // Row click handler for toggling foldout
+            row.RegisterCallback<ClickEvent>(evt =>
             {
-                if (!allowRowToggle) return; // <-- ignore clicks in object mode or when empty
+                if (!allowRowToggle) return;
 
-                if (evt.target is VisualElement ve && (btns1.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
+                if (evt.target is VisualElement ve && (buttonGroup.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
                     return;
 
                 expandToggle.value = !expandToggle.value;
                 evt.StopPropagation();
             });
 
+            // Update row class based on clickability
+            schedule.Execute(() =>
+            {
+                if (allowRowToggle)
+                    row.AddToClassList("tsf-row--clickable");
+                else
+                    row.RemoveFromClassList("tsf-row--clickable");
+            }).Every(100);
 
             btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
@@ -353,7 +370,9 @@ namespace Jungle.Editor
             // If values differ across multi-object selection: show mixed and hide foldout
             if (prop.hasMultipleDifferentValues)
             {
-                content.Add(new Label("—") { name = "mixed" });
+                var mixedLabel = new Label("—");
+                mixedLabel.AddToClassList("tsf__mixed-value");
+                content.Add(mixedLabel);
                 expandToggle.style.display = DisplayStyle.None;
                 underRowHost.style.display = DisplayStyle.None;
                 return;
@@ -372,7 +391,7 @@ namespace Jungle.Editor
                     underRowHost.style.display = DisplayStyle.None;
 
                     var none = new Label("None");
-                    none.AddToClassList("jungle-empty-value");
+                    none.AddToClassList("tsf__empty-value");
                     content.Add(none);
                     return;
                 }

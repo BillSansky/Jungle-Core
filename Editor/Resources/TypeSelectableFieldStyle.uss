@@ -1,0 +1,274 @@
+﻿/* TypeSelectableField - Unity-style styling */
+
+.tsf-root {
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.tsf-row {
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    min-height: 20px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 3px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.tsf-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tsf-row--clickable:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: link;
+}
+
+/* Toggle (foldout arrow) */
+.tsf__toggle {
+    width: 12px;
+    min-width: 12px;
+    margin-left: 0;
+    margin-right: 2px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.tsf__toggle > .unity-toggle__input {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border-width: 0;
+}
+
+.tsf__toggle > .unity-toggle__input > .unity-toggle__checkmark {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+    -unity-background-image-tint-color: rgb(153, 153, 153);
+}
+
+.tsf__toggle:hover > .unity-toggle__input > .unity-toggle__checkmark {
+    -unity-background-image-tint-color: rgb(178, 178, 178);
+}
+
+.tsf__toggle > .unity-toggle__text {
+    display: none;
+}
+
+/* Label */
+.tsf__label {
+    flex-shrink: 0;
+    flex-grow: 0;
+    min-width: 100px;
+    max-width: 120px;
+    width: 120px;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    -unity-text-align: middle-left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Content area */
+.tsf__content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: row;
+    flex-basis: 0;
+    align-items: center;
+    min-height: 18px;
+    min-width: 100px;
+}
+
+.tsf__content .unity-object-field {
+    margin: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.tsf__content .unity-object-field__selector {
+    border-radius: 2px;
+}
+
+.tsf__content .unity-object-field__input {
+    flex-grow: 1;
+}
+
+/* Type summary label (for managed references) */
+.tsf__type-summary {
+    flex-grow: 1;
+    margin: 0;
+    padding: 1px 2px;
+    padding-left: 3px;
+    min-height: 18px;
+    -unity-font-style: normal;
+    color: rgb(210, 210, 210);
+    font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    -unity-text-align: middle-left;
+}
+
+/* Empty value label */
+.tsf__empty-value {
+    flex-grow: 1;
+    margin: 0;
+    padding: 1px 2px;
+    padding-left: 3px;
+    min-height: 18px;
+    -unity-font-style: normal;
+    color: rgb(155, 155, 155);
+    font-size: 12px;
+    background-color: var(--unity-colors-input_field-background);
+    border-width: 1px;
+    border-color: var(--unity-colors-input_field-border);
+    border-radius: 3px;
+    -unity-text-align: middle-left;
+}
+
+/* Mixed value label */
+.tsf__mixed-value {
+    flex-grow: 1;
+    margin: 0;
+    padding: 1px 2px;
+    padding-left: 3px;
+    min-height: 18px;
+    -unity-font-style: normal;
+    color: rgb(127, 127, 127);
+    font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    -unity-text-align: middle-left;
+}
+
+/* Button group */
+.tsf__button-group {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 4px;
+    flex-shrink: 0;
+}
+
+/* Buttons */
+.tsf__button {
+    width: 20px;
+    height: 18px;
+    min-width: 20px;
+    min-height: 18px;
+    margin: 0 1px;
+    padding: 0;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: rgb(210, 210, 210);
+    -unity-text-align: middle-center;
+    font-size: 12px;
+}
+
+.tsf__button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(0, 0, 0, 0.5);
+    color: rgb(240, 240, 240);
+}
+
+.tsf__button:active {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Foldout content (details) */
+.tsf__details {
+    flex-direction: column;
+    margin-left: 15px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 0;
+    border-left-width: 1px;
+    border-left-color: rgba(255, 255, 255, 0.05);
+}
+
+.tsf__child-field {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    margin-left: 2px;
+}
+
+.tsf__child-field > .unity-property-field__label {
+    min-width: 110px;
+    max-width: 140px;
+}
+
+/* Dark theme adjustments */
+.unity-theme-env-variables-dark .tsf-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.unity-theme-env-variables-dark .tsf-row--clickable:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Light theme adjustments */
+.unity-theme-env-variables-light .tsf-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.unity-theme-env-variables-light .tsf-row--clickable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.unity-theme-env-variables-light .tsf__toggle > .unity-toggle__input > .unity-toggle__checkmark {
+    -unity-background-image-tint-color: rgb(90, 90, 90);
+}
+
+.unity-theme-env-variables-light .tsf__toggle:hover > .unity-toggle__input > .unity-toggle__checkmark {
+    -unity-background-image-tint-color: rgb(60, 60, 60);
+}
+
+.unity-theme-env-variables-light .tsf__type-summary {
+    color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+
+.unity-theme-env-variables-light .tsf__mixed-value {
+    color: rgb(127, 127, 127);
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+.unity-theme-env-variables-light .tsf__button {
+    background-color: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: rgb(50, 50, 50);
+}
+
+.unity-theme-env-variables-light .tsf__button:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.3);
+    color: rgb(20, 20, 20);
+}
+
+.unity-theme-env-variables-light .tsf__button:active {
+    background-color: rgba(0, 0, 0, 0.22);
+    border-color: rgba(0, 0, 0, 0.4);
+}
