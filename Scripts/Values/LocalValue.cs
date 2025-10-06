@@ -35,6 +35,6 @@ namespace Jungle.Values
             return value;
         }
 
-        public abstract bool HasMultipleValues { get; }
+        public virtual bool HasMultipleValues => false;
     }
 }
