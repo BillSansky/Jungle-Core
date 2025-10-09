@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Interpolates a transform toward a target rotation with curve-based easing.", "d_RotateTool")]
     [Serializable]
-    public class RotationLerpAction : ProcessAction
+    public class RotationLerpAction : BeginCompleteAction
     {
         [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeReference] private IVector3Value targetEulerAngles = new Vector3Value(Vector3.zero);

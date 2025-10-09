@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
         "d_AnimationClip")]
     [Serializable]
-    public class PlayableDirectorStartAction : ProcessAction
+    public class PlayableDirectorStartAction : BeginCompleteAction
     {
         [SerializeReference] private IGameObjectValue targetDirectorObject = new GameObjectValue();
         [SerializeField] private bool restartFromBeginning = true;

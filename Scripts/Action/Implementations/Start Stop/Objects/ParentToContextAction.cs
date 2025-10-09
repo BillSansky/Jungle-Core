@@ -10,7 +10,7 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Moves a GameObject under a drag contextual parent transform during drag operations.",
         "d_UnityEditor.HierarchyWindow")]
-    public class ParentToContextAction : ProcessAction
+    public class ParentToContextAction : BeginCompleteAction
     {
         [Header("Target Configuration")] [SerializeField]
         private List<ITransformValue> targetTransforms;

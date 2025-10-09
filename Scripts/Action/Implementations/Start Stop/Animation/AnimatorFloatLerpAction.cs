@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip")]
     [Serializable]
-    public class AnimatorFloatLerpAction : ProcessAction
+    public class AnimatorFloatLerpAction : BeginCompleteAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeReference] private IStringValue parameterName = new StringValue("Blend");

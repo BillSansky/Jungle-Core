@@ -9,7 +9,7 @@ namespace Jungle.Actions
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
         "d_AnimationClip")]
     [Serializable]
-    public class AnimatorStateAction : ProcessAction
+    public class AnimatorStateAction : BeginCompleteAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeField] private string stateName = "StateName";
