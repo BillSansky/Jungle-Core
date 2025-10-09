@@ -13,11 +13,11 @@ namespace Jungle.Actions
     [Serializable]
     public class ScaleLerpAction : ProcessAction
     {
-        [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeReference] private IVector3Value targetScale = new Vector3Value(Vector3.one);
-        [SerializeReference] private IFloatValue duration = new FloatValue(1f);
-        [SerializeReference] private IBoolValue lerpBackToInitialValueOnStop = new BoolValue(true);
-        [SerializeReference] private IAnimationCurveValue scaleCurve =
+        [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private IVector3Value targetScale = new Vector3Value(Vector3.one);
+        [SerializeReference][JungleClassSelection] private IFloatValue duration = new FloatValue(1f);
+        [SerializeReference][JungleClassSelection] private IBoolValue lerpBackToInitialValueOnStop = new BoolValue(true);
+        [SerializeReference][JungleClassSelection] private IAnimationCurveValue scaleCurve =
             new AnimationCurveValue(AnimationCurve.EaseInOut(0, 0, 1, 1));
 
         private Vector3 originalScale;

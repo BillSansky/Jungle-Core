@@ -13,13 +13,13 @@ namespace Jungle.Actions
     [Serializable]
     public class RotationLerpAction : ProcessAction
     {
-        [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeReference] private IVector3Value targetEulerAngles = new Vector3Value(Vector3.zero);
-        [SerializeReference] private IBoolValue useLocalRotation = new BoolValue(true);
-        [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
-        [SerializeReference] private IAnimationCurveValue interpolation =
+        [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private IVector3Value targetEulerAngles = new Vector3Value(Vector3.zero);
+        [SerializeField] private bool useLocalRotation = true;
+        [SerializeReference][JungleClassSelection] private IFloatValue duration = new FloatValue(0.35f);
+        [SerializeReference] [JungleClassSelection]private IAnimationCurveValue interpolation =
             new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
-        [SerializeReference] private IBoolValue returnToInitialOnStop = new BoolValue(true);
+        [SerializeField] private bool returnToInitialOnStop = true;
 
         private Quaternion cachedInitialRotation;
         private bool hasCachedInitialRotation;
@@ -36,7 +36,7 @@ namespace Jungle.Actions
             var target = Quaternion.Euler(targetEulerAngles.V);
             var totalDuration = duration.V;
             var curve = interpolation.V;
-            var useLocal = useLocalRotation.V;
+            var useLocal = useLocalRotation;
 
             CacheInitialRotation(resolvedTransform, useLocal);
 
@@ -62,12 +62,12 @@ namespace Jungle.Actions
 
             StopActiveRoutine();
 
-            if (!returnToInitialOnStop.V || !hasCachedInitialRotation)
+            if (!returnToInitialOnStop || !hasCachedInitialRotation)
             {
                 return;
             }
 
-            var useLocal = useLocalRotation.V;
+            var useLocal = useLocalRotation;
             var totalDuration = duration.V;
             var curve = interpolation.V;
 
@@ -113,17 +113,9 @@ namespace Jungle.Actions
 
         private Transform ResolveTargetTransform()
         {
-            if (targetTransform == null)
-            {
-                throw new InvalidOperationException("Target transform provider has not been assigned.");
-            }
-
+            
             var transform = targetTransform.V;
-            if (transform == null)
-            {
-                throw new InvalidOperationException("The transform provider returned a null transform instance.");
-            }
-
+          
             return transform;
         }
 

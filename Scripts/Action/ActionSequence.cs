@@ -61,7 +61,7 @@ namespace Jungle.Actions
 
         public enum StepLoopMode
         {
-            Once,    // Execute only once
+            Once,    // Begin only once
             Infinite,    // Infinite indefinitely
             Limited  // Infinite a specific number of times
         }
@@ -157,7 +157,7 @@ namespace Jungle.Actions
         {
             if (Steps == null || Steps.Count == 0)
             {
-                Complete();
+                End();
                 return;
             }
 
@@ -235,7 +235,7 @@ namespace Jungle.Actions
                 sequenceTimeLeft -= deltaTime;
                 if (sequenceTimeLeft <= 0f)
                 {
-                    Complete();
+                    End();
                     return;
                 }
             }
@@ -261,7 +261,7 @@ namespace Jungle.Actions
                 else
                 {
                     // Cancel-on-timeout behavior:
-                    step.Action.Complete();
+                    step.Action.End();
                     HandleStepTerminal(step);
                 }
 
@@ -376,7 +376,7 @@ namespace Jungle.Actions
         {
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
-            s.Action.Complete();
+            s.Action.End();
             parallelRunning.Remove(s);
             s.Started = false;
 
@@ -401,7 +401,7 @@ namespace Jungle.Actions
         }
 
         /// <summary>
-        /// Complete the sequence when all steps are finished.
+        /// End the sequence when all steps are finished.
         /// </summary>
         private void MaybeRestartOrComplete()
         {
@@ -409,7 +409,7 @@ namespace Jungle.Actions
                 return; // still running steps
 
             // All steps finished - sequence runs only once
-            Complete();
+            End();
         }
 
         // ---------- event wiring ----------
@@ -458,7 +458,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                 s.Action.Complete();
+                 s.Action.End();
                 ResetStepRuntimeState(s, true);
             }
 

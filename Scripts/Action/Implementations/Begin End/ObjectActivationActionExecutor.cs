@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    public class OctoputsActionExecutor : MonoBehaviour
+    public class ObjectActivationActionExecutor : MonoBehaviour
     {
      
 
-        [SerializeReference] private List<ProcessAction> actions;
+        [SerializeReference] private List<IBeginEndAction> actions;
 
         public void OnEnable()
         {
@@ -21,7 +21,7 @@ namespace Jungle.Actions
         {
             foreach (var action in actions)
             {
-               action.Complete();
+               action.End();
             }
         }
     }

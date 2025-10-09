@@ -3,7 +3,7 @@ using System;
 namespace Jungle.Actions
 {
     [Serializable]
-    public abstract class ProcessAction : BeginCompleteAction
+    public abstract class ProcessAction : IBeginEndAction
     {
 
         private bool isInProgress;
@@ -29,13 +29,7 @@ namespace Jungle.Actions
         protected abstract void CompleteImpl();
         
         
-        protected virtual void CancelImpl()
-        {
-            CompleteImpl();
-        }
-
-
-        public override void Begin()
+        public void Begin()
         {
             isInProgress = true;
             isComplete = false;
@@ -44,16 +38,13 @@ namespace Jungle.Actions
         }
         
 
-        public override void Complete()
+        public void End()
         {
             isInProgress = false;
             isComplete = true;
             CompleteImpl();
             ProcessCompleted?.Invoke();
         }
-
-    
-
      
     }
 }

@@ -11,7 +11,7 @@ namespace Jungle.Actions
         "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
         "d_GameObject Icon")]
     [Serializable]
-    public class GameObjectActivationAction : ProcessAction
+    public class GameObjectActivationBeginEndAction : IBeginEndAction
     {
         private enum ActivationState
         {
@@ -21,23 +21,19 @@ namespace Jungle.Actions
         }
 
         [SerializeReference] private IGameObjectValue targetObjects = new GameObjectLocalArrayValue();
-        [SerializeField] private ActivationState actionStart = ActivationState.Enable;
-        [SerializeField] private ActivationState actionStop = ActivationState.Toggle;
+        [SerializeField] private ActivationState beginAction = ActivationState.Enable;
+        [SerializeField] private ActivationState endAction = ActivationState.Toggle;
 
         private readonly Dictionary<GameObject, bool> originalStates = new();
-
-        public override bool IsTimed => false;
-        public override float Duration => 0f;
-
         
 
-        protected override void BeginImpl()
+        public void Begin()
         {
             StoreOriginalStates();
             SetObjectStates();
         }
 
-        protected override void CompleteImpl()
+        public void End()
         {
             RestoreOriginalStates();
         }
@@ -50,12 +46,7 @@ namespace Jungle.Actions
             
             foreach (var obj in targetObjects.Values)
             {
-                if (obj == null || originalStates.ContainsKey(obj))
-                {
-                    continue;
-                }
-
-                originalStates[obj] = obj.activeSelf;
+                originalStates.Add(obj,obj.activeSelf);
             }
         }
 
@@ -63,7 +54,7 @@ namespace Jungle.Actions
         {
             foreach (var obj in targetObjects.Values)
             {
-                ApplyAction(obj, actionStart, false);
+                ApplyAction(obj, beginAction, false);
             }
         }
 
@@ -71,7 +62,7 @@ namespace Jungle.Actions
         {
             foreach (var obj in targetObjects.Values)
             {
-                ApplyAction(obj, actionStop, true);
+                ApplyAction(obj, endAction, true);
             }
 
             originalStates.Clear();

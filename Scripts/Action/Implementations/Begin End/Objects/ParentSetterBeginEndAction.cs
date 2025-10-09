@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Jungle.Actions;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -9,27 +11,31 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Sets the parent of targets  when the action starts. Can optionally reset to original parent when stopped.",
         "d_UnityEditor.HierarchyWindow")]
-    public class ParentSetterAction : ProcessAction
+    public class ParentSetterBeginEndAction : ProcessAction
     {
-        [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private ITransformValue targetTransforms = new TransformLocalValue();
         [SerializeField] private Transform parentTransform;
         [SerializeField] private bool setParentOnStart = true;
         [SerializeField] private bool resetParentOnStop = true;
 
-        private Transform originalParent;
+        private List<Transform> originalParents;
         private bool skipStop;
 
         public override bool IsTimed => false;
         public override float Duration => 0f;
 
-        
+
         protected override void BeginImpl()
         {
             if (!setParentOnStart) return;
-            
-            originalParent = targetTransform.V.parent;
-            
-            targetTransform.V.SetParent(parentTransform, true);
+
+            originalParents = new List<Transform>();
+
+            foreach (var transform in targetTransforms.Values)
+            {
+                originalParents.Add(transform.parent);
+                transform.SetParent(parentTransform, true);
+            }
         }
 
         protected override void CompleteImpl()
@@ -41,7 +47,11 @@ namespace Jungle.Actions
 
             if (!resetParentOnStop) return;
 
-            targetTransform.V.SetParent(originalParent, true);
+            var transforms = targetTransforms.Values.ToList();
+            for (int i = 0; i < transforms.Count && i < originalParents.Count; i++)
+            {
+                transforms[i].SetParent(originalParents[i], true);
+            }
         }
     }
 }
