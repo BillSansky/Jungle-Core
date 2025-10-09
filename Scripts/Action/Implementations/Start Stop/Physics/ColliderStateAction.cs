@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class ColliderStateAction : ProcessAction
+    public class ColliderStateAction : BeginCompleteAction
     {
         [SerializeReference] private List<IColliderValue> targetColliders = new();
         [SerializeField] private ColliderEnabledState startAction;

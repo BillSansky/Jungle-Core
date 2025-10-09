@@ -15,7 +15,7 @@ namespace Jungle.Actions
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
     /// </summary>
     [Serializable]
-    public class ActionSequence : ProcessAction
+    public class ActionSequence : BeginCompleteAction
     {
         [SerializeField]
         public List<Step> Steps = new List<Step>();

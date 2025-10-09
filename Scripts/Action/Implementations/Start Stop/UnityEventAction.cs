@@ -8,7 +8,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon")]
     [System.Serializable]
-    public class UnityEventAction : ProcessAction
+    public class UnityEventAction : BeginCompleteAction
     {
         [SerializeField] private UnityEvent onStart = new();
         [SerializeField] private UnityEvent onStop = new();

@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool")]
     [Serializable]
-    public class ScaleLerpAction : ProcessAction
+    public class ScaleLerpAction : BeginCompleteAction
     {
         [SerializeReference] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeReference] private IVector3Value targetScale = new Vector3Value(Vector3.one);

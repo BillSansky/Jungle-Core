@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class RigidbodyKinematikSetterAction : ProcessAction
+    public class RigidbodyKinematikSetterAction : BeginCompleteAction
     {
         public enum KinematicOption
         {

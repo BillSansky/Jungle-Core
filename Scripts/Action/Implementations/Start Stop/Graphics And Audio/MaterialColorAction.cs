@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class MaterialColorAction : ProcessAction
+    public class MaterialColorAction : BeginCompleteAction
     {
         [SerializeField] private Color highlightColor = Color.yellow;
         [SerializeField] private float highlightIntensity = 0.5f;

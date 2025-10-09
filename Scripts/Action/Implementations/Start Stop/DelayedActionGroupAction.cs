@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class DelayedActionGroupAction : ProcessAction
+    public class DelayedActionGroupAction : BeginCompleteAction
     {
         [SerializeField]
         private float startDelay = 1.0f;

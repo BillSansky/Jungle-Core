@@ -9,7 +9,7 @@
 // namespace Jungle.Actions
 // {
 //     [System.Serializable]
-//     public class SpriteColorAction2D : ProcessAction
+//     public class SpriteColorAction2D : BeginCompleteAction
 //     {
 //         [SerializeReference] private FlexibleSpriteRendererValue targetRenderer = new();
 //         [SerializeField] private Color highlightColor = Color.yellow;

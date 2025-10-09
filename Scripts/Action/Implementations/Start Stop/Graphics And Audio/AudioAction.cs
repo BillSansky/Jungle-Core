@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class AudioAction : ProcessAction
+    public class AudioAction : BeginCompleteAction
     {
         [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;

@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Smoothly moves a transform toward a target position with optional return on stop.", "d_MoveTool")]
     [Serializable]
-    public class PositionLerpAction : ProcessAction
+    public class PositionLerpAction : BeginCompleteAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeReference][JungleClassSelection] private ITransformValue targetPosition = new TransformLocalValue();
