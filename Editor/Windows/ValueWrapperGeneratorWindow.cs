@@ -92,7 +92,7 @@ namespace Jungle.Editor
 
         private Type resolvedType;
 
-        [MenuItem("Jungle/Value Wrapper Generator")]
+        [MenuItem("Tools/Jungle/Values/Value Wrapper Generator")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<ValueWrapperGeneratorWindow>();

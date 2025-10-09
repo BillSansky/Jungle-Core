@@ -111,7 +111,7 @@ namespace Jungle.Actions
 
             // Event handlers to detach safely
             [NonSerialized] internal Action completedHandler;
-            [NonSerialized] internal Action failedHandler;
+
 
             /// <summary>
             /// Gets the duration of this step based on time limit or action duration.
@@ -176,26 +176,7 @@ namespace Jungle.Actions
             // drives only time limits via coroutine
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
-
-        protected override void CancelImpl()
-        {
-            running = false;
-
-            if (tickRoutine != null)
-            {
-                CoroutineRunner.StopManagedCoroutine(tickRoutine);
-                tickRoutine = null;
-            }
-
-            foreach (var s in Steps)
-            {
-                DetachStepListeners(s);
-                s.Action.Cancel();
-                ResetStepRuntimeState(s, true);
-            }
-
-            parallelRunning.Clear();
-        }
+        
 
         protected override void CompleteImpl()
         {
@@ -280,7 +261,7 @@ namespace Jungle.Actions
                 else
                 {
                     // Cancel-on-timeout behavior:
-                    step.Action.Cancel();
+                    step.Action.Complete();
                     HandleStepTerminal(step);
                 }
 
@@ -395,7 +376,7 @@ namespace Jungle.Actions
         {
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
-            s.Action.Cancel();
+            s.Action.Complete();
             parallelRunning.Remove(s);
             s.Started = false;
 
@@ -456,16 +437,8 @@ namespace Jungle.Actions
                 }
             };
 
-            s.failedHandler = () =>
-            {
-                if (!running) return;
-
-                // Treat failure as terminal for progression.
-                HandleStepTerminal(s);
-            };
-
             s.Action.ProcessCompleted += s.completedHandler;
-            s.Action.ProcessCancelled += s.failedHandler;
+       
         }
 
         private void DetachStepListeners(Step s)
@@ -477,12 +450,7 @@ namespace Jungle.Actions
                 s.Action.ProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
-
-            if (s.failedHandler != null)
-            {
-                s.Action.ProcessCancelled -= s.failedHandler;
-                s.failedHandler = null;
-            }
+            
         }
 
         private void ResetAllForRepeat()
@@ -490,7 +458,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                 s.Action.Cancel();
+                 s.Action.Complete();
                 ResetStepRuntimeState(s, true);
             }
 
