@@ -72,7 +72,7 @@
 //             isHighlighted = anyRendererFound;
 //         }
 //
-//         protected override void CompleteImpl()
+//         protected override void InterruptOrCompleteCleanup()
 //         {
 //             if (skipStop)
 //             {

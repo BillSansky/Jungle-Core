@@ -29,6 +29,8 @@ namespace Jungle.Actions
 
         private Coroutine autoEndCoroutine;
 
+        private event Action internalCompletionListener;
+        
         public override bool IsTimed => endLogic != EndLogic.NeverEnd;
 
         public override float Duration
@@ -63,7 +65,7 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void CompleteImpl()
+        protected override void InterruptOrCompleteCleanup()
         {
             // Stop the auto-end coroutine if it's running
             if (autoEndCoroutine != null && coroutineRunner != null)
@@ -78,6 +80,11 @@ namespace Jungle.Actions
             }
         }
 
+        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        {
+            internalCompletionListener+=onCompleted;
+        }
+
         private IEnumerator AutoEndCoroutine()
         {
             if (endLogic == EndLogic.OneFrame)
@@ -89,7 +96,7 @@ namespace Jungle.Actions
                 yield return new WaitForSeconds(duration);
             }
 
-            End();
+            internalCompletionListener?.Invoke();
         }
     }
 }

@@ -9,25 +9,21 @@ namespace Jungle.Actions
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
         "d_AnimationClip")]
     [Serializable]
-    public class AnimatorStateAction : ProcessAction
+    public class AnimatorStateBeginEndAction : IBeginEndAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeField] private string stateName = "StateName";
         [SerializeField] private int layerIndex;
         [SerializeField] private bool startFromBeginning = true;
         [SerializeField] private float startNormalizedTime = 0f;
-        [SerializeField] private bool restorePreviousStateOnStop = true;
+      
 
         private Animator cachedAnimator;
         private int previousStateHash;
         private float previousNormalizedTime;
         private bool hasPreviousState;
 
-        public override bool IsTimed => false;
-        public override float Duration => 0f;
-        
-
-        protected override void BeginImpl()
+        public void Begin()
         {
             var animator = ResolveAnimator();
 
@@ -36,17 +32,12 @@ namespace Jungle.Actions
                 throw new InvalidOperationException("Animator state name must be provided before starting the action.");
             }
 
-            if (restorePreviousStateOnStop)
-            {
+           
                 var stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
                 previousStateHash = stateInfo.fullPathHash;
                 previousNormalizedTime = stateInfo.normalizedTime;
                 hasPreviousState = true;
-            }
-            else
-            {
-                hasPreviousState = false;
-            }
+            
 
             var targetStateHash = Animator.StringToHash(stateName);
 
@@ -60,12 +51,8 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void CompleteImpl()
+        public void End()
         {
-            if (!restorePreviousStateOnStop || !hasPreviousState)
-            {
-                return;
-            }
 
             var animator = cachedAnimator ?? ResolveAnimator();
             var normalizedTime = Mathf.Repeat(previousNormalizedTime, 1f);

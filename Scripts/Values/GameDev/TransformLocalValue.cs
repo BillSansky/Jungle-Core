@@ -5,6 +5,9 @@ namespace Jungle.Values.GameDev
 {
     public interface ITransformValue : IValue<Transform>
     {
+        public Vector3 Position => Value().position;
+        public Vector3 LocalScale => Value().localScale;
+        public Quaternion Rotation => Value().rotation;
         
     }
 

@@ -145,13 +145,14 @@ namespace Jungle.Actions
             }
         }
 
-        // Runtime state
-        [NonSerialized] private bool running;
+
         [NonSerialized] private int currentIndex;
         [NonSerialized] private float sequenceTimeLeft;
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
+        // Internal completion listener
+        [NonSerialized] private Action internalCompletionListener;
 
         protected override void BeginImpl()
         {
@@ -161,7 +162,7 @@ namespace Jungle.Actions
                 return;
             }
 
-            running = true;
+           
             currentIndex = 0;
             parallelRunning.Clear();
 
@@ -176,11 +177,16 @@ namespace Jungle.Actions
             // drives only time limits via coroutine
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
-        
 
-        protected override void CompleteImpl()
+        protected override void RegisterInternalCompletionListener(Action onCompleted)
         {
-            running = false;
+            internalCompletionListener = onCompleted;
+        }
+
+
+        protected override void InterruptOrCompleteCleanup()
+        {
+           
 
             if (tickRoutine != null)
             {
@@ -195,6 +201,7 @@ namespace Jungle.Actions
             }
 
             parallelRunning.Clear();
+            internalCompletionListener = null;
         }
 
         /// <summary>
@@ -202,7 +209,7 @@ namespace Jungle.Actions
         /// </summary>
         private IEnumerator TickRoutine()
         {
-            while (running)
+            while (IsInProgress)
             {
                 var deltaTime = Time.deltaTime;
 
@@ -227,7 +234,7 @@ namespace Jungle.Actions
         /// </summary>
         private void ServiceTimeLimits(float deltaTime)
         {
-            if (!running) return;
+            if (!IsInProgress) return;
 
             // Sequence time limiting (if enabled)
             if (hasSequenceTimeLimit && SequenceTimeLimit > 0f)
@@ -409,6 +416,7 @@ namespace Jungle.Actions
                 return; // still running steps
 
             // All steps finished - sequence runs only once
+            internalCompletionListener?.Invoke();
             End();
         }
 
@@ -423,7 +431,7 @@ namespace Jungle.Actions
 
             s.completedHandler = () =>
             {
-                if (!running) return;
+                if (!IsInProgress) return;
 
                 if (ShouldRestartStep(s))
                 {
@@ -437,7 +445,7 @@ namespace Jungle.Actions
                 }
             };
 
-            s.Action.ProcessCompleted += s.completedHandler;
+            s.Action.OnProcessCompleted += s.completedHandler;
        
         }
 
@@ -447,7 +455,7 @@ namespace Jungle.Actions
 
             if (s.completedHandler != null)
             {
-                s.Action.ProcessCompleted -= s.completedHandler;
+                s.Action.OnProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
             

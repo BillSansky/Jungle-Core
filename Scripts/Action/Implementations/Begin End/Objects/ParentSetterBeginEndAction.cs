@@ -11,7 +11,7 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Sets the parent of targets  when the action starts. Can optionally reset to original parent when stopped.",
         "d_UnityEditor.HierarchyWindow")]
-    public class ParentSetterBeginEndAction : ProcessAction
+    public class ParentSetterBeginEndAction : IBeginEndAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransforms = new TransformLocalValue();
         [SerializeField] private Transform parentTransform;
@@ -21,11 +21,7 @@ namespace Jungle.Actions
         private List<Transform> originalParents;
         private bool skipStop;
 
-        public override bool IsTimed => false;
-        public override float Duration => 0f;
-
-
-        protected override void BeginImpl()
+        public void Begin()
         {
             if (!setParentOnStart) return;
 
@@ -38,7 +34,7 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void CompleteImpl()
+        public void End()
         {
             if (skipStop)
             {

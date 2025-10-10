@@ -9,8 +9,9 @@ namespace Jungle.Actions
         private bool isInProgress;
         private bool isComplete;
 
-        public event Action ProcessStarted;
-        public event Action ProcessCompleted;
+        public event Action OnProcessStarted;
+        public event Action OnProcessCompleted;
+        public event Action OnProcessInterrupted;
         
         public bool IsInProgress => isInProgress;
         public bool IsComplete => isComplete;
@@ -24,9 +25,9 @@ namespace Jungle.Actions
 
 
         protected abstract void BeginImpl();
+        protected abstract void InterruptOrCompleteCleanup();
 
-
-        protected abstract void CompleteImpl();
+        protected abstract void RegisterInternalCompletionListener( Action onCompleted);
         
         
         public void Begin()
@@ -34,17 +35,35 @@ namespace Jungle.Actions
             isInProgress = true;
             isComplete = false;
             BeginImpl();
-            ProcessStarted?.Invoke();
+            RegisterInternalCompletionListener(NotifyComplete);
+            OnProcessStarted?.Invoke();
         }
         
 
         public void End()
         {
-            isInProgress = false;
-            isComplete = true;
-            CompleteImpl();
-            ProcessCompleted?.Invoke();
+            
+            Interrupt();
         }
      
+        public void Interrupt()
+        {
+            if (!isInProgress)
+                return;
+            
+            isInProgress = false;
+            isComplete = true;
+            InterruptOrCompleteCleanup();
+            OnProcessInterrupted?.Invoke();
+        }
+        
+        protected void NotifyComplete()
+        {
+            isInProgress = false;
+            isComplete = true;
+            InterruptOrCompleteCleanup();
+            OnProcessCompleted?.Invoke();
+        }
+        
     }
 }

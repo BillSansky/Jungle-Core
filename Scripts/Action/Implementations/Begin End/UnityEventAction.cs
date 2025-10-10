@@ -8,22 +8,18 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon")]
     [System.Serializable]
-    public class UnityEventAction : ProcessAction
+    public class UnityEventAction : IBeginEndAction
     {
         [SerializeField] private UnityEvent onStart = new();
         [SerializeField] private UnityEvent onStop = new();
         [SerializeField] private UnityEvent onOneShot = new();
         
-        public override bool IsTimed => false;
-        public override float Duration => 0f;
-
-        
-        protected override void BeginImpl()
+        public void Begin()
         {
             onStart?.Invoke();
         }
 
-        protected override void CompleteImpl()
+        public void End()
         {
             onStop?.Invoke();
         }

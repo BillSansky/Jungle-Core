@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class MaterialColorAction : ProcessAction
+    public class MaterialColorAction : IBeginEndAction
     {
         [SerializeField] private Color highlightColor = Color.yellow;
         [SerializeField] private float highlightIntensity = 0.5f;
@@ -28,10 +28,7 @@ namespace Jungle.Actions
 
         private Coroutine colorLerpCoroutine;
 
-        public override bool IsTimed => true;
-        public override float Duration => lerpDuration + lerpBackDuration;
-
-        protected override void BeginImpl()
+        public void Begin()
         {
             if (colorLerpCoroutine != null)
             {
@@ -116,7 +113,7 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void CompleteImpl()
+        public void End()
         {
             if (colorLerpCoroutine != null)
             {

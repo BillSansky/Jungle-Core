@@ -11,10 +11,10 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Smoothly moves a transform toward a target position with optional return on stop.", "d_MoveTool")]
     [Serializable]
-    public class PositionLerpAction : ProcessAction
+    public class PositionLerpProcessAction : ProcessAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
-        [SerializeReference][JungleClassSelection] private ITransformValue targetPosition = new TransformLocalValue();
+        [SerializeReference][JungleClassSelection] private IVector3Value targetPosition;
         [SerializeReference] private bool useLocalPosition ;
         [SerializeReference] private IFloatValue duration = new FloatValue(0.35f);
         [SerializeReference] private IAnimationCurveValue interpolation =
@@ -38,10 +38,7 @@ namespace Jungle.Actions
             var totalDuration = duration.V;
             var curve = interpolation.V;
 
-            var targetTransformValue = targetPosition?.V;
-            var target = targetTransformValue != null 
-                ? ReadPosition(targetTransformValue, useLocal) 
-                : Vector3.zero;
+            
 
             CacheInitialPosition(resolvedTransform, useLocal);
 
@@ -49,16 +46,16 @@ namespace Jungle.Actions
 
             if (totalDuration <= 0f)
             {
-                ApplyPosition(resolvedTransform, target, useLocal);
+                ApplyPosition(resolvedTransform, targetPosition.Value(), useLocal);
                 return;
             }
 
             var start = ReadPosition(resolvedTransform, useLocal);
             activeRoutine = CoroutineRunner.StartManagedCoroutine(
-                LerpPosition(resolvedTransform, start, target, totalDuration, curve, useLocal));
+                LerpPosition(resolvedTransform, start, totalDuration, curve, useLocal));
         }
 
-        protected override void CompleteImpl()
+        protected override void InterruptOrCompleteCleanup()
         {
             if (resolvedTransform == null)
             {
@@ -84,20 +81,26 @@ namespace Jungle.Actions
 
             var current = ReadPosition(resolvedTransform, useLocal);
             activeRoutine = CoroutineRunner.StartManagedCoroutine(
-                LerpPosition(resolvedTransform, current, cachedInitialPosition, totalDuration, curve, useLocal));
+                LerpPosition(resolvedTransform, current, totalDuration, curve, useLocal));
+        }
+
+        private Action callback;
+        
+        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        {
+           callback=onCompleted;
         }
 
         private IEnumerator LerpPosition(
             Transform transform,
             Vector3 start,
-            Vector3 end,
             float totalDuration,
             AnimationCurve curve,
             bool useLocal)
         {
             if (totalDuration <= 0f)
             {
-                ApplyPosition(transform, end, useLocal);
+                ApplyPosition(transform, targetPosition.V, useLocal);
                 yield break;
             }
 
@@ -109,11 +112,12 @@ namespace Jungle.Actions
                 time += Time.deltaTime;
                 var t = Mathf.Clamp01(time / durationClamp);
                 var curved = curve.Evaluate(t);
-                ApplyPosition(transform, Vector3.LerpUnclamped(start, end, curved), useLocal);
+                ApplyPosition(transform, Vector3.LerpUnclamped(start, targetPosition.V, curved), useLocal);
                 yield return null;
             }
 
-            ApplyPosition(transform, end, useLocal);
+            ApplyPosition(transform, targetPosition.V, useLocal);
+            callback.Invoke();
         }
 
         private Transform ResolveTargetTransform()
