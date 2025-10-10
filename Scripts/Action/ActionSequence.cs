@@ -9,7 +9,7 @@ namespace Jungle.Actions
 {
     /// <summary>
     /// Event-driven sequence of child ProcessActions that runs once through all steps.
-    /// - Progression listens to child ProcessCompleted/ProcessFailed (no polling).
+    /// - Progression listens to child ProcessCompleted/ProcessCancelled (no polling).
     /// - Coroutine only services time limits (sequence & per-step).
     /// - Optional sequence time limit can be set to constrain the entire sequence duration.
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
@@ -61,7 +61,7 @@ namespace Jungle.Actions
 
         public enum StepLoopMode
         {
-            Once,    // Execute only once
+            Once,    // Begin only once
             Infinite,    // Infinite indefinitely
             Limited  // Infinite a specific number of times
         }
@@ -111,7 +111,7 @@ namespace Jungle.Actions
 
             // Event handlers to detach safely
             [NonSerialized] internal Action completedHandler;
-            [NonSerialized] internal Action failedHandler;
+
 
             /// <summary>
             /// Gets the duration of this step based on time limit or action duration.
@@ -145,23 +145,24 @@ namespace Jungle.Actions
             }
         }
 
-        // Runtime state
-        [NonSerialized] private bool running;
+
         [NonSerialized] private int currentIndex;
         [NonSerialized] private float sequenceTimeLeft;
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
+        // Internal completion listener
+        [NonSerialized] private Action internalCompletionListener;
 
-        protected override void BeginProcessImpl()
+        protected override void BeginImpl()
         {
             if (Steps == null || Steps.Count == 0)
             {
-                Complete();
+                End();
                 return;
             }
 
-            running = true;
+           
             currentIndex = 0;
             parallelRunning.Clear();
 
@@ -177,29 +178,15 @@ namespace Jungle.Actions
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
 
-        protected override void CancelImpl()
+        protected override void RegisterInternalCompletionListener(Action onCompleted)
         {
-            running = false;
-
-            if (tickRoutine != null)
-            {
-                CoroutineRunner.StopManagedCoroutine(tickRoutine);
-                tickRoutine = null;
-            }
-
-            foreach (var s in Steps)
-            {
-                DetachStepListeners(s);
-                SafeCancel(s.Action);
-                ResetStepRuntimeState(s, true);
-            }
-
-            parallelRunning.Clear();
+            internalCompletionListener = onCompleted;
         }
 
-        protected override void CompleteImpl()
+
+        protected override void InterruptOrCompleteCleanup()
         {
-            running = false;
+           
 
             if (tickRoutine != null)
             {
@@ -214,6 +201,7 @@ namespace Jungle.Actions
             }
 
             parallelRunning.Clear();
+            internalCompletionListener = null;
         }
 
         /// <summary>
@@ -221,7 +209,7 @@ namespace Jungle.Actions
         /// </summary>
         private IEnumerator TickRoutine()
         {
-            while (running)
+            while (IsInProgress)
             {
                 var deltaTime = Time.deltaTime;
 
@@ -246,7 +234,7 @@ namespace Jungle.Actions
         /// </summary>
         private void ServiceTimeLimits(float deltaTime)
         {
-            if (!running) return;
+            if (!IsInProgress) return;
 
             // Sequence time limiting (if enabled)
             if (hasSequenceTimeLimit && SequenceTimeLimit > 0f)
@@ -254,7 +242,7 @@ namespace Jungle.Actions
                 sequenceTimeLeft -= deltaTime;
                 if (sequenceTimeLeft <= 0f)
                 {
-                    Complete();
+                    End();
                     return;
                 }
             }
@@ -280,7 +268,7 @@ namespace Jungle.Actions
                 else
                 {
                     // Cancel-on-timeout behavior:
-                    SafeCancel(step.Action);
+                    step.Action.End();
                     HandleStepTerminal(step);
                 }
 
@@ -385,7 +373,7 @@ namespace Jungle.Actions
             s.StartDelayRemaining = 0f;
 
             AttachStepListeners(s);      // attach before Begin to catch instant-complete
-            SafeBegin(s.Action);
+            s.Action.Begin();
 
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
@@ -395,7 +383,7 @@ namespace Jungle.Actions
         {
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
-            SafeCancel(s.Action);
+            s.Action.End();
             parallelRunning.Remove(s);
             s.Started = false;
 
@@ -420,7 +408,7 @@ namespace Jungle.Actions
         }
 
         /// <summary>
-        /// Complete the sequence when all steps are finished.
+        /// End the sequence when all steps are finished.
         /// </summary>
         private void MaybeRestartOrComplete()
         {
@@ -428,7 +416,8 @@ namespace Jungle.Actions
                 return; // still running steps
 
             // All steps finished - sequence runs only once
-            Complete();
+            internalCompletionListener?.Invoke();
+            End();
         }
 
         // ---------- event wiring ----------
@@ -442,7 +431,7 @@ namespace Jungle.Actions
 
             s.completedHandler = () =>
             {
-                if (!running) return;
+                if (!IsInProgress) return;
 
                 if (ShouldRestartStep(s))
                 {
@@ -456,16 +445,8 @@ namespace Jungle.Actions
                 }
             };
 
-            s.failedHandler = () =>
-            {
-                if (!running) return;
-
-                // Treat failure as terminal for progression.
-                HandleStepTerminal(s);
-            };
-
-            s.Action.ProcessCompleted += s.completedHandler;
-            s.Action.ProcessFailed += s.failedHandler;
+            s.Action.OnProcessCompleted += s.completedHandler;
+       
         }
 
         private void DetachStepListeners(Step s)
@@ -474,15 +455,10 @@ namespace Jungle.Actions
 
             if (s.completedHandler != null)
             {
-                s.Action.ProcessCompleted -= s.completedHandler;
+                s.Action.OnProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
-
-            if (s.failedHandler != null)
-            {
-                s.Action.ProcessFailed -= s.failedHandler;
-                s.failedHandler = null;
-            }
+            
         }
 
         private void ResetAllForRepeat()
@@ -490,7 +466,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                SafeCancel(s.Action);
+                 s.Action.End();
                 ResetStepRuntimeState(s, true);
             }
 
@@ -548,24 +524,8 @@ namespace Jungle.Actions
             }
         }
 
-        // --- safe wrappers (adapt if your ProcessAction API differs) ---
-
-        private static void SafeBegin(ProcessAction a)
-        {
         
-            a.Begin();
-        }
 
-        private static void SafeCancel(ProcessAction a)
-        {
-          
-            if (a.IsInProgress) a.Cancel();
-        }
-
-        private static void SafeForceComplete(ProcessAction a)
-        {
-          
-            if (!a.IsComplete) a.Complete();
-        }
+       
     }
 }

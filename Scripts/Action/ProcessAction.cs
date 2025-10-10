@@ -3,17 +3,16 @@ using System;
 namespace Jungle.Actions
 {
     [Serializable]
-    public abstract class ProcessAction
+    public abstract class ProcessAction : IBeginEndAction
     {
-        private bool isStarted;
+
         private bool isInProgress;
         private bool isComplete;
 
-        public event Action ProcessStarted;
-        public event Action ProcessCompleted;
-        public event Action ProcessFailed;
-
-        public bool IsStarted => isStarted;
+        public event Action OnProcessStarted;
+        public event Action OnProcessCompleted;
+        public event Action OnProcessInterrupted;
+        
         public bool IsInProgress => isInProgress;
         public bool IsComplete => isComplete;
 
@@ -23,81 +22,48 @@ namespace Jungle.Actions
         public abstract bool IsTimed { get; }
 
         public abstract float Duration { get; }
+
+
+        protected abstract void BeginImpl();
+        protected abstract void InterruptOrCompleteCleanup();
+
+        protected abstract void RegisterInternalCompletionListener( Action onCompleted);
         
-        public void Start()
-        {
-            if (isStarted)
-            {
-                return;
-            }
-
-            isStarted = true;
-            OnStart();
-        }
-
-        public void Stop()
-        {
-            if (!isStarted)
-            {
-                return;
-            }
-
-            isStarted = false;
-            OnStop();
-        }
-
-        protected virtual void OnStart()
-        {
-        }
-
-        protected virtual void OnStop()
-        {
-        }
-
+        
         public void Begin()
         {
-            Cancel();
-
             isInProgress = true;
             isComplete = false;
-            BeginProcessImpl();
-            ProcessStarted?.Invoke();
+            BeginImpl();
+            RegisterInternalCompletionListener(NotifyComplete);
+            OnProcessStarted?.Invoke();
         }
+        
 
-        public void Cancel()
+        public void End()
+        {
+            
+            Interrupt();
+        }
+     
+        public void Interrupt()
         {
             if (!isInProgress)
-            {
                 return;
-            }
-
+            
             isInProgress = false;
-            isComplete = false;
-            CancelImpl();
-            ProcessFailed?.Invoke();
+            isComplete = true;
+            InterruptOrCompleteCleanup();
+            OnProcessInterrupted?.Invoke();
         }
-
-        public void Complete()
+        
+        protected void NotifyComplete()
         {
             isInProgress = false;
             isComplete = true;
-            CompleteImpl();
-            ProcessCompleted?.Invoke();
+            InterruptOrCompleteCleanup();
+            OnProcessCompleted?.Invoke();
         }
-
-        protected virtual void BeginProcessImpl()
-        {
-            Start();
-        }
-
-        protected virtual void CancelImpl()
-        {
-            Stop();
-        }
-
-        protected virtual void CompleteImpl()
-        {
-            Stop();
-        }
+        
     }
 }
