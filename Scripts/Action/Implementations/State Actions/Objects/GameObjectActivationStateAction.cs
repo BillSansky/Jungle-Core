@@ -11,7 +11,7 @@ namespace Jungle.Actions
         "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
         "d_GameObject Icon")]
     [Serializable]
-    public class GameObjectActivationBeginEndAction : IBeginEndAction
+    public class GameObjectActivationStateAction : IStateAction
     {
         private enum ActivationState
         {
@@ -27,13 +27,13 @@ namespace Jungle.Actions
         private readonly Dictionary<GameObject, bool> originalStates = new();
         
 
-        public void Begin()
+        public void OnStateEnter()
         {
             StoreOriginalStates();
             SetObjectStates();
         }
 
-        public void End()
+        public void OnStateExit()
         {
             RestoreOriginalStates();
         }

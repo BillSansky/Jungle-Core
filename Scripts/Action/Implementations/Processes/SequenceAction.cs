@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Jungle.Attributes;
 using Jungle.Utils;
 using UnityEngine;
@@ -13,40 +14,43 @@ namespace Jungle.Actions
     /// - Coroutine only services time limits (sequence & per-step).
     /// - Optional sequence time limit can be set to constrain the entire sequence duration.
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
-    /// </summary>
+     /// </summary>
     [Serializable]
-    public class ActionSequence : ProcessAction
+    public class SequenceAction : IProcessAction
     {
-        [SerializeField]
-        public List<Step> Steps = new List<Step>();
+        [SerializeField] public List<Step> Steps = new List<Step>();
 
-        [Header("Sequence Settings")]
-        [Tooltip("Enable to set a time limit for the entire sequence.")]
+        [Header("Sequence Settings")] [Tooltip("Enable to set a time limit for the entire sequence.")]
         public bool hasSequenceTimeLimit = false;
 
         [Tooltip("Time limit for the entire sequence in seconds.")]
         public float SequenceTimeLimit = 0f;
 
-        /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
-        public override bool IsTimed =>
-            (hasSequenceTimeLimit && SequenceTimeLimit > 0f) ||
-            (Steps != null && Steps.Exists(s => s.timeLimited && s.timeLimit > 0f));
 
-        public override float Duration
+        public event Action OnProcessCompleted;
+
+        public bool HasCompleted { get; private set; }
+
+        /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
+        public bool HasDefinedDuration =>
+            (hasSequenceTimeLimit) || Steps.All(s => s.Action.HasDefinedDuration || s.timeLimited);
+
+        public float Duration
         {
             get
             {
                 // If sequence has a time limit, return the shorter of sequence time limit or total step duration
                 float totalDuration = 0f;
-                if (Steps != null && Steps.Count > 0)
+                if (Steps.Count > 0)
                 {
                     foreach (var step in Steps)
                     {
                         totalDuration += step.startDelay;
-                        if (step.Action != null && step.Action.IsTimed)
-                        {
-                            totalDuration += step.Action.Duration;
-                        }
+                        float? duration = step.GetDuration();
+                        if (!duration.HasValue)
+                            return -1;
+
+                        totalDuration += duration.Value;
                     }
                 }
 
@@ -59,49 +63,52 @@ namespace Jungle.Actions
             }
         }
 
+        public bool IsInProgress { get; private set; }
+
         public enum StepLoopMode
         {
-            Once,    // Begin only once
-            Infinite,    // Infinite indefinitely
-            Limited  // Infinite a specific number of times
+            Once, // Start only once
+            Infinite, // Infinite indefinitely
+            Limited // Infinite a specific number of times
         }
 
         [Serializable]
         public class Step
         {
             [JungleClassSelection] [SerializeReference]
-            public ProcessAction Action;
+            public IProcessAction Action;
 
             [Header("Infinite Settings")]
-            [Tooltip("Controls how this step loops: Once (no loop), Infinite (infinite), or Limited (specific number of loops).")]
+            [Tooltip(
+                "Controls how this step loops: Once (no loop), Infinite (infinite), or Limited (specific number of loops).")]
             public StepLoopMode loopMode = StepLoopMode.Once;
 
-            [Tooltip("Number of times to execute this step when loopMode is Limited.")]
-            [Min(1)]
+            [Tooltip("Number of times to execute this step when loopMode is Limited.")] [Min(1)]
             public int loopCount = 1;
 
-            [Tooltip("If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
+            [Tooltip(
+                "If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
             public bool blocking = true;
 
             [Header("Step Start Delay")]
             [Tooltip("Delay in seconds before this step begins after it becomes eligible.")]
             public float startDelay = 0f;
 
-            [Header("Step Time Limit")]
-            public bool timeLimited;
+            [Header("Step Time Limit")] public bool timeLimited;
 
-            [Tooltip("If true, when the time limit elapses we do NOT force-complete; we let it finish naturally and skip exactly one loop on completion. If false, we cancel on timeout.")]
+            [Tooltip(
+                "If true, when the time limit elapses we do NOT force-complete; we let it finish naturally and skip exactly one loop on completion. If false, we cancel on timeout.")]
             public bool finishExecutionOnEndTime;
 
             [Tooltip("Seconds allowed for this step if timeLimited is true.")]
             public float timeLimit = 0f;
 
             // Runtime (not serialized)
-            [NonSerialized] internal float TimeLeft;
-            [NonSerialized] internal bool Started;
+            [NonSerialized] internal float timeLeft;
+            [NonSerialized] internal bool started;
 
-            [NonSerialized] internal bool WaitingForStartDelay;
-            [NonSerialized] internal float StartDelayRemaining;
+            [NonSerialized] internal bool waitingForStartDelay;
+            [NonSerialized] internal float startDelayRemaining;
 
             // Timeout behavior: after a timeout (finishExecutionOnEndTime == true),
             // allow the action to complete naturally, but skip exactly one loop on that completion.
@@ -124,7 +131,7 @@ namespace Jungle.Actions
                 float? stepTimeLimit = null;
 
                 // Get action duration if available
-                if (Action != null && Action.IsTimed && Action.Duration > 0f)
+                if (Action != null && Action.HasDefinedDuration && Action.Duration > 0f)
                 {
                     actionDuration = Action.Duration;
                 }
@@ -148,21 +155,23 @@ namespace Jungle.Actions
 
         [NonSerialized] private int currentIndex;
         [NonSerialized] private float sequenceTimeLeft;
+
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
+
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
-        // Internal completion listener
-        [NonSerialized] private Action internalCompletionListener;
 
-        protected override void BeginImpl()
+        public void Start()
         {
-            if (Steps == null || Steps.Count == 0)
+            IsInProgress = true;
+            HasCompleted = false;
+
+            if (Steps.Count == 0)
             {
-                End();
+                Complete();
                 return;
             }
 
-           
             currentIndex = 0;
             parallelRunning.Clear();
 
@@ -178,16 +187,37 @@ namespace Jungle.Actions
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
 
-        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        public void Interrupt()
         {
-            internalCompletionListener = onCompleted;
+            if (!IsInProgress) return;
+
+            IsInProgress = false;
+            InterruptOrCompleteCleanup();
         }
 
-
-        protected override void InterruptOrCompleteCleanup()
+        public void OnStateExit()
         {
-           
+            if (IsInProgress)
+            {
+                Interrupt();
+            }
 
+            InterruptOrCompleteCleanup();
+            HasCompleted = false;
+        }
+
+        private void Complete()
+        {
+            if (!IsInProgress) return;
+
+            IsInProgress = false;
+            HasCompleted = true;
+            InterruptOrCompleteCleanup();
+            OnProcessCompleted?.Invoke();
+        }
+
+        protected void InterruptOrCompleteCleanup()
+        {
             if (tickRoutine != null)
             {
                 CoroutineRunner.StopManagedCoroutine(tickRoutine);
@@ -201,7 +231,6 @@ namespace Jungle.Actions
             }
 
             parallelRunning.Clear();
-            internalCompletionListener = null;
         }
 
         /// <summary>
@@ -227,6 +256,7 @@ namespace Jungle.Actions
 
                 yield return null;
             }
+          
         }
 
         /// <summary>
@@ -242,7 +272,7 @@ namespace Jungle.Actions
                 sequenceTimeLeft -= deltaTime;
                 if (sequenceTimeLeft <= 0f)
                 {
-                    End();
+                    Complete();
                     return;
                 }
             }
@@ -254,8 +284,8 @@ namespace Jungle.Actions
                 if (!(step.timeLimited && step.timeLimit > 0f))
                     continue;
 
-                step.TimeLeft -= deltaTime;
-                if (step.TimeLeft > 0f) continue;
+                step.timeLeft -= deltaTime;
+                if (step.timeLeft > 0f) continue;
 
                 // Timeout reached
                 if (step.finishExecutionOnEndTime)
@@ -268,13 +298,13 @@ namespace Jungle.Actions
                 else
                 {
                     // Cancel-on-timeout behavior:
-                    step.Action.End();
+                    step.Action.Interrupt();
                     HandleStepTerminal(step);
                 }
 
                 // Reset the per-step timer so we don't keep firing every frame.
                 // If we want "single-shot" timeout per run, set to +inf; otherwise re-arm.
-                step.TimeLeft = float.PositiveInfinity;
+                step.timeLeft = float.PositiveInfinity;
             }
         }
 
@@ -287,20 +317,20 @@ namespace Jungle.Actions
             for (int i = currentIndex; i < Steps.Count; i++)
             {
                 var step = Steps[i];
-                if (!step.WaitingForStartDelay)
+                if (!step.waitingForStartDelay)
                     continue;
 
-                if (step.StartDelayRemaining > 0f)
+                if (step.startDelayRemaining > 0f)
                 {
-                    step.StartDelayRemaining -= deltaTime;
-                    if (step.StartDelayRemaining <= 0f)
+                    step.startDelayRemaining -= deltaTime;
+                    if (step.startDelayRemaining <= 0f)
                     {
-                        step.StartDelayRemaining = 0f;
+                        step.startDelayRemaining = 0f;
                         anyElapsed = true;
                     }
                 }
 
-                if (step.blocking && step.StartDelayRemaining > 0f)
+                if (step.blocking && step.startDelayRemaining > 0f)
                 {
                     break;
                 }
@@ -322,7 +352,7 @@ namespace Jungle.Actions
             }
 
             var step = Steps[currentIndex];
-            return !step.Started && step.WaitingForStartDelay && step.StartDelayRemaining > 0f;
+            return !step.started && step.waitingForStartDelay && step.startDelayRemaining > 0f;
         }
 
         private void StartNextEligibleSteps()
@@ -331,23 +361,23 @@ namespace Jungle.Actions
             {
                 var step = Steps[currentIndex];
 
-                if (!step.Started)
+                if (!step.started)
                 {
-                    if (!step.WaitingForStartDelay)
+                    if (!step.waitingForStartDelay)
                     {
-                        step.StartDelayRemaining = Mathf.Max(0f, step.StartDelayRemaining);
-                        if (step.StartDelayRemaining > 0f)
+                        step.startDelayRemaining = Mathf.Max(0f, step.startDelayRemaining);
+                        if (step.startDelayRemaining > 0f)
                         {
-                            step.WaitingForStartDelay = true;
+                            step.waitingForStartDelay = true;
                             return;
                         }
                     }
-                    else if (step.StartDelayRemaining > 0f)
+                    else if (step.startDelayRemaining > 0f)
                     {
                         return;
                     }
 
-                    step.WaitingForStartDelay = false;
+                    step.waitingForStartDelay = false;
                     StartStep(step);
                 }
 
@@ -366,14 +396,14 @@ namespace Jungle.Actions
         {
             if (s.Action == null) return;
 
-            s.Started = true;
-            s.TimeLeft = (s.timeLimited && s.timeLimit > 0f) ? s.timeLimit : float.PositiveInfinity;
+            s.started = true;
+            s.timeLeft = (s.timeLimited && s.timeLimit > 0f) ? s.timeLimit : float.PositiveInfinity;
             s.suppressLoopOnce = false; // new run ⇒ clear suppression
-            s.WaitingForStartDelay = false;
-            s.StartDelayRemaining = 0f;
+            s.waitingForStartDelay = false;
+            s.startDelayRemaining = 0f;
 
-            AttachStepListeners(s);      // attach before Begin to catch instant-complete
-            s.Action.Begin();
+            AttachStepListeners(s); // attach before Start to catch instant-complete
+            s.Action.Start();
 
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
@@ -383,9 +413,9 @@ namespace Jungle.Actions
         {
             // Clean slate: cancel & detach, then re-attach and start
             DetachStepListeners(s);
-            s.Action.End();
+            s.Action.Interrupt();
             parallelRunning.Remove(s);
-            s.Started = false;
+            s.started = false;
 
             StartStep(s);
         }
@@ -408,16 +438,16 @@ namespace Jungle.Actions
         }
 
         /// <summary>
-        /// End the sequence when all steps are finished.
+        /// OnStateExit the sequence when all steps are finished.
         /// </summary>
         private void MaybeRestartOrComplete()
         {
             if (currentIndex < Steps.Count || parallelRunning.Count > 0)
                 return; // still running steps
-
-            // All steps finished - sequence runs only once
-            internalCompletionListener?.Invoke();
-            End();
+            
+            
+            
+            Complete();
         }
 
         // ---------- event wiring ----------
@@ -446,7 +476,6 @@ namespace Jungle.Actions
             };
 
             s.Action.OnProcessCompleted += s.completedHandler;
-       
         }
 
         private void DetachStepListeners(Step s)
@@ -458,7 +487,6 @@ namespace Jungle.Actions
                 s.Action.OnProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
-            
         }
 
         private void ResetAllForRepeat()
@@ -466,7 +494,7 @@ namespace Jungle.Actions
             foreach (var s in Steps)
             {
                 DetachStepListeners(s);
-                 s.Action.End();
+                s.Action.Interrupt();
                 ResetStepRuntimeState(s, true);
             }
 
@@ -487,11 +515,11 @@ namespace Jungle.Actions
 
         private void ResetStepRuntimeState(Step step, bool resetLoopCount)
         {
-            step.Started = false;
+            step.started = false;
             step.suppressLoopOnce = false;
-            step.WaitingForStartDelay = false;
-            step.StartDelayRemaining = Mathf.Max(0f, step.startDelay);
-            step.TimeLeft = (step.timeLimited && step.timeLimit > 0f) ? step.timeLimit : float.PositiveInfinity;
+            step.waitingForStartDelay = false;
+            step.startDelayRemaining = Mathf.Max(0f, step.startDelay);
+            step.timeLeft = (step.timeLimited && step.timeLimit > 0f) ? step.timeLimit : float.PositiveInfinity;
 
             if (resetLoopCount)
             {
@@ -523,9 +551,5 @@ namespace Jungle.Actions
                     return false;
             }
         }
-
-        
-
-       
     }
 }

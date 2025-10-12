@@ -9,7 +9,7 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Moves a GameObject under a drag contextual parent transform during drag operations.",
         "d_UnityEditor.HierarchyWindow")]
-    public class ParentToContextBeginEndAction : IBeginEndAction
+    public class ParentToContextStateAction : IStateAction
     {
         [Header("Target Configuration")] [SerializeField]
         private ITransformValue targetTransforms;
@@ -25,7 +25,7 @@ namespace Jungle.Actions
         private List<Transform> originalParents = new();
         private bool skipStop;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             originalParents.Clear();
             foreach (var target in targetTransforms.Values)
@@ -46,7 +46,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void End()
+        public void OnStateExit()
         {
             if (skipStop)
             {

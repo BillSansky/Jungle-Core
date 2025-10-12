@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
         "d_AnimationClip")]
     [Serializable]
-    public class PlayableDirectorStartAction : IBeginEndAction
+    public class PlayableDirectorStartAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetDirectorObject = new GameObjectValue();
         [SerializeField] private bool restartFromBeginning = true;
@@ -18,7 +18,7 @@ namespace Jungle.Actions
 
         private PlayableDirector cachedDirector;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             var director = ResolveDirector();
 
@@ -30,7 +30,7 @@ namespace Jungle.Actions
             director.Play();
         }
 
-        public void End()
+        public void OnStateExit()
         {
            
             var director = cachedDirector ?? ResolveDirector();

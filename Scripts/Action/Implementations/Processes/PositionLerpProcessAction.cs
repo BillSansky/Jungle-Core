@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Smoothly moves a transform toward a target position with optional return on stop.", "d_MoveTool")]
     [Serializable]
-    public class PositionLerpProcessAction : ProcessAction
+    public class PositionLerpProcessAction : IProcessAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeReference][JungleClassSelection] private IVector3Value targetPosition;
@@ -25,20 +25,35 @@ namespace Jungle.Actions
         private bool hasCachedInitialPosition;
         private Transform resolvedTransform;
         private Coroutine activeRoutine;
+        private bool isInProgress;
+        private bool hasCompleted;
 
-        public override bool IsTimed => duration?.V > 0f;
-        public override float Duration => duration?.V ?? 0f;
+        public event Action OnProcessCompleted;
 
-      
+        public bool HasDefinedDuration => duration?.V > 0f;
+        public float Duration => duration?.V ?? 0f;
+        public bool IsInProgress => isInProgress;
+        public bool HasCompleted => hasCompleted;
 
-        protected override void BeginImpl()
+        public void Execute()
         {
+            Start();
+        }
+
+        public void Start()
+        {
+            if (isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = true;
+            hasCompleted = false;
+
             resolvedTransform = ResolveTargetTransform();
             var useLocal = useLocalPosition;
             var totalDuration = duration.V;
             var curve = interpolation.V;
-
-            
 
             CacheInitialPosition(resolvedTransform, useLocal);
 
@@ -46,7 +61,8 @@ namespace Jungle.Actions
 
             if (totalDuration <= 0f)
             {
-                ApplyPosition(resolvedTransform, targetPosition.Value(), useLocal);
+                ApplyPosition(resolvedTransform, targetPosition.V, useLocal);
+                Complete();
                 return;
             }
 
@@ -55,10 +71,17 @@ namespace Jungle.Actions
                 LerpPosition(resolvedTransform, start, totalDuration, curve, useLocal));
         }
 
-        protected override void InterruptOrCompleteCleanup()
+        public void Interrupt()
         {
+            if (!isInProgress)
+            {
+                return;
+            }
+
             if (resolvedTransform == null)
             {
+                isInProgress = false;
+                hasCompleted = false;
                 return;
             }
 
@@ -66,6 +89,8 @@ namespace Jungle.Actions
 
             if (!returnToInitialOnStop || !hasCachedInitialPosition)
             {
+                isInProgress = false;
+                hasCompleted = false;
                 return;
             }
 
@@ -76,19 +101,26 @@ namespace Jungle.Actions
             if (totalDuration <= 0f)
             {
                 ApplyPosition(resolvedTransform, cachedInitialPosition, useLocal);
+                isInProgress = false;
+                hasCompleted = false;
                 return;
             }
 
             var current = ReadPosition(resolvedTransform, useLocal);
             activeRoutine = CoroutineRunner.StartManagedCoroutine(
-                LerpPosition(resolvedTransform, current, totalDuration, curve, useLocal));
+                LerpToInitialPosition(resolvedTransform, current, totalDuration, curve, useLocal));
         }
 
-        private Action callback;
-        
-        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        private void Complete()
         {
-           callback=onCompleted;
+            if (!isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = false;
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
         }
 
         private IEnumerator LerpPosition(
@@ -101,6 +133,7 @@ namespace Jungle.Actions
             if (totalDuration <= 0f)
             {
                 ApplyPosition(transform, targetPosition.V, useLocal);
+                Complete();
                 yield break;
             }
 
@@ -117,21 +150,47 @@ namespace Jungle.Actions
             }
 
             ApplyPosition(transform, targetPosition.V, useLocal);
-            callback.Invoke();
+            Complete();
+        }
+
+        private IEnumerator LerpToInitialPosition(
+            Transform transform,
+            Vector3 start,
+            float totalDuration,
+            AnimationCurve curve,
+            bool useLocal)
+        {
+            if (totalDuration <= 0f)
+            {
+                ApplyPosition(transform, cachedInitialPosition, useLocal);
+                isInProgress = false;
+                hasCompleted = false;
+                yield break;
+            }
+
+            float time = 0f;
+            var durationClamp = Mathf.Max(0.0001f, totalDuration);
+
+            while (time < durationClamp)
+            {
+                time += Time.deltaTime;
+                var t = Mathf.Clamp01(time / durationClamp);
+                var curved = curve.Evaluate(t);
+                ApplyPosition(transform, Vector3.LerpUnclamped(start, cachedInitialPosition, curved), useLocal);
+                yield return null;
+            }
+
+            ApplyPosition(transform, cachedInitialPosition, useLocal);
+            isInProgress = false;
+            hasCompleted = false;
         }
 
         private Transform ResolveTargetTransform()
         {
-            if (targetTransform == null)
-            {
-                throw new InvalidOperationException("Target transform provider has not been assigned.");
-            }
+            Debug.Assert(targetTransform != null, "Target transform provider has not been assigned.");
 
             var transform = targetTransform.V;
-            if (transform == null)
-            {
-                throw new InvalidOperationException("The transform provider returned a null transform instance.");
-            }
+            Debug.Assert(transform != null, "The transform provider returned a null transform instance.");
 
             return transform;
         }

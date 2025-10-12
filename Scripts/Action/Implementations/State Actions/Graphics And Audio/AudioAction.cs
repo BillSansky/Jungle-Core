@@ -5,14 +5,14 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class AudioAction : IBeginEndAction
+    public class AudioAction : IStateAction
     {
         [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;
         [SerializeField] private AudioClip dragEndSound;
         [SerializeField] private AudioClip targetReachedSound;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             if (!dragStartSound) return;
 
@@ -23,7 +23,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void End()
+        public void OnStateExit()
         {
             if (!dragEndSound) return;
 

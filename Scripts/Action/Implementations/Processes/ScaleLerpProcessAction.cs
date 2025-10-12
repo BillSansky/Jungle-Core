@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool")]
     [Serializable]
-    public class ScaleLerpProcessAction : ProcessAction
+    public class ScaleLerpProcessAction : IProcessAction
     {
         [SerializeReference] [JungleClassSelection]
         private ITransformValue targetTransform = new TransformLocalValue();
@@ -35,8 +35,15 @@ namespace Jungle.Actions
 
         private Coroutine routine;
 
-        public override bool IsTimed => duration?.V > 0f;
-        public override float Duration => duration?.V ?? 0f;
+        private bool isInProgress;
+        private bool hasCompleted;
+
+        // IProcessAction interface implementation
+        public event Action OnProcessCompleted;
+        public bool HasDefinedDuration => duration?.V > 0f;
+        public float Duration => duration?.V ?? 0f;
+        public bool IsInProgress => isInProgress;
+        public bool HasCompleted => hasCompleted;
 
 
         private IEnumerator ScaleCoroutine(Transform transform, float durationValue,
@@ -47,7 +54,7 @@ namespace Jungle.Actions
             if (durationValue <= 0f)
             {
                 transform.localScale = targetScale.V;
-                callback.Invoke();
+                CompleteProcess();
                 yield break;
             }
 
@@ -61,10 +68,10 @@ namespace Jungle.Actions
                 yield return null;
             }
 
-            callback.Invoke();
+            CompleteProcess();
         }
 
-        protected override void BeginImpl()
+        public void Start()
         {
             var transform = targetTransform?.V;
             if (!transform) return;
@@ -74,42 +81,36 @@ namespace Jungle.Actions
             if (!wasInitialized) originalScale = transform.localScale;
 
             currentLerpTime = 0f;
-
+            isInProgress = true;
+            hasCompleted = false;
             wasInitialized = true;
 
             var target = targetScale.V;
             var durationValue = Mathf.Max(0f, duration.V);
             var curve = scaleCurve.V;
 
-
             routine = CoroutineRunner.StartManagedCoroutine(ScaleCoroutine(transform, durationValue, curve));
         }
 
-        protected override void InterruptOrCompleteCleanup()
+        public void Interrupt()
         {
-            var transform = targetTransform?.V;
-            if (!transform) return;
+            if (!isInProgress) return;
 
             CleanupAction();
-            
+            isInProgress = false;
+            hasCompleted = false;
         }
 
-        private Action callback;
-
-        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        private void CompleteProcess()
         {
-            callback = onCompleted;
+            isInProgress = false;
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
         }
 
         private void CleanupAction()
         {
             CoroutineRunner.StopManagedCoroutine(routine);
         }
-
-        private void OnDisable()
-        {
-            CleanupAction();
-        }
-        
     }
 }

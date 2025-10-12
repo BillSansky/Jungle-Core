@@ -7,7 +7,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip")]
     [Serializable]
-    public class AnimatorTriggerAction : IBeginEndAction
+    public class AnimatorTriggerAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeField] private string triggerName = "Activate";
@@ -15,7 +15,7 @@ namespace Jungle.Actions
 
         private Animator cachedAnimator;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             var animator = ResolveAnimator();
 
@@ -27,7 +27,7 @@ namespace Jungle.Actions
             animator.SetTrigger(triggerName);
         }
 
-        public void End()
+        public void OnStateExit()
         {
             if (!resetOnStop)
             {

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class RigidbodyKinematicBeginEndAction : IBeginEndAction
+    public class RigidbodyKinematicStateAction : IStateAction
     {
         public enum KinematicOption
         {
@@ -25,7 +25,7 @@ namespace Jungle.Actions
         private List<bool> wasKinematic = new();
 
 
-        public void Begin()
+        public void OnStateEnter()
         {
             wasKinematic.Clear();
 
@@ -50,7 +50,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void End()
+        public void OnStateExit()
         {
             int i = 0;
             foreach (var rb in targetRigidbodies.Values)

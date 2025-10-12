@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Jungle.Values
 {
@@ -12,6 +13,7 @@ namespace Jungle.Values
         /// <summary>
         /// Local value stored directly on the reference.
         /// </summary>
+        [SerializeField]
         private T value;
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip")]
     [Serializable]
-    public class AnimatorFloatLerpAction : IBeginEndAction
+    public class AnimatorFloatLerpAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeReference] private IStringValue parameterName = new StringValue("Blend");
@@ -25,7 +25,7 @@ namespace Jungle.Actions
         private bool hasCachedInitialValue;
         private Coroutine activeRoutine;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             var animator = ResolveAnimator();
             var parameter = ResolveParameterName();
@@ -50,7 +50,7 @@ namespace Jungle.Actions
                 LerpValue(animator, parameter, start, target, totalDuration, curve));
         }
 
-        public void End()
+        public void OnStateExit()
         {
 
             var animator = cachedAnimator ?? ResolveAnimator();

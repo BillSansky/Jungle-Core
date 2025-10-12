@@ -11,29 +11,45 @@ namespace Jungle.Actions
 {
     [JungleClassInfo("Interpolates a transform toward a target rotation with curve-based easing.", "d_RotateTool")]
     [Serializable]
-    public class RotationLerpProcessAction : ProcessAction
+    public class RotationLerpProcessAction : IProcessAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransform = new TransformLocalValue();
         [SerializeReference][JungleClassSelection] private IVector3Value targetRotation = new Vector3Value(Vector3.zero);
         [SerializeField] private bool useLocalRotation = true;
         [SerializeReference][JungleClassSelection] private IFloatValue duration = new FloatValue(0.35f);
-        [SerializeReference] [JungleClassSelection]private IAnimationCurveValue interpolation =
+        [SerializeReference][JungleClassSelection] private IAnimationCurveValue interpolation =
             new AnimationCurveValue(AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
-      
 
         private Quaternion cachedInitialRotation;
         private bool hasCachedInitialRotation;
         private Transform resolvedTransform;
         private Coroutine activeRoutine;
+        private bool isInProgress;
+        private bool hasCompleted;
 
-        public override bool IsTimed => duration?.V > 0f;
-        public override float Duration => duration?.V ?? 0f;
+        public event Action OnProcessCompleted;
 
-       
-        protected override void BeginImpl()
+        public bool HasDefinedDuration => duration?.V > 0f;
+        public float Duration => duration?.V ?? 0f;
+        public bool IsInProgress => isInProgress;
+        public bool HasCompleted => hasCompleted;
+
+        public void Execute()
         {
+            Start();
+        }
+
+        public void Start()
+        {
+            if (isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = true;
+            hasCompleted = false;
+
             resolvedTransform = ResolveTargetTransform();
-  
             var totalDuration = duration.V;
             var curve = interpolation.V;
             var useLocal = useLocalRotation;
@@ -42,27 +58,43 @@ namespace Jungle.Actions
 
             StopActiveRoutine();
 
-          
+            if (totalDuration <= 0f)
+            {
+                ApplyRotation(resolvedTransform, Quaternion.Euler(targetRotation.V), useLocal);
+                Complete();
+                return;
+            }
+
             var start = ReadRotation(resolvedTransform, useLocal);
             activeRoutine = CoroutineRunner.StartManagedCoroutine(
                 LerpRotation(resolvedTransform, start, totalDuration, curve, useLocal));
         }
 
-        protected override void InterruptOrCompleteCleanup()
+        public void Interrupt()
         {
-            if (resolvedTransform == null)
+            if (!isInProgress)
             {
                 return;
             }
 
+            Debug.Assert(resolvedTransform != null, "Resolved transform is null during interrupt.");
+
             StopActiveRoutine();
-            
+
+            isInProgress = false;
+            hasCompleted = false;
         }
 
-        private Action callback;
-        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        private void Complete()
         {
-            callback=onCompleted;
+            if (!isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = false;
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
         }
 
         private IEnumerator LerpRotation(
@@ -74,7 +106,8 @@ namespace Jungle.Actions
         {
             if (totalDuration <= 0f)
             {
-                ApplyRotation(transform,     Quaternion.Euler(targetRotation.V), useLocal);
+                ApplyRotation(transform, Quaternion.Euler(targetRotation.V), useLocal);
+                Complete();
                 yield break;
             }
 
@@ -91,13 +124,15 @@ namespace Jungle.Actions
             }
 
             ApplyRotation(transform, Quaternion.Euler(targetRotation.V), useLocal);
-            callback();
+            Complete();
         }
 
         private Transform ResolveTargetTransform()
         {
-            
+            Debug.Assert(targetTransform != null, "Target transform provider has not been assigned.");
+
             var transform = targetTransform.V;
+            Debug.Assert(transform != null, "The transform provider returned a null transform instance.");
           
             return transform;
         }

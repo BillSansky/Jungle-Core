@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Jungle.Attributes;
 using Jungle.Values.GameDev;
 using UnityEngine;
 
@@ -14,16 +15,16 @@ namespace Jungle.Actions
     }
     
     [System.Serializable]
-    public class ColliderStateBeginEndAction : IBeginEndAction
+    public class ColliderStateStateAction : IStateAction
     {
-        [SerializeReference] private IColliderValue targetColliders;
+        [SerializeReference][JungleClassSelection] private IColliderValue targetColliders;
         [SerializeField] private ColliderStateModification onExecuteModification;
         [SerializeField] private ColliderStateModification onCompleteModification;
 
         private readonly Dictionary<Collider, bool> originalStates = new();
       
        
-        public void Begin()
+        public void OnStateEnter()
         {
             StoreOriginalState();
             ApplyColliderStates(onExecuteModification);
@@ -38,7 +39,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void End()
+        public void OnStateExit()
         {
 
             ApplyColliderStates(onCompleteModification);

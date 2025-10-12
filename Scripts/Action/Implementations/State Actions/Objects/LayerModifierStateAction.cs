@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [System.Serializable]
-    public class LayerModifierBeginEndAction : IBeginEndAction
+    public class LayerModifierStateAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetObjects = new GameObjectValue();
 
@@ -16,7 +16,7 @@ namespace Jungle.Actions
         private readonly Dictionary<GameObject, int> storedLayers = new();
 
 
-       public void Begin()
+       public void OnStateEnter()
         {
             if (revertOnStop)
                 storedLayers.Clear();
@@ -34,7 +34,7 @@ namespace Jungle.Actions
            
         }
 
-        public void End()
+        public void OnStateExit()
         {
      
             if (revertOnStop)

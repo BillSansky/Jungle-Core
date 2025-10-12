@@ -7,13 +7,13 @@ namespace Jungle.Actions
     {
      
 
-        [SerializeReference] private List<IBeginEndAction> actions;
+        [SerializeReference] private List<IStateAction> actions;
 
         public void OnEnable()
         {
             foreach (var action in actions)
             {
-                action.Begin();
+                action.OnStateEnter();
             }
         }
 
@@ -21,7 +21,7 @@ namespace Jungle.Actions
         {
             foreach (var action in actions)
             {
-               action.End();
+               action.OnStateExit();
             }
         }
     }

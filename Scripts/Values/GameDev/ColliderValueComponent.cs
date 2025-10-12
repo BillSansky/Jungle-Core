@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
+    [Serializable]
     public class ColliderValueComponent : ValueComponent<Collider>
     {
         [SerializeField]

@@ -9,7 +9,7 @@ namespace Jungle.Actions
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
         "d_AnimationClip")]
     [Serializable]
-    public class AnimatorStateBeginEndAction : IBeginEndAction
+    public class AnimatorStateStateAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeField] private string stateName = "StateName";
@@ -23,7 +23,7 @@ namespace Jungle.Actions
         private float previousNormalizedTime;
         private bool hasPreviousState;
 
-        public void Begin()
+        public void OnStateEnter()
         {
             var animator = ResolveAnimator();
 
@@ -51,7 +51,7 @@ namespace Jungle.Actions
             }
         }
 
-        public void End()
+        public void OnStateExit()
         {
 
             var animator = cachedAnimator ?? ResolveAnimator();

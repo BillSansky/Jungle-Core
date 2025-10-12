@@ -10,15 +10,14 @@ namespace Jungle.Actions
     {
         Timed,
         OneFrame,
-        NeverEnd,
     }
     
     [Serializable]
-    public class AutoBeginEndProcessAction : ProcessAction
+    public class TimedStateActionExecutor : IProcessAction
     {
         
         [SerializeReference][JungleClassSelection]
-        public List<IBeginEndAction> Actions  = new List<IBeginEndAction>();
+        public List<IStateAction> Actions  = new List<IStateAction>();
         
         public EndLogic endLogic = EndLogic.Timed;
         
@@ -28,12 +27,14 @@ namespace Jungle.Actions
         public MonoBehaviour coroutineRunner;
 
         private Coroutine autoEndCoroutine;
+        private bool isInProgress;
+        private bool hasCompleted;
 
-        private event Action internalCompletionListener;
-        
-        public override bool IsTimed => endLogic != EndLogic.NeverEnd;
+        public event Action OnProcessCompleted;
 
-        public override float Duration
+        public bool HasDefinedDuration => true;
+
+        public float Duration
         {
             get
             {
@@ -43,19 +44,36 @@ namespace Jungle.Actions
                         return duration;
                     case EndLogic.OneFrame:
                         return 0.0f;
-                    case EndLogic.NeverEnd:
-                        return float.PositiveInfinity;
                     default:
                         return 0.0f;
                 }
             }
         }
 
-        protected override void BeginImpl()
+        public bool IsInProgress => isInProgress;
+
+        public bool HasCompleted => hasCompleted;
+
+        public void Execute()
         {
+            Start();
+        }
+
+        public void Start()
+        {
+            Debug.Assert(coroutineRunner != null, "coroutineRunner must be set before starting the action");
+
+            if (isInProgress)
+            {
+                return;
+            }
+
+            isInProgress = true;
+            hasCompleted = false;
+
             foreach (var action in Actions)
             {
-                action?.Begin();
+                action?.OnStateEnter();
             }
 
             // Start auto-end coroutine if needed
@@ -65,7 +83,19 @@ namespace Jungle.Actions
             }
         }
 
-        protected override void InterruptOrCompleteCleanup()
+        public void Interrupt()
+        {
+            if (!isInProgress)
+            {
+                return;
+            }
+
+            Cleanup();
+            isInProgress = false;
+            hasCompleted = false;
+        }
+
+        private void Cleanup()
         {
             // Stop the auto-end coroutine if it's running
             if (autoEndCoroutine != null && coroutineRunner != null)
@@ -76,13 +106,21 @@ namespace Jungle.Actions
 
             foreach (var action in Actions)
             {
-                action?.End();
+                action?.OnStateExit();
             }
         }
 
-        protected override void RegisterInternalCompletionListener(Action onCompleted)
+        private void Complete()
         {
-            internalCompletionListener+=onCompleted;
+            if (!isInProgress)
+            {
+                return;
+            }
+
+            Cleanup();
+            isInProgress = false;
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
         }
 
         private IEnumerator AutoEndCoroutine()
@@ -96,7 +134,7 @@ namespace Jungle.Actions
                 yield return new WaitForSeconds(duration);
             }
 
-            internalCompletionListener?.Invoke();
+            Complete();
         }
     }
 }
