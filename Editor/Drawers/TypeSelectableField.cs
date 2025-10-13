@@ -34,6 +34,11 @@ namespace Jungle.Editor
 
         private EventCallback<ChangeEvent<bool>> expandToggleHandler;
 
+        // Track reference state to detect structural changes
+        private object lastManagedRefValue;
+        private Type lastManagedRefType;
+        private UnityEngine.Object lastObjectRefValue;
+
         // Guard in case some drawer mistakenly applies to children
         [ThreadStatic] private static bool renderingChildren;
 
@@ -79,11 +84,13 @@ namespace Jungle.Editor
             btnPickOrSwap = new Button(OnPickOrSwapClicked) { text = "+" };
             btnPickOrSwap.tooltip = "Pick or change the type";
             btnPickOrSwap.AddToClassList("tsf__button");
+            btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             buttonGroup.Add(btnPickOrSwap);
 
             btnClear = new Button(OnClearClicked) { text = "✕" };
             btnClear.tooltip = "Clear";
             btnClear.AddToClassList("tsf__button");
+            btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             buttonGroup.Add(btnClear);
 
             rootContainer.Add(row);
@@ -94,46 +101,16 @@ namespace Jungle.Editor
             underRowHost.name = "tsf-details";
             rootContainer.Add(underRowHost);
 
-            // Row click handler for toggling foldout
-            // Only handle clicks on specific allowlisted elements
+            // Click handler for label to toggle foldout
             row.RegisterCallback<ClickEvent>(evt =>
             {
                 if (!allowRowToggle) return;
-
-                var target = evt.target as VisualElement;
-                if (target == null) return;
-
-                // First check: is this one of our clickable elements?
-                bool isClickableElement = target == expandToggle || 
-                                         target == label ||
-                                         (target is Label && target.ClassListContains("tsf__type-summary"));
-
-                if (isClickableElement)
-                {
-                    expandToggle.value = !expandToggle.value;
-                    evt.StopPropagation();
-                    return;
-                }
-
-                // Second check: exclude clicks that originated from within input field internals
-                // This prevents interference with drag-to-change behavior on numeric fields
-                if (target.ClassListContains("unity-base-field__input") ||
-                    target.ClassListContains("unity-float-field__input") ||
-                    target.ClassListContains("unity-integer-field__input") ||
-                    (target.parent != null && target.parent.ClassListContains("unity-base-field__input")))
-                {
-                    return;
-                }
+                expandToggle.value = !expandToggle.value;
+           
+                evt.StopPropagation();
             });
 
-            // Update row class based on clickability
-            schedule.Execute(() =>
-            {
-                if (allowRowToggle)
-                    row.AddToClassList("tsf-row--clickable");
-                else
-                    row.RemoveFromClassList("tsf-row--clickable");
-            }).Every(100);
+            
         }
 
         /// <summary>Bind the field to a property and base type.</summary>
@@ -171,17 +148,28 @@ namespace Jungle.Editor
             RepaintContentOnly();
             RefreshButtons();
 
-            // Keep in sync with changes
+            // Capture initial reference state
+            CaptureReferenceState();
+
+            // Keep in sync with changes - only repaint on structural changes
             this.TrackPropertyValue(prop, _ =>
             {
-                RepaintContentOnly();
-                RefreshButtons();
+                if (HasStructuralChange())
+                {
+                    RepaintContentOnly();
+                    RefreshButtons();
+                    CaptureReferenceState();
+                }
             });
 
             this.TrackSerializedObjectValue(prop.serializedObject, _ =>
             {
-                RepaintContentOnly();
-                RefreshButtons();
+                if (HasStructuralChange())
+                {
+                    RepaintContentOnly();
+                    RefreshButtons();
+                    CaptureReferenceState();
+                }
             });
         }
 
@@ -191,6 +179,7 @@ namespace Jungle.Editor
         private void OnPickOrSwapClicked()
         {
             if (prop == null) return;
+            Debug.Log("CLICK");
 
             if (isManagedRef)
             {
@@ -376,10 +365,58 @@ namespace Jungle.Editor
             btnClear.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        private void CaptureReferenceState()
+        {
+            if (prop == null) return;
+
+            if (isManagedRef)
+            {
+                lastManagedRefValue = prop.managedReferenceValue;
+                lastManagedRefType = lastManagedRefValue?.GetType();
+            }
+            else
+            {
+                lastObjectRefValue = prop.objectReferenceValue;
+            }
+        }
+
+        private bool HasStructuralChange()
+        {
+            if (prop == null) return false;
+
+            if (isManagedRef)
+            {
+                var current = prop.managedReferenceValue;
+                var currentType = current?.GetType();
+
+                // Structural change if:
+                // 1. null ↔ non-null transition
+                // 2. Type changed
+                bool wasNull = lastManagedRefValue == null;
+                bool isNull = current == null;
+
+                if (wasNull != isNull)
+                    return true;
+
+                if (lastManagedRefType != currentType)
+                    return true;
+
+                return false;
+            }
+            else
+            {
+                var current = prop.objectReferenceValue;
+
+                // Structural change if reference changed (including null ↔ non-null)
+                return lastObjectRefValue != current;
+            }
+        }
+
         // --------------- Content rendering ---------------
 
         private void RepaintContentOnly()
         {
+            Debug.Log("REPAINT");
             content.Clear();
             underRowHost.Clear();
 

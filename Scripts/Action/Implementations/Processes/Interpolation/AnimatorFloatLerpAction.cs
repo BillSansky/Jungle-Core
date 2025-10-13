@@ -10,9 +10,9 @@ namespace Jungle.Actions
     [Serializable]
     public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
     {
-        [SerializeReference] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
-        [SerializeReference] private IStringValue parameterName = new StringValue("Blend");
-        [SerializeReference] private IFloatValue targetValue = new FloatValue(1f);
+        [SerializeReference][JungleClassSelection] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
+        [SerializeReference][JungleClassSelection] private IStringValue parameterName = new StringValue("Blend");
+        [SerializeReference][JungleClassSelection] private IFloatValue targetValue = new FloatValue(1f);
 
         private Animator cachedAnimator;
         private float cachedInitialValue;
