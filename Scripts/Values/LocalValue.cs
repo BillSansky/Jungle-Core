@@ -1,4 +1,5 @@
 using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values
@@ -8,13 +9,14 @@ namespace Jungle.Values
     /// </summary>
     /// <typeparam name="T">Type of value being stored.</typeparam>
     [Serializable]
+    [JungleClassInfo("a value only defined locally",true)]
     public abstract class LocalValue<T> : IValue<T>
     {
         /// <summary>
         /// Local value stored directly on the reference.
         /// </summary>
         [SerializeField]
-        private T value;
+        protected T value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalValue{T}"/> class.

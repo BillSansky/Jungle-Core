@@ -14,35 +14,40 @@ namespace Jungle.Attributes
         public string IconPathOrKey { get; }
         public string Category { get; }
         public string DisplayName { get; }   // <-- NEW
+        public bool DrawInline { get; }
 
-        public JungleClassInfoAttribute(string description)
+        public JungleClassInfoAttribute(string description, bool drawInline = false)
         {
             Description = description;
             IconPathOrKey = null;
             Category = "General";
+            DrawInline = drawInline;
         }
 
-        public JungleClassInfoAttribute(string description, string iconPathOrKey)
+        public JungleClassInfoAttribute(string description, string iconPathOrKey, bool drawInline = false)
         {
             Description = description;
             IconPathOrKey = iconPathOrKey;
             Category = "General";
+            DrawInline = drawInline;
         }
 
-        public JungleClassInfoAttribute(string description, string iconPathOrKey, string category)
+        public JungleClassInfoAttribute(string description, string iconPathOrKey, string category, bool drawInline = false)
         {
             Description = description;
             IconPathOrKey = iconPathOrKey;
             Category = category ?? "General";
+            DrawInline = drawInline;
         }
 
         // NEW: lets you override the name shown in the picker (optional)
-        public JungleClassInfoAttribute(string displayName, string description, string iconPathOrKey, string category = "General", bool isDisplayName = true)
+        public JungleClassInfoAttribute(string displayName, string description, string iconPathOrKey, string category = "General", bool drawInline = false, bool isDisplayName = true)
         {
             DisplayName = displayName;
             Description = description;
             IconPathOrKey = iconPathOrKey;
             Category = string.IsNullOrEmpty(category) ? "General" : category;
+            DrawInline = drawInline;
         }
     }
 }

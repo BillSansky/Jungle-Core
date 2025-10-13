@@ -9,6 +9,11 @@ namespace Jungle.Values.Primitives
     [Serializable]
     public class IntValue : LocalValue<int>, IIntValue
     {
+        public IntValue(int i) : base(i)
+        {
+           
+        }
+
         public override bool HasMultipleValues => false;
         
     }

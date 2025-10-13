@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -94,15 +95,35 @@ namespace Jungle.Editor
             rootContainer.Add(underRowHost);
 
             // Row click handler for toggling foldout
+            // Only handle clicks on specific allowlisted elements
             row.RegisterCallback<ClickEvent>(evt =>
             {
                 if (!allowRowToggle) return;
 
-                if (evt.target is VisualElement ve && (buttonGroup.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
-                    return;
+                var target = evt.target as VisualElement;
+                if (target == null) return;
 
-                expandToggle.value = !expandToggle.value;
-                evt.StopPropagation();
+                // First check: is this one of our clickable elements?
+                bool isClickableElement = target == expandToggle || 
+                                         target == label ||
+                                         (target is Label && target.ClassListContains("tsf__type-summary"));
+
+                if (isClickableElement)
+                {
+                    expandToggle.value = !expandToggle.value;
+                    evt.StopPropagation();
+                    return;
+                }
+
+                // Second check: exclude clicks that originated from within input field internals
+                // This prevents interference with drag-to-change behavior on numeric fields
+                if (target.ClassListContains("unity-base-field__input") ||
+                    target.ClassListContains("unity-float-field__input") ||
+                    target.ClassListContains("unity-integer-field__input") ||
+                    (target.parent != null && target.parent.ClassListContains("unity-base-field__input")))
+                {
+                    return;
+                }
             });
 
             // Update row class based on clickability
@@ -113,9 +134,6 @@ namespace Jungle.Editor
                 else
                     row.RemoveFromClassList("tsf-row--clickable");
             }).Every(100);
-
-            btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
-            btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
         }
 
         /// <summary>Bind the field to a property and base type.</summary>
@@ -367,6 +385,19 @@ namespace Jungle.Editor
 
             if (prop == null) return;
 
+            // Detect DrawInline from the managed reference type's JungleClassInfoAttribute
+            bool drawInline = false;
+            if (isManagedRef && prop.managedReferenceValue != null)
+            {
+                var valueType = prop.managedReferenceValue.GetType();
+                var classInfo = (Jungle.Attributes.JungleClassInfoAttribute)Attribute.GetCustomAttribute(
+                    valueType, typeof(Jungle.Attributes.JungleClassInfoAttribute));
+                if (classInfo != null)
+                {
+                    drawInline = classInfo.DrawInline;
+                }
+            }
+
             // If values differ across multi-object selection: show mixed and hide foldout
             if (prop.hasMultipleDifferentValues)
             {
@@ -375,6 +406,7 @@ namespace Jungle.Editor
                 content.Add(mixedLabel);
                 expandToggle.style.display = DisplayStyle.None;
                 underRowHost.style.display = DisplayStyle.None;
+                label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
                 return;
             }
 
@@ -389,6 +421,7 @@ namespace Jungle.Editor
                     expandToggle.style.display = DisplayStyle.None;
                     expandToggle.SetEnabled(false);
                     underRowHost.style.display = DisplayStyle.None;
+                    label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
 
                     var none = new Label("None");
                     none.AddToClassList("tsf__empty-value");
@@ -396,18 +429,34 @@ namespace Jungle.Editor
                     return;
                 }
 
-                allowRowToggle = true;
-                expandToggle.style.display = DisplayStyle.Flex;
-                expandToggle.SetEnabled(true);
-                
-                // Row summary = nice type name
-                var typeNice = GetManagedRefNiceName(prop);
-                var summary = new Label(typeNice);
-                summary.AddToClassList("tsf__type-summary");
-                content.Add(summary);
+                // Inline mode: hide label and toggle, render children directly in content
+                if (drawInline)
+                {
+                    allowRowToggle = false;
+                    expandToggle.style.display = DisplayStyle.None;
+                    expandToggle.SetEnabled(false);
+                    label.style.display = DisplayStyle.None;
+                    underRowHost.style.display = DisplayStyle.None;
 
-                // Details (children) go under the row
-                RenderManagedRefChildrenInto(prop, underRowHost);
+                    // Render children directly in content area
+                    RenderManagedRefChildrenInto(prop, content);
+                }
+                else
+                {
+                    allowRowToggle = true;
+                    expandToggle.style.display = DisplayStyle.Flex;
+                    expandToggle.SetEnabled(true);
+                    label.style.display = DisplayStyle.Flex;
+
+                    // Row summary = nice type name
+                    var typeNice = GetManagedRefNiceName(prop);
+                    var summary = new Label(typeNice);
+                    summary.AddToClassList("tsf__type-summary");
+                    content.Add(summary);
+
+                    // Details (children) go under the row
+                    RenderManagedRefChildrenInto(prop, underRowHost);
+                }
             }
             else
             {
@@ -415,6 +464,7 @@ namespace Jungle.Editor
                 expandToggle.SetValueWithoutNotify(false);
                 expandToggle.style.display = DisplayStyle.None;
                 expandToggle.SetEnabled(false);
+                label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
 
                 var of = new ObjectField
                 {
