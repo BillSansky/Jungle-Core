@@ -458,6 +458,7 @@ namespace Jungle.Editor
                     expandToggle.style.display = DisplayStyle.None;
                     expandToggle.SetEnabled(false);
                     underRowHost.style.display = DisplayStyle.None;
+
                     label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
 
                     var none = new Label("None");
@@ -466,7 +467,7 @@ namespace Jungle.Editor
                     return;
                 }
 
-                // Inline mode: hide label and toggle, render children directly in content
+                // Inline mode: hide base label, hide toggle, render children directly in content with parent label on first child
                 if (drawInline)
                 {
                     allowRowToggle = false;
@@ -475,8 +476,8 @@ namespace Jungle.Editor
                     label.style.display = DisplayStyle.None;
                     underRowHost.style.display = DisplayStyle.None;
 
-                    // Render children directly in content area
-                    RenderManagedRefChildrenInto(prop, content);
+                    // Render children directly in content area, transferring parent label to first child
+                    RenderManagedRefChildrenInto(prop, content, hideChildLabels: true, parentLabel: label.text);
                 }
                 else
                 {
@@ -492,7 +493,7 @@ namespace Jungle.Editor
                     content.Add(summary);
 
                     // Details (children) go under the row
-                    RenderManagedRefChildrenInto(prop, underRowHost);
+                    RenderManagedRefChildrenInto(prop, underRowHost, hideChildLabels: false);
                 }
             }
             else
@@ -501,7 +502,7 @@ namespace Jungle.Editor
                 expandToggle.SetValueWithoutNotify(false);
                 expandToggle.style.display = DisplayStyle.None;
                 expandToggle.SetEnabled(false);
-                label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
+                label.style.display = DisplayStyle.Flex;
 
                 var of = new ObjectField
                 {
@@ -525,7 +526,7 @@ namespace Jungle.Editor
             return ObjectNames.NicifyVariableName(shortName);
         }
 
-        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host)
+        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels = false, string parentLabel = null)
         {
             if (managedRefProp == null) return;
             if (renderingChildren) return;
@@ -544,11 +545,34 @@ namespace Jungle.Editor
                 if (!it.NextVisible(true) || it.depth <= parentDepth)
                     return;
 
+                bool isFirstChild = true;
                 while (it.propertyPath != end.propertyPath && it.depth > parentDepth)
                 {
                     // Draw children (not the parent)
-                    var child = new PropertyField(it.Copy(), ObjectNames.NicifyVariableName(it.name));
+                    string childLabel;
+                    if (hideChildLabels && isFirstChild && !string.IsNullOrEmpty(parentLabel))
+                    {
+                        // First child gets the parent's label for drag-and-drop
+                        childLabel = parentLabel;
+                        isFirstChild = false;
+                    }
+                    else if (hideChildLabels)
+                    {
+                        // Subsequent children have no label
+                        childLabel = "";
+                    }
+                    else
+                    {
+                        // Normal mode: use nicified child name
+                        childLabel = ObjectNames.NicifyVariableName(it.name);
+                    }
+
+                    var child = new PropertyField(it.Copy(), childLabel);
                     child.AddToClassList("tsf__child-field");
+                    if (hideChildLabels)
+                    {
+                        child.AddToClassList("tsf__child-field--inline");
+                    }
                     child.Bind(so);
                     host.Add(child);
 
