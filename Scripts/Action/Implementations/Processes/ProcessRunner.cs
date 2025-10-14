@@ -1,6 +1,4 @@
-﻿using Jungle.Actions;
-using Jungle.Attributes;
-using PlasticGui;
+﻿using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Actions
