@@ -11,7 +11,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Jungle.Editor
 {
-    [CustomPropertyDrawer(typeof(ActionSequence))]
+    [CustomPropertyDrawer(typeof(SequenceAction))]
     public class ActionSequenceDrawer : PropertyDrawer
     {
         private const float LabelColumnWidth = 220f;
@@ -30,9 +30,9 @@ namespace Jungle.Editor
             foldout.RegisterValueChangedCallback(evt => property.isExpanded = evt.newValue);
             root.Add(foldout);
 
-            var hasSequenceTimeLimitProp = property.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit));
-            var sequenceTimeLimitProp = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
-            var stepsProp = property.FindPropertyRelative(nameof(ActionSequence.Steps));
+            var hasSequenceTimeLimitProp = property.FindPropertyRelative(nameof(SequenceAction.hasSequenceTimeLimit));
+            var sequenceTimeLimitProp = property.FindPropertyRelative(nameof(SequenceAction.SequenceTimeLimit));
+            var stepsProp = property.FindPropertyRelative(nameof(SequenceAction.Steps));
 
             foldout.Add(new PropertyField(hasSequenceTimeLimitProp));
             foldout.Add(new PropertyField(sequenceTimeLimitProp));
@@ -157,13 +157,13 @@ namespace Jungle.Editor
                 var propertyCopy = property.Copy();
                 this.TrackPropertyValue(propertyCopy, _ => Refresh());
 
-                var stepsCopy = property.FindPropertyRelative(nameof(ActionSequence.Steps)).Copy();
+                var stepsCopy = property.FindPropertyRelative(nameof(SequenceAction.Steps)).Copy();
                 this.TrackPropertyValue(stepsCopy, _ => Refresh());
 
-                var hasSequenceTimeLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit)).Copy();
+                var hasSequenceTimeLimitCopy = property.FindPropertyRelative(nameof(SequenceAction.hasSequenceTimeLimit)).Copy();
                 this.TrackPropertyValue(hasSequenceTimeLimitCopy, _ => Refresh());
 
-                var sequenceLimitCopy = property.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit)).Copy();
+                var sequenceLimitCopy = property.FindPropertyRelative(nameof(SequenceAction.SequenceTimeLimit)).Copy();
                 this.TrackPropertyValue(sequenceLimitCopy, _ => Refresh());
             }
 
@@ -172,9 +172,9 @@ namespace Jungle.Editor
                 serializedObject.UpdateIfRequiredOrScript();
 
                 var rootProperty = serializedObject.FindProperty(propertyPath);
-                var stepsProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.Steps));
-                var hasSequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.hasSequenceTimeLimit));
-                var sequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(ActionSequence.SequenceTimeLimit));
+                var stepsProp = rootProperty.FindPropertyRelative(nameof(SequenceAction.Steps));
+                var hasSequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(SequenceAction.hasSequenceTimeLimit));
+                var sequenceTimeLimitProp = rootProperty.FindPropertyRelative(nameof(SequenceAction.SequenceTimeLimit));
 
                 rowsContainer.Clear();
                 currentTimelineWidth = MinimumTimelineWidth;
@@ -272,12 +272,12 @@ namespace Jungle.Editor
                     // Calculate the actual end time for looped steps
                     if (entry.LoopsActive && entry.BaseDuration.HasValue)
                     {
-                        if (entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                        if (entry.LoopMode == SequenceAction.StepLoopMode.Limited)
                         {
                             // For limited loops, the end is start + (baseDuration * loopCount)
                             maxEnd = Mathf.Max(maxEnd, start + (entry.BaseDuration.Value * entry.LoopCount));
                         }
-                        else if (entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                        else if (entry.LoopMode == SequenceAction.StepLoopMode.Infinite)
                         {
                             // For infinite loops, extend to sequence time limit if available
                             if (hasSequenceTimeLimit && sequenceTimeLimit.HasValue && sequenceTimeLimit.Value > 0f)
@@ -368,7 +368,7 @@ namespace Jungle.Editor
                     barColumn.style.overflow = Overflow.Hidden;
 
                     // Create bars for loop iterations or single bar for non-looped steps
-                    if (entry.LoopsActive && entry.BaseDuration.HasValue && entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                    if (entry.LoopsActive && entry.BaseDuration.HasValue && entry.LoopMode == SequenceAction.StepLoopMode.Limited)
                     {
                         // Create individual bars for each loop iteration on the same horizontal line
                         var iterationStart = entry.DisplayStart;
@@ -386,7 +386,7 @@ namespace Jungle.Editor
                             iterationStart += entry.BaseDuration.Value;
                         }
                     }
-                    else if (entry.LoopsActive && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                    else if (entry.LoopsActive && entry.LoopMode == SequenceAction.StepLoopMode.Infinite)
                     {
                         // For infinite loops, show iterations until time limit or end of timeline
                         var iterationStart = entry.DisplayStart;
@@ -542,7 +542,7 @@ namespace Jungle.Editor
                 }
 
                 // Loop iterations get progressive fade for infinite loops
-                if (entry.IsLoopIteration && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                if (entry.IsLoopIteration && entry.LoopMode == SequenceAction.StepLoopMode.Infinite)
                 {
                     var fadeAmount = Mathf.Min(0.6f, entry.LoopIterationIndex * 0.1f);
                     baseColor = Color.Lerp(baseColor, new Color(0.5f, 0.5f, 0.5f, 0.4f), fadeAmount);
@@ -618,7 +618,7 @@ namespace Jungle.Editor
                     iterationLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
                     bar.Add(iterationLabel);
                 }
-                else if (entry.LoopsActive && entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                else if (entry.LoopsActive && entry.LoopMode == SequenceAction.StepLoopMode.Infinite)
                 {
                     // Add infinity symbol for the first iteration of infinite loops
                     var infinityLabel = new Label("∞");
@@ -928,14 +928,14 @@ namespace Jungle.Editor
                 {
                     switch (entry.LoopMode)
                     {
-                        case ActionSequence.StepLoopMode.Infinite:
+                        case SequenceAction.StepLoopMode.Infinite:
                             info += " • Loops: ∞";
                             if (entry.BaseDuration.HasValue)
                             {
                                 info += $" ({entry.BaseDuration.Value:0.##}s each)";
                             }
                             break;
-                        case ActionSequence.StepLoopMode.Limited:
+                        case SequenceAction.StepLoopMode.Limited:
                             info += $" • Loops: {entry.LoopCount}x";
                             if (entry.BaseDuration.HasValue)
                             {
@@ -966,26 +966,28 @@ namespace Jungle.Editor
             for (var i = 0; i < stepsProp.arraySize; i++)
             {
                 var stepProp = stepsProp.GetArrayElementAtIndex(i);
-                var blocking = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.blocking)).boolValue;
-                var loopModeProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopMode));
-                var loopCountProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.loopCount));
-                var timeLimitedProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimited));
+                var blocking = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.blocking)).boolValue;
+                var loopModeProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.loopMode));
+                var loopCountProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.loopCount));
+                var timeLimitedProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.timeLimited));
                 var timeLimited = timeLimitedProp.boolValue;
-                var timeLimitProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.timeLimit));
-                var startDelayProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.startDelay));
-                var actionProp = stepProp.FindPropertyRelative(nameof(ActionSequence.Step.Action));
+                var timeLimitProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.timeLimit));
+                var startDelayProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.startDelay));
+                var actionProp = stepProp.FindPropertyRelative(nameof(SequenceAction.Step.Action));
 
                 var startDelay = Mathf.Max(0f, startDelayProp.floatValue);
-                var loopMode = (ActionSequence.StepLoopMode)loopModeProp.enumValueIndex;
-                var loopsActive = loopMode != ActionSequence.StepLoopMode.Once;
+                var loopMode = (SequenceAction.StepLoopMode)loopModeProp.enumValueIndex;
+                var loopsActive = loopMode != SequenceAction.StepLoopMode.Once;
                 var loopCount = Mathf.Max(1, loopCountProp.intValue);
                 
 
                 // Create a temporary step instance to use GetDuration method
-                var tempStep = new ActionSequence.Step();
-                tempStep.Action = actionProp.managedReferenceValue as ProcessAction;
-                tempStep.timeLimited = timeLimited;
-                tempStep.timeLimit = timeLimitProp.floatValue;
+                var tempStep = new SequenceAction.Step
+                {
+                    Action = actionProp.managedReferenceValue as IProcessAction,
+                    timeLimited = timeLimited,
+                    timeLimit = timeLimitProp.floatValue
+                };
 
                 float? baseDuration = tempStep.GetDuration();
 
@@ -1006,7 +1008,7 @@ namespace Jungle.Editor
                 float? totalDuration = baseDuration;
                 if (loopsActive && baseDuration.HasValue)
                 {
-                    if (loopMode == ActionSequence.StepLoopMode.Limited)
+                    if (loopMode == SequenceAction.StepLoopMode.Limited)
                     {
                         totalDuration = baseDuration.Value * loopCount;
                     }
@@ -1132,11 +1134,11 @@ namespace Jungle.Editor
                 }
                 else if (entry.LoopsActive && entry.BaseDuration.HasValue && !entry.IsLoopIteration)
                 {
-                    if (entry.LoopMode == ActionSequence.StepLoopMode.Infinite)
+                    if (entry.LoopMode == SequenceAction.StepLoopMode.Infinite)
                     {
                         durationLabel = $"∞ × {entry.BaseDuration.Value:0.##}s";
                     }
-                    else if (entry.LoopMode == ActionSequence.StepLoopMode.Limited)
+                    else if (entry.LoopMode == SequenceAction.StepLoopMode.Limited)
                     {
                         durationLabel = $"{entry.LoopCount}× {entry.BaseDuration.Value:0.##}s = {duration.Value:0.##}s";
                     }
@@ -1166,7 +1168,7 @@ namespace Jungle.Editor
         {
             public string DisplayName = string.Empty;
             public bool Blocking;
-            public ActionSequence.StepLoopMode LoopMode;
+            public SequenceAction.StepLoopMode LoopMode;
             public bool LoopsActive;
             public int LoopCount;
             public bool TimeLimited;

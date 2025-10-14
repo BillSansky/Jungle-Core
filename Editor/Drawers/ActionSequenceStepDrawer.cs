@@ -4,12 +4,11 @@ using Jungle.Actions;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
-    [CustomPropertyDrawer(typeof(ActionSequence.Step))]
+    [CustomPropertyDrawer(typeof(SequenceAction.Step))]
     public class ActionSequenceStepDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -21,14 +20,14 @@ namespace Jungle.Editor
             foldout.text = BuildFoldoutLabel(property);
             root.Add(foldout);
 
-            var actionProperty = RequireRelativeProperty(property, "Action");
-            var loopModeProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.loopMode));
-            var loopCountProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.loopCount));
-            var blockingProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.blocking));
-            var startDelayProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.startDelay));
-            var timeLimitedProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.timeLimited));
-            var finishOnTimeoutProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.finishExecutionOnEndTime));
-            var timeLimitProperty = RequireRelativeProperty(property, nameof(ActionSequence.Step.timeLimit));
+            var actionProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.Action));
+            var loopModeProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.loopMode));
+            var loopCountProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.loopCount));
+            var blockingProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.blocking));
+            var startDelayProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.startDelay));
+            var timeLimitedProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.timeLimited));
+            var finishOnTimeoutProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.finishExecutionOnEndTime));
+            var timeLimitProperty = RequireRelativeProperty(property, nameof(SequenceAction.Step.timeLimit));
 
             var actionField = new PropertyField(actionProperty);
             actionField.BindProperty(actionProperty);
@@ -99,24 +98,24 @@ namespace Jungle.Editor
 
             void UpdateLoopModeUI()
             {
-                var loopMode = (ActionSequence.StepLoopMode)loopModeProperty.enumValueIndex;
-                var showLoopCount = loopMode == ActionSequence.StepLoopMode.Limited;
+                var loopMode = (SequenceAction.StepLoopMode)loopModeProperty.enumValueIndex;
+                var showLoopCount = loopMode == SequenceAction.StepLoopMode.Limited;
                 SetElementDisplay(loopCountContainer, showLoopCount);
                 UpdateLoopInfoLabel();
             }
 
             void UpdateLoopInfoLabel()
             {
-                var loopMode = (ActionSequence.StepLoopMode)loopModeProperty.enumValueIndex;
+                var loopMode = (SequenceAction.StepLoopMode)loopModeProperty.enumValueIndex;
                 switch (loopMode)
                 {
-                    case ActionSequence.StepLoopMode.Once:
+                    case SequenceAction.StepLoopMode.Once:
                         loopInfoLabel.text = "Executes once";
                         break;
-                    case ActionSequence.StepLoopMode.Infinite:
+                    case SequenceAction.StepLoopMode.Infinite:
                         loopInfoLabel.text = "Loops infinitely (∞)";
                         break;
-                    case ActionSequence.StepLoopMode.Limited:
+                    case SequenceAction.StepLoopMode.Limited:
                         var loopCount = Mathf.Max(1, loopCountProperty.intValue);
                         loopInfoLabel.text = $"Loops {loopCount} times";
                         break;
@@ -145,7 +144,7 @@ namespace Jungle.Editor
 
         private static string BuildFoldoutLabel(SerializedProperty property)
         {
-            var actionProperty = property.FindPropertyRelative("Action");
+            var actionProperty = property.FindPropertyRelative(nameof(SequenceAction.Step.Action));
             if (actionProperty == null)
             {
                 return "Step";
@@ -165,16 +164,16 @@ namespace Jungle.Editor
 
             // Add loop information (if applicable) to the foldout label
             var loopInfo = string.Empty;
-            var loopModeProp = property.FindPropertyRelative(nameof(ActionSequence.Step.loopMode));
-            var loopCountProp = property.FindPropertyRelative(nameof(ActionSequence.Step.loopCount));
+            var loopModeProp = property.FindPropertyRelative(nameof(SequenceAction.Step.loopMode));
+            var loopCountProp = property.FindPropertyRelative(nameof(SequenceAction.Step.loopCount));
             if (loopModeProp != null)
             {
-                var loopMode = (ActionSequence.StepLoopMode)loopModeProp.enumValueIndex;
-                if (loopMode == ActionSequence.StepLoopMode.Infinite)
+                var loopMode = (SequenceAction.StepLoopMode)loopModeProp.enumValueIndex;
+                if (loopMode == SequenceAction.StepLoopMode.Infinite)
                 {
                     loopInfo = " (Loops ∞)";
                 }
-                else if (loopMode == ActionSequence.StepLoopMode.Limited && loopCountProp != null)
+                else if (loopMode == SequenceAction.StepLoopMode.Limited && loopCountProp != null)
                 {
                     var loopCount = Mathf.Max(1, loopCountProp.intValue);
                     loopInfo = $" (Loops {loopCount}x)";

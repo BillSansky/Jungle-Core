@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -32,6 +33,11 @@ namespace Jungle.Editor
         private bool isManagedRef;
 
         private EventCallback<ChangeEvent<bool>> expandToggleHandler;
+
+        // Track reference state to detect structural changes
+        private object lastManagedRefValue;
+        private Type lastManagedRefType;
+        private UnityEngine.Object lastObjectRefValue;
 
         // Guard in case some drawer mistakenly applies to children
         [ThreadStatic] private static bool renderingChildren;
@@ -78,11 +84,13 @@ namespace Jungle.Editor
             btnPickOrSwap = new Button(OnPickOrSwapClicked) { text = "+" };
             btnPickOrSwap.tooltip = "Pick or change the type";
             btnPickOrSwap.AddToClassList("tsf__button");
+            btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             buttonGroup.Add(btnPickOrSwap);
 
             btnClear = new Button(OnClearClicked) { text = "✕" };
             btnClear.tooltip = "Clear";
             btnClear.AddToClassList("tsf__button");
+            btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             buttonGroup.Add(btnClear);
 
             rootContainer.Add(row);
@@ -93,29 +101,16 @@ namespace Jungle.Editor
             underRowHost.name = "tsf-details";
             rootContainer.Add(underRowHost);
 
-            // Row click handler for toggling foldout
+            // Click handler for label to toggle foldout
             row.RegisterCallback<ClickEvent>(evt =>
             {
                 if (!allowRowToggle) return;
-
-                if (evt.target is VisualElement ve && (buttonGroup.Contains(ve) || ve == btnPickOrSwap || ve == btnClear))
-                    return;
-
                 expandToggle.value = !expandToggle.value;
+           
                 evt.StopPropagation();
             });
 
-            // Update row class based on clickability
-            schedule.Execute(() =>
-            {
-                if (allowRowToggle)
-                    row.AddToClassList("tsf-row--clickable");
-                else
-                    row.RemoveFromClassList("tsf-row--clickable");
-            }).Every(100);
-
-            btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
-            btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
+            
         }
 
         /// <summary>Bind the field to a property and base type.</summary>
@@ -153,17 +148,28 @@ namespace Jungle.Editor
             RepaintContentOnly();
             RefreshButtons();
 
-            // Keep in sync with changes
+            // Capture initial reference state
+            CaptureReferenceState();
+
+            // Keep in sync with changes - only repaint on structural changes
             this.TrackPropertyValue(prop, _ =>
             {
-                RepaintContentOnly();
-                RefreshButtons();
+                if (HasStructuralChange())
+                {
+                    RepaintContentOnly();
+                    RefreshButtons();
+                    CaptureReferenceState();
+                }
             });
 
             this.TrackSerializedObjectValue(prop.serializedObject, _ =>
             {
-                RepaintContentOnly();
-                RefreshButtons();
+                if (HasStructuralChange())
+                {
+                    RepaintContentOnly();
+                    RefreshButtons();
+                    CaptureReferenceState();
+                }
             });
         }
 
@@ -173,6 +179,7 @@ namespace Jungle.Editor
         private void OnPickOrSwapClicked()
         {
             if (prop == null) return;
+            Debug.Log("CLICK");
 
             if (isManagedRef)
             {
@@ -358,14 +365,75 @@ namespace Jungle.Editor
             btnClear.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        private void CaptureReferenceState()
+        {
+            if (prop == null) return;
+
+            if (isManagedRef)
+            {
+                lastManagedRefValue = prop.managedReferenceValue;
+                lastManagedRefType = lastManagedRefValue?.GetType();
+            }
+            else
+            {
+                lastObjectRefValue = prop.objectReferenceValue;
+            }
+        }
+
+        private bool HasStructuralChange()
+        {
+            if (prop == null) return false;
+
+            if (isManagedRef)
+            {
+                var current = prop.managedReferenceValue;
+                var currentType = current?.GetType();
+
+                // Structural change if:
+                // 1. null ↔ non-null transition
+                // 2. Type changed
+                bool wasNull = lastManagedRefValue == null;
+                bool isNull = current == null;
+
+                if (wasNull != isNull)
+                    return true;
+
+                if (lastManagedRefType != currentType)
+                    return true;
+
+                return false;
+            }
+            else
+            {
+                var current = prop.objectReferenceValue;
+
+                // Structural change if reference changed (including null ↔ non-null)
+                return lastObjectRefValue != current;
+            }
+        }
+
         // --------------- Content rendering ---------------
 
         private void RepaintContentOnly()
         {
+            Debug.Log("REPAINT");
             content.Clear();
             underRowHost.Clear();
 
             if (prop == null) return;
+
+            // Detect DrawInline from the managed reference type's JungleClassInfoAttribute
+            bool drawInline = false;
+            if (isManagedRef && prop.managedReferenceValue != null)
+            {
+                var valueType = prop.managedReferenceValue.GetType();
+                var classInfo = (Jungle.Attributes.JungleClassInfoAttribute)Attribute.GetCustomAttribute(
+                    valueType, typeof(Jungle.Attributes.JungleClassInfoAttribute));
+                if (classInfo != null)
+                {
+                    drawInline = classInfo.DrawInline;
+                }
+            }
 
             // If values differ across multi-object selection: show mixed and hide foldout
             if (prop.hasMultipleDifferentValues)
@@ -375,6 +443,7 @@ namespace Jungle.Editor
                 content.Add(mixedLabel);
                 expandToggle.style.display = DisplayStyle.None;
                 underRowHost.style.display = DisplayStyle.None;
+                label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
                 return;
             }
 
@@ -390,24 +459,42 @@ namespace Jungle.Editor
                     expandToggle.SetEnabled(false);
                     underRowHost.style.display = DisplayStyle.None;
 
+                    label.style.display = drawInline ? DisplayStyle.None : DisplayStyle.Flex;
+
                     var none = new Label("None");
                     none.AddToClassList("tsf__empty-value");
                     content.Add(none);
                     return;
                 }
 
-                allowRowToggle = true;
-                expandToggle.style.display = DisplayStyle.Flex;
-                expandToggle.SetEnabled(true);
-                
-                // Row summary = nice type name
-                var typeNice = GetManagedRefNiceName(prop);
-                var summary = new Label(typeNice);
-                summary.AddToClassList("tsf__type-summary");
-                content.Add(summary);
+                // Inline mode: hide base label, hide toggle, render children directly in content with parent label on first child
+                if (drawInline)
+                {
+                    allowRowToggle = false;
+                    expandToggle.style.display = DisplayStyle.None;
+                    expandToggle.SetEnabled(false);
+                    label.style.display = DisplayStyle.None;
+                    underRowHost.style.display = DisplayStyle.None;
 
-                // Details (children) go under the row
-                RenderManagedRefChildrenInto(prop, underRowHost);
+                    // Render children directly in content area, transferring parent label to first child
+                    RenderManagedRefChildrenInto(prop, content, hideChildLabels: true, parentLabel: label.text);
+                }
+                else
+                {
+                    allowRowToggle = true;
+                    expandToggle.style.display = DisplayStyle.Flex;
+                    expandToggle.SetEnabled(true);
+                    label.style.display = DisplayStyle.Flex;
+
+                    // Row summary = nice type name
+                    var typeNice = GetManagedRefNiceName(prop);
+                    var summary = new Label(typeNice);
+                    summary.AddToClassList("tsf__type-summary");
+                    content.Add(summary);
+
+                    // Details (children) go under the row
+                    RenderManagedRefChildrenInto(prop, underRowHost, hideChildLabels: false);
+                }
             }
             else
             {
@@ -415,6 +502,7 @@ namespace Jungle.Editor
                 expandToggle.SetValueWithoutNotify(false);
                 expandToggle.style.display = DisplayStyle.None;
                 expandToggle.SetEnabled(false);
+                label.style.display = DisplayStyle.Flex;
 
                 var of = new ObjectField
                 {
@@ -438,7 +526,7 @@ namespace Jungle.Editor
             return ObjectNames.NicifyVariableName(shortName);
         }
 
-        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host)
+        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels = false, string parentLabel = null)
         {
             if (managedRefProp == null) return;
             if (renderingChildren) return;
@@ -457,11 +545,34 @@ namespace Jungle.Editor
                 if (!it.NextVisible(true) || it.depth <= parentDepth)
                     return;
 
+                bool isFirstChild = true;
                 while (it.propertyPath != end.propertyPath && it.depth > parentDepth)
                 {
                     // Draw children (not the parent)
-                    var child = new PropertyField(it.Copy(), ObjectNames.NicifyVariableName(it.name));
+                    string childLabel;
+                    if (hideChildLabels && isFirstChild && !string.IsNullOrEmpty(parentLabel))
+                    {
+                        // First child gets the parent's label for drag-and-drop
+                        childLabel = parentLabel;
+                        isFirstChild = false;
+                    }
+                    else if (hideChildLabels)
+                    {
+                        // Subsequent children have no label
+                        childLabel = "";
+                    }
+                    else
+                    {
+                        // Normal mode: use nicified child name
+                        childLabel = ObjectNames.NicifyVariableName(it.name);
+                    }
+
+                    var child = new PropertyField(it.Copy(), childLabel);
                     child.AddToClassList("tsf__child-field");
+                    if (hideChildLabels)
+                    {
+                        child.AddToClassList("tsf__child-field--inline");
+                    }
                     child.Bind(so);
                     host.Add(child);
 
