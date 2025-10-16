@@ -1,4 +1,5 @@
 ﻿using System;
+using Jungle.Values.Primitives;
 using UnityEngine;
 
 namespace Jungle.Conditions
@@ -8,7 +9,7 @@ namespace Jungle.Conditions
     /// Inherit from this class to create custom conditions that return true/false based on your logic.
     /// </summary>
     [Serializable]
-    public abstract class Condition
+    public abstract class Condition : IBoolValue
     {
         [SerializeField]
         private bool invertCondition;
@@ -23,5 +24,11 @@ namespace Jungle.Conditions
         }
         
         protected internal abstract bool IsValidImpl();
+        public bool Value()
+        {
+            return IsValid();
+        }
+
+        public bool HasMultipleValues => false;
     }
 }
