@@ -1,4 +1,5 @@
 using System;
+using Jungle.Values;
 
 namespace Jungle.Values.Primitives
 {
@@ -20,5 +21,10 @@ namespace Jungle.Values.Primitives
 
         public override bool HasMultipleValues => false;
 
+    }
+
+    [Serializable]
+    public class FloatMethodInvokerValue : MethodInvokerValue<float>, IFloatValue
+    {
     }
 }

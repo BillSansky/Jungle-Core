@@ -1,4 +1,5 @@
 using System;
+using Jungle.Values;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -21,5 +22,10 @@ namespace Jungle.Values.UnityTypes
 
         public override bool HasMultipleValues => false;
 
+    }
+
+    [Serializable]
+    public class AnimationCurveMethodInvokerValue : MethodInvokerValue<AnimationCurve>, IAnimationCurveValue
+    {
     }
 }

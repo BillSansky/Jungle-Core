@@ -13,4 +13,9 @@ namespace Jungle.Values
     {
         public override bool HasMultipleValues => false;
     }
+
+    [Serializable]
+    public class RendererMethodInvokerValue : MethodInvokerValue<Renderer>, IRendererValue
+    {
+    }
 }

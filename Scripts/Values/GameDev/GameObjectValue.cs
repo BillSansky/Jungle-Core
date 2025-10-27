@@ -1,4 +1,5 @@
 using System;
+using Jungle.Values;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -12,5 +13,10 @@ namespace Jungle.Values.GameDev
     {
         public override bool HasMultipleValues => false;
         
+    }
+
+    [Serializable]
+    public class GameObjectMethodInvokerValue : MethodInvokerValue<GameObject>, IGameObjectValue
+    {
     }
 }
