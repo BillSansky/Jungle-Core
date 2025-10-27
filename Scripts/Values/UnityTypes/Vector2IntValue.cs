@@ -1,4 +1,5 @@
 using System;
+using Jungle.Values;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -13,5 +14,10 @@ namespace Jungle.Values.UnityTypes
         public override bool HasMultipleValues => false;
         
         
+    }
+
+    [Serializable]
+    public class Vector2IntMethodInvokerValue : MethodInvokerValue<Vector2Int>, IVector2IntValue
+    {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Jungle.Values;
 
 namespace Jungle.Values.Primitives
 {
@@ -22,4 +23,8 @@ namespace Jungle.Values.Primitives
 
     }
 
+    [Serializable]
+    public class BoolMethodInvokerValue : MethodInvokerValue<bool>, IBoolValue
+    {
+    }
 }
