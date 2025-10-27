@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface ITransformValue : IValue<Transform>
+    public interface ITransformValue : IComponent<Transform>
     {
         public Vector3 Position => Value().position;
         public Vector3 LocalScale => Value().localScale;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface IRigidbodyValue : IValue<Rigidbody>
+    public interface IRigidbodyValue : IComponent<Rigidbody>
     {
     }
 
