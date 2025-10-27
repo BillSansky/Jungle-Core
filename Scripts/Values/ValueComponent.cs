@@ -6,13 +6,15 @@ namespace Jungle.Values
     /// Base class for <see cref="MonoBehaviour"/> components that expose a value of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
-    public abstract class ValueComponent<T> : MonoBehaviour, IValue<T>
+    public abstract class ValueComponent<T> : MonoBehaviour, ISettableValue<T>
     {
         /// <inheritdoc />
         public abstract T Value();
-        
-        public bool HasMultipleValues => false;
-        
-        
+
+        public abstract void SetValue(T value);
+
+        public virtual bool HasMultipleValues => false;
+
+
     }
 }

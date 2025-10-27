@@ -13,6 +13,11 @@ namespace Jungle.Values.Primitives
         {
             return value;
         }
+
+        public override void SetValue(int value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]

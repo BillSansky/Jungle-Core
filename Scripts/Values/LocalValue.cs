@@ -10,7 +10,7 @@ namespace Jungle.Values
     /// <typeparam name="T">Type of value being stored.</typeparam>
     [Serializable]
     [JungleClassInfo("a value only defined locally",true)]
-    public abstract class LocalValue<T> : IValue<T>
+    public abstract class LocalValue<T> : ISettableValue<T>
     {
         /// <summary>
         /// Local value stored directly on the reference.
@@ -37,6 +37,11 @@ namespace Jungle.Values
         public T Value()
         {
             return value;
+        }
+
+        public virtual void SetValue(T value)
+        {
+            this.value = value;
         }
 
         public virtual bool HasMultipleValues => false;

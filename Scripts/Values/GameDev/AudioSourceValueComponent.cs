@@ -12,6 +12,11 @@ namespace Jungle.Values.GameDev
         {
             return value;
         }
+
+        public override void SetValue(AudioSource value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]

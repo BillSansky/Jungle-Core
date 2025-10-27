@@ -24,4 +24,9 @@ namespace Jungle.Values
             get { yield return Value(); }
         }
     }
+
+    public interface ISettableValue<T> : IValue<T>
+    {
+        void SetValue(T value);
+    }
 }

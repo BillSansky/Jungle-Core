@@ -12,6 +12,11 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+
+        public override void SetValue(Color value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]
