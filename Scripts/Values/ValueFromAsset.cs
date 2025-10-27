@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
     /// <typeparam name="TAsset">Concrete asset type used to fetch the value.</typeparam>
     [Serializable]
-    public class ValueFromAsset<T, TAsset> : IValue<T>
+    public class ValueFromAsset<T, TAsset> : ISettableValue<T>
         where TAsset : ValueAsset<T>
     {
         [SerializeField]
@@ -28,6 +28,31 @@ namespace Jungle.Values
             return valueAsset.Value();
         }
 
-        public bool HasMultipleValues => valueAsset.HasMultipleValues;
+        public void SetValue(T value)
+        {
+            if (valueAsset == null)
+            {
+                Debug.LogError(
+                    $"value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
+                return;
+            }
+
+            valueAsset.SetValue(value);
+        }
+
+        public bool HasMultipleValues
+        {
+            get
+            {
+                if (valueAsset == null)
+                {
+                    Debug.LogError(
+                        $"value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
+                    return false;
+                }
+
+                return valueAsset.HasMultipleValues;
+            }
+        }
     }
 }

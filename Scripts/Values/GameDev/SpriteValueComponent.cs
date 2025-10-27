@@ -12,6 +12,11 @@ namespace Jungle.Values.GameDev
         {
             return value;
         }
+
+        public override void SetValue(Sprite value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]

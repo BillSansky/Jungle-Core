@@ -14,6 +14,11 @@ namespace Jungle.Values
         {
             return value;
         }
+
+        public override void SetValue(Renderer value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]

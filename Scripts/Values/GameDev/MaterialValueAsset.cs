@@ -13,6 +13,11 @@ namespace Jungle.Values.GameDev
         {
             return value;
         }
+
+        public override void SetValue(Material value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]

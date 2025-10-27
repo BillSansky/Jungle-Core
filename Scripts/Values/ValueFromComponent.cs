@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
     /// <typeparam name="TComponent">Concrete component type used to fetch the value.</typeparam>
     [Serializable]
-    public class ValueFromComponent<T, TComponent> : IValue<T>
+    public class ValueFromComponent<T, TComponent> : ISettableValue<T>
         where TComponent : ValueComponent<T>
     {
         [SerializeField]
@@ -28,6 +28,31 @@ namespace Jungle.Values
             return component.Value();
         }
 
-        public bool HasMultipleValues =>component.HasMultipleValues;
+        public void SetValue(T value)
+        {
+            if (component == null)
+            {
+                Debug.LogError(
+                    $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
+                return;
+            }
+
+            component.SetValue(value);
+        }
+
+        public bool HasMultipleValues
+        {
+            get
+            {
+                if (component == null)
+                {
+                    Debug.LogError(
+                        $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
+                    return false;
+                }
+
+                return component.HasMultipleValues;
+            }
+        }
     }
 }

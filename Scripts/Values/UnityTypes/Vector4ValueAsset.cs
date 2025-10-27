@@ -13,6 +13,11 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+
+        public override void SetValue(Vector4 value)
+        {
+            this.value = value;
+        }
     }
 
     [Serializable]
