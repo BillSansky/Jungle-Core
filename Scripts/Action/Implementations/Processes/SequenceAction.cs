@@ -130,13 +130,13 @@ namespace Jungle.Actions
                 float? actionDuration = null;
                 float? stepTimeLimit = null;
 
-                // Get action duration if available
+                // GetContext action duration if available
                 if (Action != null && Action.HasDefinedDuration && Action.Duration > 0f)
                 {
                     actionDuration = Action.Duration;
                 }
 
-                // Get time limit if set
+                // GetContext time limit if set
                 if (timeLimited && timeLimit > 0f)
                 {
                     stepTimeLimit = timeLimit;
