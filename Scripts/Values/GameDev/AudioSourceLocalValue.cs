@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface IAudioSourceValue : IValue<AudioSource>
+    public interface IAudioSourceValue : IComponent<AudioSource>
     {
         
     }

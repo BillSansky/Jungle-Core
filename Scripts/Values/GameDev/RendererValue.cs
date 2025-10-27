@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Jungle.Values
 {
-    public interface IRendererValue : IValue<Renderer>
+    public interface IRendererValue : IComponent<Renderer>
     {
     }
 

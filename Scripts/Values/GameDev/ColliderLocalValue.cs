@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface IColliderValue : IValue<Collider>
+    public interface IColliderValue : IComponent<Collider>
     {
     }
 
