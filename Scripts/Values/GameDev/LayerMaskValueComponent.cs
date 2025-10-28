@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -19,9 +20,19 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    public class LayerMaskListValueComponent : SerializedValueListComponent<LayerMask>
+    {
+    }
+
     [Serializable]
     public class LayerMaskValueFromComponent :
         ValueFromComponent<LayerMask, LayerMaskValueComponent>, ILayerMaskValue
+    {
+    }
+
+    [Serializable]
+    public class LayerMaskListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<LayerMask>, LayerMaskListValueComponent>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -20,9 +21,20 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AnimationClip list value", fileName = "AnimationClipListValue")]
+    public class AnimationClipListValueAsset : SerializedValueListAsset<AnimationClip>
+    {
+    }
+
     [Serializable]
     public class AnimationClipValueFromAsset :
         ValueFromAsset<AnimationClip, AnimationClipValueAsset>, IAnimationClipValue
+    {
+    }
+
+    [Serializable]
+    public class AnimationClipListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<AnimationClip>, AnimationClipListValueAsset>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -19,8 +20,17 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    public class LongListValueComponent : SerializedValueListComponent<long>
+    {
+    }
+
     [Serializable]
     public class LongValueFromComponent : ValueFromComponent<long, LongValueComponent>, ILongValue
+    {
+    }
+
+    [Serializable]
+    public class LongListValueFromComponent : ValueFromComponent<IReadOnlyList<long>, LongListValueComponent>
     {
     }
 }

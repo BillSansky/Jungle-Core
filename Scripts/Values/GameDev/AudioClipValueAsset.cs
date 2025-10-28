@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -20,9 +21,20 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AudioClip list value", fileName = "AudioClipListValue")]
+    public class AudioClipListValueAsset : SerializedValueListAsset<AudioClip>
+    {
+    }
+
     [Serializable]
     public class AudioClipValueFromAsset :
         ValueFromAsset<AudioClip, AudioClipValueAsset>, IAudioClipValue
+    {
+    }
+
+    [Serializable]
+    public class AudioClipListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<AudioClip>, AudioClipListValueAsset>
     {
     }
 }

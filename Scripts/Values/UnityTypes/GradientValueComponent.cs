@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,8 +20,18 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class GradientListValueComponent : SerializedValueListComponent<Gradient>
+    {
+    }
+
     [Serializable]
     public class GradientValueFromComponent : ValueFromComponent<Gradient, GradientValueComponent>, IGradientValue
+    {
+    }
+
+    [Serializable]
+    public class GradientListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Gradient>, GradientListValueComponent>
     {
     }
 }

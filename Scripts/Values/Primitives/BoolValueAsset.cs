@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -20,8 +21,18 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool list value", fileName = "BoolListValue")]
+    public class BoolListValueAsset : SerializedValueListAsset<bool>
+    {
+    }
+
     [Serializable]
     public class BoolValueFromAsset : ValueFromAsset<bool, BoolValueAsset>, IBoolValue
+    {
+    }
+
+    [Serializable]
+    public class BoolListValueFromAsset : ValueFromAsset<IReadOnlyList<bool>, BoolListValueAsset>
     {
     }
 }

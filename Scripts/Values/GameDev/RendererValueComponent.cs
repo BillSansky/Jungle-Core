@@ -1,5 +1,6 @@
 ﻿using Jungle.Values;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values
@@ -20,8 +21,18 @@ namespace Jungle.Values
         }
     }
 
+    public class RendererListValueComponent : SerializedValueListComponent<Renderer>
+    {
+    }
+
     [Serializable]
     public class RendererValueFromComponent : ValueFromComponent<Renderer, RendererValueComponent>, IRendererValue
+    {
+    }
+
+    [Serializable]
+    public class RendererListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Renderer>, RendererListValueComponent>
     {
     }
 }

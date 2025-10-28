@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,8 +20,18 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class BoundsListValueComponent : SerializedValueListComponent<Bounds>
+    {
+    }
+
     [Serializable]
     public class BoundsValueFromComponent : ValueFromComponent<Bounds, BoundsValueComponent>, IBoundsValue
+    {
+    }
+
+    [Serializable]
+    public class BoundsListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Bounds>, BoundsListValueComponent>
     {
     }
 }

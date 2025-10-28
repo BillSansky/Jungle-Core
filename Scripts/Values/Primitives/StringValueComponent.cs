@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -19,8 +20,17 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    public class StringListValueComponent : SerializedValueListComponent<string>
+    {
+    }
+
     [Serializable]
     public class StringValueFromComponent : ValueFromComponent<string, StringValueComponent>, IStringValue
+    {
+    }
+
+    [Serializable]
+    public class StringListValueFromComponent : ValueFromComponent<IReadOnlyList<string>, StringListValueComponent>
     {
     }
 }

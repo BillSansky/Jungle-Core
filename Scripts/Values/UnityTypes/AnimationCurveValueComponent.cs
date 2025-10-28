@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,9 +20,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class AnimationCurveListValueComponent : SerializedValueListComponent<AnimationCurve>
+    {
+    }
+
     [Serializable]
     public class AnimationCurveValueFromComponent :
         ValueFromComponent<AnimationCurve, AnimationCurveValueComponent>, IAnimationCurveValue
+    {
+    }
+
+    [Serializable]
+    public class AnimationCurveListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<AnimationCurve>, AnimationCurveListValueComponent>
     {
     }
 }

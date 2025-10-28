@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -20,9 +21,20 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/AnimationCurve list value", fileName = "AnimationCurveListValue")]
+    public class AnimationCurveListValueAsset : SerializedValueListAsset<AnimationCurve>
+    {
+    }
+
     [Serializable]
     public class AnimationCurveValueFromAsset :
         ValueFromAsset<AnimationCurve, AnimationCurveValueAsset>, IAnimationCurveValue
+    {
+    }
+
+    [Serializable]
+    public class AnimationCurveListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<AnimationCurve>, AnimationCurveListValueAsset>
     {
     }
 }

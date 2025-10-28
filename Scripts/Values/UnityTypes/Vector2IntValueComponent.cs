@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,9 +20,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class Vector2IntListValueComponent : SerializedValueListComponent<Vector2Int>
+    {
+    }
+
     [Serializable]
     public class Vector2IntValueFromComponent :
         ValueFromComponent<Vector2Int, Vector2IntValueComponent>, IVector2IntValue
+    {
+    }
+
+    [Serializable]
+    public class Vector2IntListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Vector2Int>, Vector2IntListValueComponent>
     {
     }
 }

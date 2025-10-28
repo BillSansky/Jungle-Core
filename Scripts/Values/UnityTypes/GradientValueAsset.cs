@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -20,8 +21,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient list value", fileName = "GradientListValue")]
+    public class GradientListValueAsset : SerializedValueListAsset<Gradient>
+    {
+    }
+
     [Serializable]
     public class GradientValueFromAsset : ValueFromAsset<Gradient, GradientValueAsset>, IGradientValue
+    {
+    }
+
+    [Serializable]
+    public class GradientListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Gradient>, GradientListValueAsset>
     {
     }
 }

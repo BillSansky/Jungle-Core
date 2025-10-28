@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,8 +20,18 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class ColorListValueComponent : SerializedValueListComponent<Color>
+    {
+    }
+
     [Serializable]
     public class ColorValueFromComponent : ValueFromComponent<Color, ColorValueComponent>, IColorValue
+    {
+    }
+
+    [Serializable]
+    public class ColorListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Color>, ColorListValueComponent>
     {
     }
 }

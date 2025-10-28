@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -20,8 +21,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Bounds list value", fileName = "BoundsListValue")]
+    public class BoundsListValueAsset : SerializedValueListAsset<Bounds>
+    {
+    }
+
     [Serializable]
     public class BoundsValueFromAsset : ValueFromAsset<Bounds, BoundsValueAsset>, IBoundsValue
+    {
+    }
+
+    [Serializable]
+    public class BoundsListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Bounds>, BoundsListValueAsset>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -20,8 +21,18 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Double list value", fileName = "DoubleListValue")]
+    public class DoubleListValueAsset : SerializedValueListAsset<double>
+    {
+    }
+
     [Serializable]
     public class DoubleValueFromAsset : ValueFromAsset<double, DoubleValueAsset>, IDoubleValue
+    {
+    }
+
+    [Serializable]
+    public class DoubleListValueFromAsset : ValueFromAsset<IReadOnlyList<double>, DoubleListValueAsset>
     {
     }
 }
