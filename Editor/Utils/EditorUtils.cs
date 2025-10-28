@@ -153,7 +153,7 @@ namespace Jungle.Editor
         private const string JungleEditorStyleSheetResource = "JungleEditorStyles";
 
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, Type baseType,
-            SerializedProperty property)
+            SerializedProperty property, System.Reflection.FieldInfo fieldInfo)
         {
             // Remove the original field from layout…
             var parent = propertyField.parent;
@@ -162,7 +162,7 @@ namespace Jungle.Editor
 
             // …and insert our clean composite control in the same spot.
             var selector = new TypeSelectableField();
-            selector.Bind(property, baseType);
+            selector.Bind(property, baseType, fieldInfo);
 
             // Optional: keep your stylesheet hookup
             AttachJungleEditorStyles(selector);
