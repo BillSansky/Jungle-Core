@@ -83,25 +83,58 @@ namespace Jungle.Values
                 null
             );
 
-            if (methodInfo == null)
+            if (methodInfo != null)
             {
-                Debug.LogWarning($"MethodInvokerValue: Method '{methodName}' not found on {componentType.Name}");
+                if (methodInfo.ReturnType != typeof(T))
+                {
+                    Debug.LogWarning($"MethodInvokerValue: Method '{methodName}' must return type {typeof(T).Name}, but returns {methodInfo.ReturnType.Name}");
+                    return;
+                }
+
+                try
+                {
+                    cachedFunc = (Func<T>)Delegate.CreateDelegate(typeof(Func<T>), component, methodInfo);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"MethodInvokerValue: Failed to create delegate for method '{methodName}': {e.Message}");
+                }
+
                 return;
             }
 
-            if (methodInfo.ReturnType != typeof(T))
+            PropertyInfo propertyInfo = componentType.GetProperty(
+                methodName,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+            );
+
+            if (propertyInfo == null)
             {
-                Debug.LogWarning($"MethodInvokerValue: Method '{methodName}' must return type {typeof(T).Name}, but returns {methodInfo.ReturnType.Name}");
+                Debug.LogWarning($"MethodInvokerValue: Member '{methodName}' not found on {componentType.Name}");
+                return;
+            }
+
+            if (propertyInfo.PropertyType != typeof(T))
+            {
+                Debug.LogWarning($"MethodInvokerValue: Property '{methodName}' must return type {typeof(T).Name}, but returns {propertyInfo.PropertyType.Name}");
+                return;
+            }
+
+            MethodInfo getter = propertyInfo.GetGetMethod(true);
+
+            if (getter == null || getter.GetParameters().Length != 0)
+            {
+                Debug.LogWarning($"MethodInvokerValue: Property '{methodName}' does not have a parameterless getter");
                 return;
             }
 
             try
             {
-                cachedFunc = (Func<T>)Delegate.CreateDelegate(typeof(Func<T>), component, methodInfo);
+                cachedFunc = (Func<T>)Delegate.CreateDelegate(typeof(Func<T>), component, getter);
             }
             catch (Exception e)
             {
-                Debug.LogError($"MethodInvokerValue: Failed to create delegate for method '{methodName}': {e.Message}");
+                Debug.LogError($"MethodInvokerValue: Failed to create delegate for property '{methodName}': {e.Message}");
             }
         }
 
