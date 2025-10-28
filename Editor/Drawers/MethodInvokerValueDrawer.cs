@@ -27,22 +27,22 @@ namespace Jungle.Values.Editor
             container.Add(componentField);
 
             // Create method dropdown
-            var methodDropdown = new DropdownField("Method");
-            methodDropdown.choices = new List<string> { "Select a component first" };
-            methodDropdown.value = "Select a component first";
-            methodDropdown.SetEnabled(false);
-            container.Add(methodDropdown);
+            var memberDropdown = new DropdownField("Member");
+            memberDropdown.choices = new List<string> { "Select a component first" };
+            memberDropdown.value = "Select a component first";
+            memberDropdown.SetEnabled(false);
+            container.Add(memberDropdown);
 
             // Update dropdown when component changes
             componentField.RegisterValueChangeCallback(evt =>
             {
-                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
+                UpdateMemberDropdown(componentProp, methodNameProp, memberDropdown, returnType);
                 methodNameProp.stringValue = string.Empty;
                 methodNameProp.serializedObject.ApplyModifiedProperties();
             });
 
             // Handle dropdown selection
-            methodDropdown.RegisterValueChangedCallback(evt =>
+            memberDropdown.RegisterValueChangedCallback(evt =>
             {
                 if (componentProp.objectReferenceValue != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
                 {
@@ -54,7 +54,7 @@ namespace Jungle.Values.Editor
             // Initialize dropdown
             container.schedule.Execute(() =>
             {
-                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
+                UpdateMemberDropdown(componentProp, methodNameProp, memberDropdown, returnType);
             });
 
             return container;
@@ -73,33 +73,33 @@ namespace Jungle.Values.Editor
             return typeof(void);
         }
 
-        private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type expectedReturnType)
+        private void UpdateMemberDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type expectedReturnType)
         {
             Component component = componentProp.objectReferenceValue as Component;
 
             if (component != null)
             {
-                List<string> methodNames = GetAvailableMethods(component, expectedReturnType);
+                List<string> memberNames = GetAvailableMembers(component, expectedReturnType);
 
-                if (methodNames.Count > 0)
+                if (memberNames.Count > 0)
                 {
-                    dropdown.choices = methodNames;
+                    dropdown.choices = memberNames;
                     dropdown.SetEnabled(true);
 
                     // Set current value if valid
-                    if (methodNames.Contains(methodNameProp.stringValue))
+                    if (memberNames.Contains(methodNameProp.stringValue))
                     {
                         dropdown.value = methodNameProp.stringValue;
                     }
                     else
                     {
-                        dropdown.value = methodNames[0];
+                        dropdown.value = memberNames[0];
                     }
                 }
                 else
                 {
-                    dropdown.choices = new List<string> { $"No parameterless methods returning {expectedReturnType.Name} found" };
-                    dropdown.value = $"No parameterless methods returning {expectedReturnType.Name} found";
+                    dropdown.choices = new List<string> { $"No parameterless members returning {expectedReturnType.Name} found" };
+                    dropdown.value = $"No parameterless members returning {expectedReturnType.Name} found";
                     dropdown.SetEnabled(false);
                 }
             }
@@ -111,14 +111,14 @@ namespace Jungle.Values.Editor
             }
         }
 
-        private List<string> GetAvailableMethods(Component component, Type expectedReturnType)
+        private List<string> GetAvailableMembers(Component component, Type expectedReturnType)
         {
             if (component == null)
                 return new List<string>();
 
             Type componentType = component.GetType();
 
-            var methods = componentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            var methodNames = componentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.ReturnType == expectedReturnType)
                 .Where(m => m.GetParameters().Length == 0)
                 .Where(m => !m.IsSpecialName)
@@ -127,11 +127,24 @@ namespace Jungle.Values.Editor
                            m.DeclaringType != typeof(MonoBehaviour) &&
                            m.DeclaringType != typeof(UnityEngine.Object))
                 .Select(m => m.Name)
+                .ToList();
+
+            var propertyNames = componentType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(p => p.PropertyType == expectedReturnType)
+                .Where(p => p.GetIndexParameters().Length == 0)
+                .Where(p =>
+                {
+                    MethodInfo getter = p.GetGetMethod(true);
+                    return getter != null && getter.GetParameters().Length == 0;
+                })
+                .Select(p => p.Name)
+                .ToList();
+
+            return methodNames
+                .Concat(propertyNames)
                 .Distinct()
                 .OrderBy(name => name)
                 .ToList();
-
-            return methods;
         }
     }
 }
