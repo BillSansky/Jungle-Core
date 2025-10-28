@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jungle.Values.Primitives;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -10,39 +11,52 @@ using UnityEngine.UIElements;
 namespace Jungle.Values.Editor
 {
     [CustomPropertyDrawer(typeof(MethodInvokerValue<>))]
+    [CustomPropertyDrawer(typeof(FloatMethodInvokerValue))]
+    [CustomPropertyDrawer(typeof(IntMethodInvokerValue))]
+    [CustomPropertyDrawer(typeof(BoolMethodInvokerValue))]
+    [CustomPropertyDrawer(typeof(StringMethodInvokerValue))]
     public class MethodInvokerValueDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            
             var container = new VisualElement();
 
             var componentProp = property.FindPropertyRelative("component");
             var methodNameProp = property.FindPropertyRelative("methodName");
 
-            // Get the generic type parameter T from MethodInvokerValue<T>
-            Type returnType = GetExpectedReturnType();
+            Type returnType = GetExpectedReturnType(property);
 
-            // Create component field
-            var componentField = new PropertyField(componentProp, "Ref");
+            // Create ObjectField
+            var componentField = new ObjectField("Component")
+            {
+                objectType = typeof(Component),
+                value = componentProp.objectReferenceValue
+            };
+            componentField.BindProperty(componentProp);
+
+            // Dropdown for method/property names
+            var methodDropdown = new DropdownField("Method", new List<string> { "Select a component first" }, 0);
+            methodDropdown.style.backgroundColor = new StyleColor(Color.yellow); // Make it very visible for debugging
+
             container.Add(componentField);
+            container.Add(methodDropdown);
+            
+            Debug.Log($"Added {container.childCount} children to container");
 
-            // Create method dropdown
-            var memberDropdown = new DropdownField("Member");
-            memberDropdown.choices = new List<string> { "Select a component first" };
-            memberDropdown.value = "Select a component first";
-            memberDropdown.SetEnabled(false);
-            container.Add(memberDropdown);
+            // Initial dropdown population
+            UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
 
             // Update dropdown when component changes
-            componentField.RegisterValueChangeCallback(evt =>
+            componentField.RegisterValueChangedCallback(evt =>
             {
-                UpdateMemberDropdown(componentProp, methodNameProp, memberDropdown, returnType);
+                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
                 methodNameProp.stringValue = string.Empty;
                 methodNameProp.serializedObject.ApplyModifiedProperties();
             });
 
-            // Handle dropdown selection
-            memberDropdown.RegisterValueChangedCallback(evt =>
+            // Update property when dropdown changes
+            methodDropdown.RegisterValueChangedCallback(evt =>
             {
                 if (componentProp.objectReferenceValue != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
                 {
@@ -51,85 +65,101 @@ namespace Jungle.Values.Editor
                 }
             });
 
-            // Initialize dropdown
-            container.schedule.Execute(() =>
+            // Debug: check if container is actually attached
+            container.RegisterCallback<AttachToPanelEvent>(e =>
             {
-                UpdateMemberDropdown(componentProp, methodNameProp, memberDropdown, returnType);
+                Debug.Log($"Container attached to panel. Children: {container.childCount}");
             });
 
             return container;
         }
 
-        private Type GetExpectedReturnType()
+        private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type returnType)
         {
-            // fieldInfo.FieldType is MethodInvokerValue<T>
-            Type fieldType = fieldInfo.FieldType;
-
-            if (fieldType.IsGenericType)
+            Component component = componentProp.objectReferenceValue as Component;
+            
+            if (component == null)
             {
-                return fieldType.GetGenericArguments()[0];
+                dropdown.choices = new List<string> { "Select a component first" };
+                dropdown.index = 0;
+                return;
             }
 
+            List<string> methodNames = GetAvailableMethods(component, returnType);
+            
+            if (methodNames.Count == 0)
+            {
+                dropdown.choices = new List<string> { $"No methods returning {returnType.Name} found" };
+                dropdown.index = 0;
+                return;
+            }
+
+            dropdown.choices = methodNames;
+            
+            // Set current value
+            string currentMethod = methodNameProp.stringValue;
+            int currentIndex = methodNames.IndexOf(currentMethod);
+            dropdown.index = currentIndex >= 0 ? currentIndex : 0;
+            dropdown.value = dropdown.choices[dropdown.index];
+        }
+
+        private Type GetExpectedReturnType(SerializedProperty property)
+        {
+            // Try to get the actual runtime type from the property
+            // This works for SerializeReference fields
+            
+            // For SerializeReference, get the managed reference value
+            if (property.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                var managedRefValue = property.managedReferenceValue;
+                if (managedRefValue != null)
+                {
+                    Type actualType = managedRefValue.GetType();
+                    return GetReturnTypeFromMethodInvokerType(actualType);
+                }
+            }
+            
+            // Fall back to fieldInfo for direct field declarations
+            Type fieldType = fieldInfo.FieldType;
+            return GetReturnTypeFromMethodInvokerType(fieldType);
+        }
+
+        private Type GetReturnTypeFromMethodInvokerType(Type type)
+        {
+            // Check if this type is or inherits from MethodInvokerValue<T>
+            Type currentType = type;
+            while (currentType != null)
+            {
+                if (currentType.IsGenericType && currentType.GetGenericTypeDefinition().Name == "MethodInvokerValue`1")
+                {
+                    return currentType.GetGenericArguments()[0];
+                }
+                currentType = currentType.BaseType;
+            }
+
+            // If no generic type found, return void
             return typeof(void);
         }
 
-        private void UpdateMemberDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type expectedReturnType)
-        {
-            Component component = componentProp.objectReferenceValue as Component;
-
-            if (component != null)
-            {
-                List<string> memberNames = GetAvailableMembers(component, expectedReturnType);
-
-                if (memberNames.Count > 0)
-                {
-                    dropdown.choices = memberNames;
-                    dropdown.SetEnabled(true);
-
-                    // Set current value if valid
-                    if (memberNames.Contains(methodNameProp.stringValue))
-                    {
-                        dropdown.value = methodNameProp.stringValue;
-                    }
-                    else
-                    {
-                        dropdown.value = memberNames[0];
-                    }
-                }
-                else
-                {
-                    dropdown.choices = new List<string> { $"No parameterless members returning {expectedReturnType.Name} found" };
-                    dropdown.value = $"No parameterless members returning {expectedReturnType.Name} found";
-                    dropdown.SetEnabled(false);
-                }
-            }
-            else
-            {
-                dropdown.choices = new List<string> { "Select a component first" };
-                dropdown.value = "Select a component first";
-                dropdown.SetEnabled(false);
-            }
-        }
-
-        private List<string> GetAvailableMembers(Component component, Type expectedReturnType)
+        private List<string> GetAvailableMethods(Component component, Type expectedReturnType)
         {
             if (component == null)
                 return new List<string>();
 
-            Type componentType = component.GetType();
+            Type type = component.GetType();
 
-            var methodNames = componentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            var methodNames = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.ReturnType == expectedReturnType)
                 .Where(m => m.GetParameters().Length == 0)
                 .Where(m => !m.IsSpecialName)
                 .Where(m => m.DeclaringType != typeof(Component) &&
-                           m.DeclaringType != typeof(Behaviour) &&
-                           m.DeclaringType != typeof(MonoBehaviour) &&
-                           m.DeclaringType != typeof(UnityEngine.Object))
+                            m.DeclaringType != typeof(Behaviour) &&
+                            m.DeclaringType != typeof(MonoBehaviour) &&
+                            m.DeclaringType != typeof(UnityEngine.Object))
                 .Select(m => m.Name)
                 .ToList();
 
-            var propertyNames = componentType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            var propertyNames = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(p => p.PropertyType == expectedReturnType)
                 .Where(p => p.GetIndexParameters().Length == 0)
                 .Where(p =>
@@ -140,11 +170,7 @@ namespace Jungle.Values.Editor
                 .Select(p => p.Name)
                 .ToList();
 
-            return methodNames
-                .Concat(propertyNames)
-                .Distinct()
-                .OrderBy(name => name)
-                .ToList();
+            return methodNames.Concat(propertyNames).Distinct().OrderBy(n => n).ToList();
         }
     }
 }
