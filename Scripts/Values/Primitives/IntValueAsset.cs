@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -20,8 +21,18 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int list value", fileName = "IntListValue")]
+    public class IntListValueAsset : SerializedValueListAsset<int>
+    {
+    }
+
     [Serializable]
     public class IntValueFromAsset : ValueFromAsset<int, IntValueAsset>, IIntValue
+    {
+    }
+
+    [Serializable]
+    public class IntListValueFromAsset : ValueFromAsset<IReadOnlyList<int>, IntListValueAsset>
     {
     }
 }

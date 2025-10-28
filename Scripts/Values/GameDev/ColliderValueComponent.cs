@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -20,9 +21,19 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    public class ColliderListValueComponent : SerializedValueListComponent<Collider>
+    {
+    }
+
     [Serializable]
     public class ColliderValueFromComponent :
         ValueFromComponent<Collider, ColliderValueComponent>, IColliderValue
+    {
+    }
+
+    [Serializable]
+    public class ColliderListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Collider>, ColliderListValueComponent>
     {
     }
 }

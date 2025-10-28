@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -19,8 +20,18 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    public class RectListValueComponent : SerializedValueListComponent<Rect>
+    {
+    }
+
     [Serializable]
     public class RectValueFromComponent : ValueFromComponent<Rect, RectValueComponent>, IRectValue
+    {
+    }
+
+    [Serializable]
+    public class RectListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Rect>, RectListValueComponent>
     {
     }
 }

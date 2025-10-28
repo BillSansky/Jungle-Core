@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -19,9 +20,19 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    public class GameObjectListValueComponent : SerializedValueListComponent<GameObject>
+    {
+    }
+
     [Serializable]
     public class GameObjectValueFromComponent :
         ValueFromComponent<GameObject, GameObjectValueComponent>, IGameObjectValue
+    {
+    }
+
+    [Serializable]
+    public class GameObjectListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<GameObject>, GameObjectListValueComponent>
     {
     }
 }

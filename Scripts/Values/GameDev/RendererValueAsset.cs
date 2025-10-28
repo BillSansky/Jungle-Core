@@ -1,5 +1,6 @@
 ﻿using Jungle.Values;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values
@@ -21,8 +22,19 @@ namespace Jungle.Values
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Renderer list value", fileName = "RendererListValueAsset")]
+    public class RendererListValueAsset : SerializedValueListAsset<Renderer>
+    {
+    }
+
     [Serializable]
     public class RendererValueFromAsset : ValueFromAsset<Renderer, RendererValueAsset>, IRendererValue
+    {
+    }
+
+    [Serializable]
+    public class RendererListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Renderer>, RendererListValueAsset>
     {
     }
 }

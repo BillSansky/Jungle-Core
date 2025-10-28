@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -19,9 +20,19 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    public class AudioSourceListValueComponent : SerializedValueListComponent<AudioSource>
+    {
+    }
+
     [Serializable]
     public class AudioSourceValueFromComponent :
         ValueFromComponent<AudioSource, AudioSourceValueComponent>, IAudioSourceValue
+    {
+    }
+
+    [Serializable]
+    public class AudioSourceListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<AudioSource>, AudioSourceListValueComponent>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -20,8 +21,18 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Long list value", fileName = "LongListValue")]
+    public class LongListValueAsset : SerializedValueListAsset<long>
+    {
+    }
+
     [Serializable]
     public class LongValueFromAsset : ValueFromAsset<long, LongValueAsset>, ILongValue
+    {
+    }
+
+    [Serializable]
+    public class LongListValueFromAsset : ValueFromAsset<IReadOnlyList<long>, LongListValueAsset>
     {
     }
 }

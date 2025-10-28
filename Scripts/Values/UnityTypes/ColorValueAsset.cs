@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -20,8 +21,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color list value", fileName = "ColorListValue")]
+    public class ColorListValueAsset : SerializedValueListAsset<Color>
+    {
+    }
+
     [Serializable]
     public class ColorValueFromAsset : ValueFromAsset<Color, ColorValueAsset>, IColorValue
+    {
+    }
+
+    [Serializable]
+    public class ColorListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Color>, ColorListValueAsset>
     {
     }
 }

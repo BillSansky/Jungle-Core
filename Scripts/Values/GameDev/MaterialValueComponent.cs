@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.GameDev
@@ -19,9 +20,19 @@ namespace Jungle.Values.GameDev
         }
     }
 
+    public class MaterialListValueComponent : SerializedValueListComponent<Material>
+    {
+    }
+
     [Serializable]
     public class MaterialValueFromComponent :
         ValueFromComponent<Material, MaterialValueComponent>, IMaterialValue
+    {
+    }
+
+    [Serializable]
+    public class MaterialListValueFromComponent :
+        ValueFromComponent<IReadOnlyList<Material>, MaterialListValueComponent>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
@@ -20,8 +21,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Vector4 list value", fileName = "Vector4ListValue")]
+    public class Vector4ListValueAsset : SerializedValueListAsset<Vector4>
+    {
+    }
+
     [Serializable]
     public class Vector4ValueFromAsset : ValueFromAsset<Vector4, Vector4ValueAsset>, IVector4Value
+    {
+    }
+
+    [Serializable]
+    public class Vector4ListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Vector4>, Vector4ListValueAsset>
     {
     }
 }

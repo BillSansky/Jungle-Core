@@ -4,13 +4,13 @@ using UnityEngine;
 namespace Jungle.Values
 {
     /// <summary>
-    /// Provides a value sourced from a <see cref="ValueAsset{T}"/>.
+    /// Provides a value sourced from a <see cref="ValueAssetBase{T}"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
     /// <typeparam name="TAsset">Concrete asset type used to fetch the value.</typeparam>
     [Serializable]
     public class ValueFromAsset<T, TAsset> : ISettableValue<T>
-        where TAsset : ValueAsset<T>
+        where TAsset : ValueAssetBase<T>
     {
         [SerializeField]
         private TAsset valueAsset;

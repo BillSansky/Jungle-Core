@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Values.Primitives
@@ -19,8 +20,17 @@ namespace Jungle.Values.Primitives
         }
     }
 
+    public class BoolListValueComponent : SerializedValueListComponent<bool>
+    {
+    }
+
     [Serializable]
     public class BoolValueFromComponent : ValueFromComponent<bool, BoolValueComponent>, IBoolValue
+    {
+    }
+
+    [Serializable]
+    public class BoolListValueFromComponent : ValueFromComponent<IReadOnlyList<bool>, BoolListValueComponent>
     {
     }
 }
