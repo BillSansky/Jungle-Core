@@ -64,7 +64,7 @@ namespace Jungle.Values
 
             if (component == null)
             {
-                Debug.LogWarning("MethodInvokerValue: Component is null");
+                Debug.LogWarning("MethodInvokerValue: Ref is null");
                 return;
             }
 

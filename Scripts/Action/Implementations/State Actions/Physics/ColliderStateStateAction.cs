@@ -33,7 +33,7 @@ namespace Jungle.Actions
         private void StoreOriginalState()
         {
             originalStates.Clear();
-            foreach (var collider in targetColliders.Values)
+            foreach (var collider in targetColliders.Refs)
             {
                 originalStates[collider] = collider.enabled;
             }
@@ -48,7 +48,7 @@ namespace Jungle.Actions
 
         private void ApplyColliderStates(ColliderStateModification action)
         {
-            foreach (var collider in targetColliders.Values)
+            foreach (var collider in targetColliders.Refs)
             {
                 if (!collider) continue;
 

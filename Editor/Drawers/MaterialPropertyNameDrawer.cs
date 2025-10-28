@@ -65,7 +65,7 @@ namespace Jungle.Editor
                 {
                     try
                     {
-                        var renderers = iRendererValue.Values;
+                        var renderers = iRendererValue.Refs;
                         if (renderers != null)
                         {
                             var rendererList = renderers.ToList();

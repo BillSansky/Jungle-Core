@@ -179,7 +179,6 @@ namespace Jungle.Editor
         private void OnPickOrSwapClicked()
         {
             if (prop == null) return;
-            Debug.Log("CLICK");
 
             if (isManagedRef)
             {
@@ -259,7 +258,7 @@ namespace Jungle.Editor
                             UnityEngine.Object.DestroyImmediate(instance);
                         }
                     }
-                    // Component / MonoBehaviour
+                    // Ref / MonoBehaviour
                     else if (typeof(Component).IsAssignableFrom(pickedType) ||
                              typeof(MonoBehaviour).IsAssignableFrom(pickedType))
                     {
@@ -274,7 +273,7 @@ namespace Jungle.Editor
                         }
                         else
                         {
-                            Undo.RecordObject(go, "Add Component");
+                            Undo.RecordObject(go, "Add Ref");
                             var comp = Undo.AddComponent(go, pickedType) as Component;
                             createdOrAssigned = comp;
                             // Keep inspector focused on where the component was added
@@ -416,7 +415,6 @@ namespace Jungle.Editor
 
         private void RepaintContentOnly()
         {
-            Debug.Log("REPAINT");
             content.Clear();
             underRowHost.Clear();
 

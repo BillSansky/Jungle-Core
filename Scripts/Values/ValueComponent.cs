@@ -18,7 +18,7 @@ namespace Jungle.Values
     }
 
     /// <summary>
-    /// Component base class for values represented by a single element.
+    /// Ref base class for values represented by a single element.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
     public abstract class ValueComponent<T> : ValueComponentBase<T>
@@ -27,7 +27,7 @@ namespace Jungle.Values
     }
 
     /// <summary>
-    /// Component base class for values represented by a list of elements.
+    /// Ref base class for values represented by a list of elements.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
     public abstract class ValueListComponent<TElement> : ValueComponentBase<IReadOnlyList<TElement>>
@@ -68,7 +68,7 @@ namespace Jungle.Values
     }
 
     /// <summary>
-    /// Component base class for list values stored as a serialized <see cref="List{T}"/>.
+    /// Ref base class for list values stored as a serialized <see cref="List{T}"/>.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
     public abstract class SerializedValueListComponent<TElement> : ValueListComponent<TElement>

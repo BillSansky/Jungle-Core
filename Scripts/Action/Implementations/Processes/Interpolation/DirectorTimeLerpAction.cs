@@ -53,7 +53,7 @@ namespace Jungle.Actions
         {
             Debug.Assert(targetDirectorObject != null, "PlayableDirector GameObject provider has not been assigned.");
 
-            var gameObject = targetDirectorObject.V;
+            var gameObject = targetDirectorObject.G;
             Debug.Assert(gameObject != null, "The PlayableDirector GameObject provider returned a null instance.");
 
             var director = gameObject.GetComponent<PlayableDirector>();

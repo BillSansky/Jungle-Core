@@ -31,7 +31,7 @@ namespace Jungle.Actions
             base.OnBeforeStart();
 
             // Store original colors
-            foreach (var renderer in targetRenderer.Values)
+            foreach (var renderer in targetRenderer.Refs)
             {
                 var materials = renderer.materials;
                 var originalColors = new Color[materials.Length];
@@ -56,9 +56,9 @@ namespace Jungle.Actions
         {
             // Return the first renderer's first material color as reference
             // The actual lerping happens per-material in ApplyValue
-            if (targetRenderer.Values != null)
+            if (targetRenderer.Refs != null)
             {
-                foreach (var renderer in targetRenderer.Values)
+                foreach (var renderer in targetRenderer.Refs)
                 {
                     if (renderer != null && originalColorsMap.TryGetValue(renderer, out var colors))
                     {
@@ -84,7 +84,7 @@ namespace Jungle.Actions
 
         protected override void ApplyValue(Color value)
         {
-            foreach (var renderer in targetRenderer.Values)
+            foreach (var renderer in targetRenderer.Refs)
             {
                 if (renderer == null) continue;
 
@@ -119,7 +119,7 @@ namespace Jungle.Actions
             Interrupt();
 
             // Restore original colors
-            foreach (var renderer in targetRenderer.Values)
+            foreach (var renderer in targetRenderer.Refs)
             {
                 if (renderer && originalColorsMap.ContainsKey(renderer))
                 {

@@ -21,7 +21,7 @@ namespace Jungle.Values
             if (component == null)
             {
                 Debug.LogError(
-                    $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
+                    $"Ref reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
                 return default;
             }
 
@@ -33,7 +33,7 @@ namespace Jungle.Values
             if (component == null)
             {
                 Debug.LogError(
-                    $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
+                    $"Ref reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace Jungle.Values
                 if (component == null)
                 {
                     Debug.LogError(
-                        $"Component reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
+                        $"Ref reference is missing for {GetType().Name}. Assign a {typeof(TComponent).Name} instance.");
                     return false;
                 }
 

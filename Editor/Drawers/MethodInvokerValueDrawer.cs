@@ -3,73 +3,115 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Jungle.Values.Editor
 {
     [CustomPropertyDrawer(typeof(MethodInvokerValue<>))]
     public class MethodInvokerValueDrawer : PropertyDrawer
     {
-        private const float LineHeight = 18f;
-        private const float Spacing = 2f;
-
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            EditorGUI.BeginProperty(position, label, property);
+            var container = new VisualElement();
 
             var componentProp = property.FindPropertyRelative("component");
             var methodNameProp = property.FindPropertyRelative("methodName");
 
-            Rect componentRect = new Rect(position.x, position.y, position.width, LineHeight);
-            Rect methodRect = new Rect(position.x, position.y + LineHeight + Spacing, position.width, LineHeight);
+            // Get the generic type parameter T from MethodInvokerValue<T>
+            Type returnType = GetExpectedReturnType();
 
-            // Draw component field
-            EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(componentRect, componentProp, new GUIContent("Component"));
-            if (EditorGUI.EndChangeCheck())
+            // Create component field
+            var componentField = new PropertyField(componentProp, "Ref");
+            container.Add(componentField);
+
+            // Create method dropdown
+            var methodDropdown = new DropdownField("Method");
+            methodDropdown.choices = new List<string> { "Select a component first" };
+            methodDropdown.value = "Select a component first";
+            methodDropdown.SetEnabled(false);
+            container.Add(methodDropdown);
+
+            // Update dropdown when component changes
+            componentField.RegisterValueChangeCallback(evt =>
             {
+                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
                 methodNameProp.stringValue = string.Empty;
+                methodNameProp.serializedObject.ApplyModifiedProperties();
+            });
+
+            // Handle dropdown selection
+            methodDropdown.RegisterValueChangedCallback(evt =>
+            {
+                if (componentProp.objectReferenceValue != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
+                {
+                    methodNameProp.stringValue = evt.newValue;
+                    methodNameProp.serializedObject.ApplyModifiedProperties();
+                }
+            });
+
+            // Initialize dropdown
+            container.schedule.Execute(() =>
+            {
+                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
+            });
+
+            return container;
+        }
+
+        private Type GetExpectedReturnType()
+        {
+            // fieldInfo.FieldType is MethodInvokerValue<T>
+            Type fieldType = fieldInfo.FieldType;
+
+            if (fieldType.IsGenericType)
+            {
+                return fieldType.GetGenericArguments()[0];
             }
 
-            // Draw method dropdown
+            return typeof(void);
+        }
+
+        private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type expectedReturnType)
+        {
             Component component = componentProp.objectReferenceValue as Component;
+
             if (component != null)
             {
-                List<string> methodNames = GetAvailableMethods(component);
+                List<string> methodNames = GetAvailableMethods(component, expectedReturnType);
 
                 if (methodNames.Count > 0)
                 {
-                    int currentIndex = methodNames.IndexOf(methodNameProp.stringValue);
-                    if (currentIndex < 0) currentIndex = 0;
+                    dropdown.choices = methodNames;
+                    dropdown.SetEnabled(true);
 
-                    EditorGUI.BeginChangeCheck();
-                    int newIndex = EditorGUI.Popup(methodRect, "Method", currentIndex, methodNames.ToArray());
-                    if (EditorGUI.EndChangeCheck())
+                    // Set current value if valid
+                    if (methodNames.Contains(methodNameProp.stringValue))
                     {
-                        methodNameProp.stringValue = methodNames[newIndex];
+                        dropdown.value = methodNameProp.stringValue;
+                    }
+                    else
+                    {
+                        dropdown.value = methodNames[0];
                     }
                 }
                 else
                 {
-                    EditorGUI.LabelField(methodRect, "Method", "No parameterless void methods found");
+                    dropdown.choices = new List<string> { $"No parameterless methods returning {expectedReturnType.Name} found" };
+                    dropdown.value = $"No parameterless methods returning {expectedReturnType.Name} found";
+                    dropdown.SetEnabled(false);
                 }
             }
             else
             {
-                EditorGUI.BeginDisabledGroup(true);
-                EditorGUI.Popup(methodRect, "Method", 0, new string[] { "Select a component first" });
-                EditorGUI.EndDisabledGroup();
+                dropdown.choices = new List<string> { "Select a component first" };
+                dropdown.value = "Select a component first";
+                dropdown.SetEnabled(false);
             }
-
-            EditorGUI.EndProperty();
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return (LineHeight + Spacing) * 2;
-        }
-
-        private List<string> GetAvailableMethods(Component component)
+        private List<string> GetAvailableMethods(Component component, Type expectedReturnType)
         {
             if (component == null)
                 return new List<string>();
@@ -77,11 +119,11 @@ namespace Jungle.Values.Editor
             Type componentType = component.GetType();
 
             var methods = componentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(m => m.ReturnType == typeof(void))
+                .Where(m => m.ReturnType == expectedReturnType)
                 .Where(m => m.GetParameters().Length == 0)
-                .Where(m => !m.IsSpecialName) // Exclude property getters/setters
-                .Where(m => m.DeclaringType != typeof(Component) && 
-                           m.DeclaringType != typeof(Behaviour) && 
+                .Where(m => !m.IsSpecialName)
+                .Where(m => m.DeclaringType != typeof(Component) &&
+                           m.DeclaringType != typeof(Behaviour) &&
                            m.DeclaringType != typeof(MonoBehaviour) &&
                            m.DeclaringType != typeof(UnityEngine.Object))
                 .Select(m => m.Name)

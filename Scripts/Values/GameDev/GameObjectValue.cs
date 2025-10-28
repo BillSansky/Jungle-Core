@@ -6,6 +6,10 @@ namespace Jungle.Values.GameDev
 {
     public interface IGameObjectValue : IValue<GameObject>, ITransformValue
     {
+        GameObject G => ((IValue<GameObject>)this).Value();
+
+        IEnumerable<GameObject> Gs => ((IValue<GameObject>)this).Values;
+        
         Transform IValue<Transform>.Value()
         {
             return ((IValue<GameObject>)this).Value().transform;
@@ -28,10 +32,18 @@ namespace Jungle.Values.GameDev
     {
         public override bool HasMultipleValues => false;
         
+        public static implicit operator GameObject(GameObjectValue value)
+        {
+            return value.Value();
+        }
     }
 
     [Serializable]
     public class GameObjectMethodInvokerValue : MethodInvokerValue<GameObject>, IGameObjectValue
     {
+        public static implicit operator GameObject(GameObjectMethodInvokerValue value)
+        {
+            return value.Value();
+        }
     }
 }

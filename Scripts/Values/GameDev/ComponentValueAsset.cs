@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Component value", fileName = "ComponentValueAsset")]
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Ref value", fileName = "ComponentValueAsset")]
     public class ComponentValueAsset : ValueAsset<Component>
     {
         [SerializeField]
@@ -21,7 +21,7 @@ namespace Jungle.Values.GameDev
         }
     }
 
-    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Component list value", fileName = "ComponentListValueAsset")]
+    [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Ref list value", fileName = "ComponentListValueAsset")]
     public class ComponentListValueAsset : SerializedValueListAsset<Component>
     {
     }

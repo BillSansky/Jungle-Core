@@ -24,7 +24,7 @@ namespace Jungle.Actions
             int layer = GetFirstLayerFromMask(targetLayer);
 
            
-            foreach (var obj in targetObjects.Values)
+            foreach (var obj in targetObjects.Gs)
             {
                 if (revertOnStop)
                     storedLayers[obj] = obj.layer;

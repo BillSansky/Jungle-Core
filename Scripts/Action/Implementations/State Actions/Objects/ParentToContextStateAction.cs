@@ -28,7 +28,7 @@ namespace Jungle.Actions
         public void OnStateEnter()
         {
             originalParents.Clear();
-            foreach (var target in targetTransforms.Values)
+            foreach (var target in targetTransforms.Refs)
             {
                 if (target != null)
                 {
@@ -38,9 +38,9 @@ namespace Jungle.Actions
 
 
             // Set new parent
-            var parent = parentTransform.V;
+            var parent = parentTransform.Ref;
 
-            foreach (var t in targetTransforms.Values)
+            foreach (var t in targetTransforms.Refs)
             {
                 t.SetParent(parent, preserveWorldPosition);
             }
@@ -55,7 +55,7 @@ namespace Jungle.Actions
 
             int i = 0;
             // Revert objects to their original parents
-            foreach (var trans in targetTransforms.Values)
+            foreach (var trans in targetTransforms.Refs)
             {
                 trans.SetParent(originalParents[i], preserveWorldPosition);
                 i++;

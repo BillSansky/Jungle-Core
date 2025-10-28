@@ -27,7 +27,7 @@ namespace Jungle.Actions
 
             originalParents = new List<Transform>();
 
-            foreach (var transform in targetTransforms.Values)
+            foreach (var transform in targetTransforms.Refs)
             {
                 originalParents.Add(transform.parent);
                 transform.SetParent(parentTransform, true);
@@ -43,7 +43,7 @@ namespace Jungle.Actions
 
             if (!resetParentOnStop) return;
 
-            var transforms = targetTransforms.Values.ToList();
+            var transforms = targetTransforms.Refs.ToList();
             for (int i = 0; i < transforms.Count && i < originalParents.Count; i++)
             {
                 transforms[i].SetParent(originalParents[i], true);

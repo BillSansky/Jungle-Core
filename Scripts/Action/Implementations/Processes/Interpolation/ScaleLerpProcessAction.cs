@@ -20,7 +20,7 @@ namespace Jungle.Actions
 
         protected override void OnBeforeStart()
         {
-            var transform = targetTransform?.V;
+            var transform = targetTransform?.Ref;
             Debug.Assert(transform != null, "Target transform is null.");
             originalScale = transform.localScale;
         }
@@ -42,7 +42,7 @@ namespace Jungle.Actions
 
         protected override void ApplyValue(Vector3 value)
         {
-            var transform = targetTransform?.V;
+            var transform = targetTransform.Ref;
             Debug.Assert(transform != null, "Target transform is null.");
             transform.localScale = value;
         }

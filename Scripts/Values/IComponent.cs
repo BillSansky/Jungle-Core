@@ -1,19 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using Jungle.Values;
 using UnityEngine;
 
 namespace Jungle.Values
 {
-    public interface IComponent
-    {
-        GameObject GameObject { get; }
-
-        Transform Transform { get; }
-    }
-
-    public interface IComponent<out TComponent> : IValue<TComponent>, IComponent
+    public interface IComponent<out TComponent> : IValue<TComponent>
         where TComponent : Component
     {
-        public GameObject GameObject => Value().gameObject;
-
-        public Transform Transform => Value().transform;
+       
+        TComponent Ref => ((IValue<TComponent>)this).Value();
+        
+        IEnumerable<TComponent> Refs => ((IValue<TComponent>)this).Values;
+        
+        bool HasMultipleRefs => ((IValue<TComponent>)this).HasMultipleValues;
     }
 }

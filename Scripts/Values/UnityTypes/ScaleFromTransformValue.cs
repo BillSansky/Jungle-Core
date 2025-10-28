@@ -15,16 +15,16 @@ namespace Jungle.Values.UnityTypes
         
         public Vector3 Value()
         {
-            return transform.V.localScale;
+            return transform.LocalScale;
         }
 
-        public bool HasMultipleValues =>transform.HasMultipleValues;
+        public bool HasMultipleValues =>transform.HasMultipleRefs;
 
         public IEnumerable<Vector3> Values
         {
             get
             {
-                foreach (var transformValue in transform.Values)
+                foreach (var transformValue in transform.Refs)
                 {
                     yield return transformValue.localScale;
                 }
