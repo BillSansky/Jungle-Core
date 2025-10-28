@@ -45,7 +45,7 @@ namespace Jungle.Editor
                     initialized = true;
 
 
-                    EditorUtils.SetupFieldWithClassSelectionButton(field, baseType, property);
+                    EditorUtils.SetupFieldWithClassSelectionButton(field, baseType, property, fieldInfo);
                 });
             }
             else

@@ -1,7 +1,9 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -30,6 +32,7 @@ namespace Jungle.Editor
         // --- Binding state ---
         private SerializedProperty prop;
         private Type baseType;
+        private FieldInfo parentFieldInfo;
         private bool isManagedRef;
 
         private EventCallback<ChangeEvent<bool>> expandToggleHandler;
@@ -114,11 +117,12 @@ namespace Jungle.Editor
         }
 
         /// <summary>Bind the field to a property and base type.</summary>
-        public void Bind(SerializedProperty property, Type baseType)
+        public void Bind(SerializedProperty property, Type baseType, FieldInfo fieldInfo)
         {
             prop = property ?? throw new ArgumentNullException(nameof(property));
 
             this.baseType = baseType ?? throw new ArgumentNullException(nameof(baseType));
+            parentFieldInfo = fieldInfo;
             isManagedRef = prop.propertyType == SerializedPropertyType.ManagedReference;
             allowRowToggle = false; 
             
@@ -475,7 +479,7 @@ namespace Jungle.Editor
                     underRowHost.style.display = DisplayStyle.None;
 
                     // Render children directly in content area, transferring parent label to first child
-                    RenderManagedRefChildrenInto(prop, content, hideChildLabels: true, parentLabel: label.text);
+                    RenderManagedRefChildrenInto(prop, content, hideChildLabels: true, parentLabel: label.text, parentFieldInfo);
                 }
                 else
                 {
@@ -491,7 +495,7 @@ namespace Jungle.Editor
                     content.Add(summary);
 
                     // Details (children) go under the row
-                    RenderManagedRefChildrenInto(prop, underRowHost, hideChildLabels: false);
+                    RenderManagedRefChildrenInto(prop, underRowHost, hideChildLabels: false, parentLabel: null, parentFieldInfo);
                 }
             }
             else
@@ -524,7 +528,7 @@ namespace Jungle.Editor
             return ObjectNames.NicifyVariableName(shortName);
         }
 
-        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels = false, string parentLabel = null)
+        private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels = false, string parentLabel = null, FieldInfo fieldInfo = null)
         {
             if (managedRefProp == null) return;
             if (renderingChildren) return;
@@ -532,6 +536,11 @@ namespace Jungle.Editor
             renderingChildren = true;
             try
             {
+                if (TryRenderCustomDrawer(managedRefProp, host, hideChildLabels, parentLabel, fieldInfo))
+                {
+                    return;
+                }
+
                 var so = managedRefProp.serializedObject;
                 so.Update();
 
@@ -581,6 +590,237 @@ namespace Jungle.Editor
             finally
             {
                 renderingChildren = false;
+            }
+        }
+
+        private static bool TryRenderCustomDrawer(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels,
+            string parentLabel, FieldInfo fieldInfo)
+        {
+            if (managedRefProp.propertyType != SerializedPropertyType.ManagedReference)
+            {
+                return false;
+            }
+
+            var value = managedRefProp.managedReferenceValue;
+            if (value == null)
+            {
+                return false;
+            }
+
+            var drawerType = CustomDrawerResolver.GetDrawerType(value.GetType());
+            if (drawerType == null)
+            {
+                return false;
+            }
+
+            if (!(Activator.CreateInstance(drawerType) is PropertyDrawer drawer))
+            {
+                return false;
+            }
+
+            DrawerInitializer.Initialize(drawer, fieldInfo);
+
+            VisualElement customElement = null;
+            try
+            {
+                customElement = drawer.CreatePropertyGUI(managedRefProp);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
+
+            if (customElement != null)
+            {
+                if (hideChildLabels)
+                {
+                    customElement.AddToClassList("tsf__child-field");
+                    customElement.AddToClassList("tsf__child-field--inline");
+                }
+
+                host.Add(customElement);
+                return true;
+            }
+
+            var labelContent = GetDrawerLabel(managedRefProp, hideChildLabels, parentLabel);
+            var drawerCopy = drawer;
+
+            var imguiContainer = new IMGUIContainer(() =>
+            {
+                var serializedObject = managedRefProp.serializedObject;
+                serializedObject.Update();
+
+                EditorGUILayout.BeginVertical();
+                try
+                {
+                    var height = drawerCopy.GetPropertyHeight(managedRefProp, labelContent);
+                    var rect = EditorGUILayout.GetControlRect(true, height);
+                    EditorGUI.BeginProperty(rect, labelContent, managedRefProp);
+                    drawerCopy.OnGUI(rect, managedRefProp, labelContent);
+                    EditorGUI.EndProperty();
+                }
+                finally
+                {
+                    EditorGUILayout.EndVertical();
+                    serializedObject.ApplyModifiedProperties();
+                }
+            });
+
+            if (hideChildLabels)
+            {
+                imguiContainer.AddToClassList("tsf__child-field");
+                imguiContainer.AddToClassList("tsf__child-field--inline");
+            }
+
+            host.Add(imguiContainer);
+            return true;
+        }
+
+        private static GUIContent GetDrawerLabel(SerializedProperty managedRefProp, bool hideChildLabels, string parentLabel)
+        {
+            if (hideChildLabels)
+            {
+                return string.IsNullOrEmpty(parentLabel) ? GUIContent.none : new GUIContent(parentLabel);
+            }
+
+            return new GUIContent(ObjectNames.NicifyVariableName(managedRefProp.name));
+        }
+
+        private static class DrawerInitializer
+        {
+            private static readonly FieldInfo FieldInfoField = typeof(PropertyDrawer)
+                .GetField("m_FieldInfo", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            public static void Initialize(PropertyDrawer drawer, FieldInfo fieldInfo)
+            {
+                if (FieldInfoField != null)
+                {
+                    FieldInfoField.SetValue(drawer, fieldInfo);
+                }
+            }
+        }
+
+        private static class CustomDrawerResolver
+        {
+            private struct DrawerInfo
+            {
+                public Type TargetType;
+                public Type DrawerType;
+                public bool UseForChildren;
+            }
+
+            private static readonly List<DrawerInfo> DrawerInfos = new List<DrawerInfo>();
+            private static bool cacheInitialized;
+
+            private static readonly FieldInfo CustomDrawerTypeField = typeof(CustomPropertyDrawer)
+                .GetField("m_Type", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            private static readonly FieldInfo CustomDrawerUseForChildrenField = typeof(CustomPropertyDrawer)
+                .GetField("m_UseForChildren", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            public static Type GetDrawerType(Type runtimeType)
+            {
+                if (runtimeType == null)
+                {
+                    return null;
+                }
+
+                EnsureCache();
+
+                foreach (var info in DrawerInfos)
+                {
+                    if (Matches(info, runtimeType))
+                    {
+                        return info.DrawerType;
+                    }
+                }
+
+                return null;
+            }
+
+            private static void EnsureCache()
+            {
+                if (cacheInitialized)
+                {
+                    return;
+                }
+
+                cacheInitialized = true;
+
+                foreach (var drawerType in TypeCache.GetTypesDerivedFrom<PropertyDrawer>())
+                {
+                    foreach (CustomPropertyDrawer attr in drawerType.GetCustomAttributes(typeof(CustomPropertyDrawer), true))
+                    {
+                        var targetType = GetTargetType(attr);
+                        if (targetType == null)
+                        {
+                            continue;
+                        }
+
+                        DrawerInfos.Add(new DrawerInfo
+                        {
+                            TargetType = targetType,
+                            DrawerType = drawerType,
+                            UseForChildren = GetUseForChildren(attr)
+                        });
+                    }
+                }
+            }
+
+            private static bool Matches(DrawerInfo info, Type runtimeType)
+            {
+                if (info.TargetType == runtimeType)
+                {
+                    return true;
+                }
+
+                if (info.TargetType.IsGenericTypeDefinition)
+                {
+                    if (runtimeType.IsGenericType && runtimeType.GetGenericTypeDefinition() == info.TargetType)
+                    {
+                        return true;
+                    }
+
+                    if (info.UseForChildren)
+                    {
+                        return InheritsFromGeneric(runtimeType, info.TargetType);
+                    }
+
+                    return false;
+                }
+
+                if (info.UseForChildren)
+                {
+                    return info.TargetType.IsAssignableFrom(runtimeType);
+                }
+
+                return false;
+            }
+
+            private static bool InheritsFromGeneric(Type type, Type genericDefinition)
+            {
+                while (type != null && type != typeof(object))
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == genericDefinition)
+                    {
+                        return true;
+                    }
+
+                    type = type.BaseType;
+                }
+
+                return false;
+            }
+
+            private static Type GetTargetType(CustomPropertyDrawer attribute)
+            {
+                return (Type)CustomDrawerTypeField?.GetValue(attribute);
+            }
+
+            private static bool GetUseForChildren(CustomPropertyDrawer attribute)
+            {
+                return CustomDrawerUseForChildrenField != null &&
+                       CustomDrawerUseForChildrenField.GetValue(attribute) is bool value && value;
             }
         }
     }
