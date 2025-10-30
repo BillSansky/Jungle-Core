@@ -19,7 +19,14 @@ namespace Jungle.Values.Editor
             var container = new VisualElement();
 
             var componentProp = property.FindPropertyRelative("component");
-            var methodNameProp = property.FindPropertyRelative("methodName");
+            var memberNameProp = property.FindPropertyRelative("memberName")
+                                 ?? property.FindPropertyRelative("methodName");
+
+            if (memberNameProp == null)
+            {
+                Debug.LogError("MethodInvokerValueDrawer: Unable to find 'memberName' or legacy 'methodName' property.");
+                return container;
+            }
 
             Type returnType = GetExpectedReturnType(property);
 
@@ -40,14 +47,14 @@ namespace Jungle.Values.Editor
             Debug.Log($"Added {container.childCount} children to container");
 
             // Initial dropdown population
-            UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
+            UpdateMethodDropdown(componentProp, memberNameProp, methodDropdown, returnType);
 
             // Update dropdown when component changes
             componentField.RegisterValueChangedCallback(evt =>
             {
-                UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
-                methodNameProp.stringValue = string.Empty;
-                methodNameProp.serializedObject.ApplyModifiedProperties();
+                UpdateMethodDropdown(componentProp, memberNameProp, methodDropdown, returnType);
+                memberNameProp.stringValue = string.Empty;
+                memberNameProp.serializedObject.ApplyModifiedProperties();
             });
 
             // Update property when dropdown changes
@@ -55,8 +62,8 @@ namespace Jungle.Values.Editor
             {
                 if (componentProp.objectReferenceValue != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
                 {
-                    methodNameProp.stringValue = evt.newValue;
-                    methodNameProp.serializedObject.ApplyModifiedProperties();
+                    memberNameProp.stringValue = evt.newValue;
+                    memberNameProp.serializedObject.ApplyModifiedProperties();
                 }
             });
 
@@ -69,7 +76,7 @@ namespace Jungle.Values.Editor
             return container;
         }
 
-        private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty methodNameProp, DropdownField dropdown, Type returnType)
+        private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty memberNameProp, DropdownField dropdown, Type returnType)
         {
             Component component = componentProp.objectReferenceValue as Component;
             
@@ -92,7 +99,7 @@ namespace Jungle.Values.Editor
             dropdown.choices = methodNames;
             
             // Set current value
-            string currentMethod = methodNameProp.stringValue;
+            string currentMethod = memberNameProp.stringValue;
             int currentIndex = methodNames.IndexOf(currentMethod);
             dropdown.index = currentIndex >= 0 ? currentIndex : 0;
             dropdown.value = dropdown.choices[dropdown.index];
