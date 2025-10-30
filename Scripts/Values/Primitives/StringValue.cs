@@ -24,7 +24,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class StringMethodInvokerValue : MethodInvokerValue<string>, IStringValue
+    public class StringClassMembersValue : ClassMembersValue<string>, IStringValue
     {
     }
 }

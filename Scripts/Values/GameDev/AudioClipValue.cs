@@ -17,7 +17,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class AudioClipMethodInvokerValue : MethodInvokerValue<AudioClip>, IAudioClipValue
+    public class AudioClipClassMembersValue : ClassMembersValue<AudioClip>, IAudioClipValue
     {
     }
 }

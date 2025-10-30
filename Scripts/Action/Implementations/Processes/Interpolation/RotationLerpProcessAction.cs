@@ -45,7 +45,7 @@ namespace Jungle.Actions
         {
             Debug.Assert(targetTransform != null, "Target transform provider has not been assigned.");
 
-            var transform = targetTransform.Ref;
+            var transform = targetTransform.V;
             Debug.Assert(transform != null, "The transform provider returned a null transform instance.");
 
             return transform;

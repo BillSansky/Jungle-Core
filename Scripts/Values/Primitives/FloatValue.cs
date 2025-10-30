@@ -24,7 +24,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class FloatMethodInvokerValue : MethodInvokerValue<float>, IFloatValue
+    public class FloatClassMembersValue : ClassMembersValue<float>, IFloatValue
     {
     }
 }

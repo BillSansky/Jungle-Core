@@ -25,7 +25,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class AnimationCurveMethodInvokerValue : MethodInvokerValue<AnimationCurve>, IAnimationCurveValue
+    public class AnimationCurveClassMembersValue : ClassMembersValue<AnimationCurve>, IAnimationCurveValue
     {
     }
 }

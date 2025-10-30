@@ -4,27 +4,13 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface IGameObjectValue : IValue<GameObject>, ITransformValue
+    public interface IGameObjectValue : IGameObjectReference, IValue<GameObject>
     {
         GameObject G => ((IValue<GameObject>)this).Value();
 
         IEnumerable<GameObject> Gs => ((IValue<GameObject>)this).Values;
         
-        Transform IValue<Transform>.Value()
-        {
-            return ((IValue<GameObject>)this).Value().transform;
-        }
-
-        IEnumerable<Transform> IValue<Transform>.Values
-        {
-            get
-            {
-                foreach (var gameObject in ((IValue<GameObject>)this).Values)
-                {
-                    yield return gameObject.transform;
-                }
-            }
-        }
+        GameObject IGameObjectReference.GameObject => ((IValue<GameObject>)this).Value();
     }
 
     [Serializable]
@@ -39,9 +25,9 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class GameObjectMethodInvokerValue : MethodInvokerValue<GameObject>, IGameObjectValue
+    public class GameObjectClassMembersValue : ClassMembersValue<GameObject>, IGameObjectValue
     {
-        public static implicit operator GameObject(GameObjectMethodInvokerValue value)
+        public static implicit operator GameObject(GameObjectClassMembersValue value)
         {
             return value.Value();
         }

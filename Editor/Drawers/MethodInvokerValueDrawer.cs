@@ -10,11 +10,7 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Values.Editor
 {
-    [CustomPropertyDrawer(typeof(MethodInvokerValue<>))]
-    [CustomPropertyDrawer(typeof(FloatMethodInvokerValue))]
-    [CustomPropertyDrawer(typeof(IntMethodInvokerValue))]
-    [CustomPropertyDrawer(typeof(BoolMethodInvokerValue))]
-    [CustomPropertyDrawer(typeof(StringMethodInvokerValue))]
+    [CustomPropertyDrawer(typeof(ClassMembersValue<>),true)]
     public class MethodInvokerValueDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -36,8 +32,7 @@ namespace Jungle.Values.Editor
             componentField.BindProperty(componentProp);
 
             // Dropdown for method/property names
-            var methodDropdown = new DropdownField("Method", new List<string> { "Select a component first" }, 0);
-            methodDropdown.style.backgroundColor = new StyleColor(Color.yellow); // Make it very visible for debugging
+            var methodDropdown = new DropdownField("Member", new List<string> { "Select a component first" }, 0);
 
             container.Add(componentField);
             container.Add(methodDropdown);
@@ -126,11 +121,11 @@ namespace Jungle.Values.Editor
 
         private Type GetReturnTypeFromMethodInvokerType(Type type)
         {
-            // Check if this type is or inherits from MethodInvokerValue<T>
+            // Check if this type is or inherits from ClassMembersValue<T>
             Type currentType = type;
             while (currentType != null)
             {
-                if (currentType.IsGenericType && currentType.GetGenericTypeDefinition().Name == "MethodInvokerValue`1")
+                if (currentType.IsGenericType && currentType.GetGenericTypeDefinition().Name == "ClassMembersValue`1")
                 {
                     return currentType.GetGenericArguments()[0];
                 }

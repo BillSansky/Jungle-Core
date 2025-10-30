@@ -15,7 +15,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class DoubleMethodInvokerValue : MethodInvokerValue<double>, IDoubleValue
+    public class DoubleClassMembersValue : ClassMembersValue<double>, IDoubleValue
     {
     }
 }

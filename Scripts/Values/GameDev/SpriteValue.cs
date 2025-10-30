@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class SpriteMethodInvokerValue : MethodInvokerValue<Sprite>, ISpriteValue
+    public class SpriteClassMembersValue : ClassMembersValue<Sprite>, ISpriteValue
     {
     }
 }

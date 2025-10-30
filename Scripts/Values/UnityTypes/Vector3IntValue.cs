@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class Vector3IntMethodInvokerValue : MethodInvokerValue<Vector3Int>, IVector3IntValue
+    public class Vector3IntClassMembersValue : ClassMembersValue<Vector3Int>, IVector3IntValue
     {
     }
 }

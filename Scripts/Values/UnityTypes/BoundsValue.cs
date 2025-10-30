@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class BoundsMethodInvokerValue : MethodInvokerValue<Bounds>, IBoundsValue
+    public class BoundsClassMembersValue : ClassMembersValue<Bounds>, IBoundsValue
     {
     }
 }

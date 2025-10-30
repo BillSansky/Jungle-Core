@@ -24,7 +24,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class BoolMethodInvokerValue : MethodInvokerValue<bool>, IBoolValue
+    public class BoolClassMembersValue : ClassMembersValue<bool>, IBoolValue
     {
     }
 }

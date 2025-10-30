@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class RectMethodInvokerValue : MethodInvokerValue<Rect>, IRectValue
+    public class RectClassMembersValue : ClassMembersValue<Rect>, IRectValue
     {
     }
 }

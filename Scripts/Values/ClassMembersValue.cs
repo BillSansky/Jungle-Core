@@ -5,10 +5,10 @@ using UnityEngine;
 namespace Jungle.Values
 {
     [Serializable]
-    public class MethodInvokerValue<T> : IValue<T>
+    public class ClassMembersValue<T> : IValue<T>
     {
         [SerializeField] private Component component;
-        [SerializeField] private string methodName;
+        [SerializeField] private string memberName;
 
         private Func<T> cachedFunc;
         private bool isInitialized;
@@ -26,10 +26,10 @@ namespace Jungle.Values
 
         public string MethodName
         {
-            get => methodName;
+            get => memberName;
             set
             {
-                methodName = value;
+                memberName = value;
                 isInitialized = false;
                 cachedFunc = null;
             }
@@ -64,19 +64,19 @@ namespace Jungle.Values
 
             if (component == null)
             {
-                Debug.LogWarning("MethodInvokerValue: Ref is null");
+                Debug.LogWarning("ClassMembersValue: Ref is null");
                 return;
             }
 
-            if (string.IsNullOrEmpty(methodName))
+            if (string.IsNullOrEmpty(memberName))
             {
-                Debug.LogWarning("MethodInvokerValue: Method name is empty");
+                Debug.LogWarning("ClassMembersValue: Method name is empty");
                 return;
             }
 
             Type componentType = component.GetType();
             MethodInfo methodInfo = componentType.GetMethod(
-                methodName,
+                memberName,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
                 null,
                 Type.EmptyTypes,
@@ -87,7 +87,7 @@ namespace Jungle.Values
             {
                 if (methodInfo.ReturnType != typeof(T))
                 {
-                    Debug.LogWarning($"MethodInvokerValue: Method '{methodName}' must return type {typeof(T).Name}, but returns {methodInfo.ReturnType.Name}");
+                    Debug.LogWarning($"ClassMembersValue: Method '{memberName}' must return type {typeof(T).Name}, but returns {methodInfo.ReturnType.Name}");
                     return;
                 }
 
@@ -97,26 +97,26 @@ namespace Jungle.Values
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"MethodInvokerValue: Failed to create delegate for method '{methodName}': {e.Message}");
+                    Debug.LogError($"ClassMembersValue: Failed to create delegate for method '{memberName}': {e.Message}");
                 }
 
                 return;
             }
 
             PropertyInfo propertyInfo = componentType.GetProperty(
-                methodName,
+                memberName,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
             );
 
             if (propertyInfo == null)
             {
-                Debug.LogWarning($"MethodInvokerValue: Member '{methodName}' not found on {componentType.Name}");
+                Debug.LogWarning($"ClassMembersValue: Member '{memberName}' not found on {componentType.Name}");
                 return;
             }
 
             if (propertyInfo.PropertyType != typeof(T))
             {
-                Debug.LogWarning($"MethodInvokerValue: Property '{methodName}' must return type {typeof(T).Name}, but returns {propertyInfo.PropertyType.Name}");
+                Debug.LogWarning($"ClassMembersValue: Property '{memberName}' must return type {typeof(T).Name}, but returns {propertyInfo.PropertyType.Name}");
                 return;
             }
 
@@ -124,7 +124,7 @@ namespace Jungle.Values
 
             if (getter == null || getter.GetParameters().Length != 0)
             {
-                Debug.LogWarning($"MethodInvokerValue: Property '{methodName}' does not have a parameterless getter");
+                Debug.LogWarning($"ClassMembersValue: Property '{memberName}' does not have a parameterless getter");
                 return;
             }
 
@@ -134,7 +134,7 @@ namespace Jungle.Values
             }
             catch (Exception e)
             {
-                Debug.LogError($"MethodInvokerValue: Failed to create delegate for property '{methodName}': {e.Message}");
+                Debug.LogError($"ClassMembersValue: Failed to create delegate for property '{memberName}': {e.Message}");
             }
         }
 

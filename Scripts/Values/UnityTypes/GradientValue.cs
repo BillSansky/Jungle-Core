@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class GradientMethodInvokerValue : MethodInvokerValue<Gradient>, IGradientValue
+    public class GradientClassMembersValue : ClassMembersValue<Gradient>, IGradientValue
     {
     }
 }

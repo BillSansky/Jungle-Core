@@ -10,7 +10,7 @@ namespace Jungle.Values
     }
 
     [Serializable]
-    public class ComponentMethodInvoker : MethodInvokerValue<Component>,IComponent<Component>
+    public class ComponentClassMembers : ClassMembersValue<Component>,IComponent<Component>
     {
     }
 }

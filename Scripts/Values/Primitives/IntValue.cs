@@ -20,7 +20,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class IntMethodInvokerValue : MethodInvokerValue<int>, IIntValue
+    public class IntClassMembersValue : ClassMembersValue<int>, IIntValue
     {
     }
 }

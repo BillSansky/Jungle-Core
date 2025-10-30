@@ -15,7 +15,7 @@ namespace Jungle.Values
     }
 
     [Serializable]
-    public class RendererMethodInvokerValue : MethodInvokerValue<Renderer>, IRendererValue
+    public class RendererClassMembersValue : ClassMembersValue<Renderer>, IRendererValue
     {
     }
 }

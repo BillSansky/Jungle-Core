@@ -15,7 +15,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
-    public class LongMethodInvokerValue : MethodInvokerValue<long>, ILongValue
+    public class LongClassMembersValue : ClassMembersValue<long>, ILongValue
     {
     }
 }

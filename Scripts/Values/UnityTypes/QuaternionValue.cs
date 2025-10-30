@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class QuaternionMethodInvokerValue : MethodInvokerValue<Quaternion>, IQuaternionValue
+    public class QuaternionClassMembersValue : ClassMembersValue<Quaternion>, IQuaternionValue
     {
     }
 }

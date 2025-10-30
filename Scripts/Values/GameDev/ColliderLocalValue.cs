@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class ColliderMethodInvokerValue : MethodInvokerValue<Collider>, IColliderValue
+    public class ColliderClassMembersValue : ClassMembersValue<Collider>, IColliderValue
     {
     }
 }

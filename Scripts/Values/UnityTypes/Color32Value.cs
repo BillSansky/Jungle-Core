@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class Color32MethodInvokerValue : MethodInvokerValue<Color32>, IColor32Value
+    public class Color32ClassMembersValue : ClassMembersValue<Color32>, IColor32Value
     {
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using Jungle.Actions;
 using Jungle.Attributes;
@@ -29,7 +29,7 @@ namespace Jungle.Actions
             base.OnBeforeStart();
 
             // Store original float values
-            foreach (var renderer in targetRenderer.Refs)
+            foreach (var renderer in targetRenderer.Values)
             {
                 var materials = renderer.materials;
                 var originalValues = new float[materials.Length];
@@ -59,9 +59,9 @@ namespace Jungle.Actions
         protected override float GetStartValue()
         {
             // Return the first renderer's first material float value as reference
-            if (targetRenderer.Refs != null)
+            if (targetRenderer.Values != null)
             {
-                foreach (var renderer in targetRenderer.Refs)
+                foreach (var renderer in targetRenderer.Values)
                 {
                     if (renderer != null && originalValuesMap.TryGetValue(renderer, out var values))
                     {
@@ -87,7 +87,7 @@ namespace Jungle.Actions
 
         protected override void ApplyValue(float value)
         {
-            foreach (var renderer in targetRenderer.Refs)
+            foreach (var renderer in targetRenderer.Values)
             {
                 if (renderer == null) continue;
 
@@ -130,7 +130,7 @@ namespace Jungle.Actions
             Interrupt();
 
             // Restore original float values
-            foreach (var renderer in targetRenderer.Refs)
+            foreach (var renderer in targetRenderer.Values)
             {
                 if (renderer && originalValuesMap.ContainsKey(renderer))
                 {

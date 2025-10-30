@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -18,13 +18,13 @@ namespace Jungle.Values.UnityTypes
             return transform.Position;
         }
 
-        public bool HasMultipleValues =>transform.HasMultipleRefs;
+        public bool HasMultipleValues =>transform.HasMultipleValues;
 
         public IEnumerable<Vector3> Values
         {
             get
             {
-                foreach (var transformValue in transform.Refs)
+                foreach (var transformValue in transform.Values)
                 {
                     yield return transformValue.position;
                 }

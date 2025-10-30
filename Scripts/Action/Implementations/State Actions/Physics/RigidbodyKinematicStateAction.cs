@@ -30,7 +30,7 @@ namespace Jungle.Actions
             wasKinematic.Clear();
 
 
-            foreach (var rb in targetRigidbodies.Refs)
+            foreach (var rb in targetRigidbodies.Values)
             {
                 wasKinematic.Add(rb.isKinematic);
                 switch (beginAction)
@@ -53,7 +53,7 @@ namespace Jungle.Actions
         public void OnStateExit()
         {
             int i = 0;
-            foreach (var rb in targetRigidbodies.Refs)
+            foreach (var rb in targetRigidbodies.Values)
             {
                 switch (endAction)
                 {

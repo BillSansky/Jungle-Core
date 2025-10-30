@@ -23,7 +23,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class TransformMethodInvokerValue : MethodInvokerValue<Transform>, ITransformValue
+    public class TransformClassMembersValue : ClassMembersValue<Transform>, ITransformValue
     {
     }
 }

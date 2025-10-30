@@ -16,7 +16,7 @@ namespace Jungle.Actions
         {
             if (!dragStartSound) return;
 
-            foreach (var source in audioSource.Refs)
+            foreach (var source in audioSource.Values)
             {
                 if (source != null)
                     source.PlayOneShot(dragStartSound);
@@ -27,7 +27,7 @@ namespace Jungle.Actions
         {
             if (!dragEndSound) return;
 
-            foreach (var source in audioSource.Refs)
+            foreach (var source in audioSource.Values)
             {
                 if (source != null)
                     source.PlayOneShot(dragEndSound);

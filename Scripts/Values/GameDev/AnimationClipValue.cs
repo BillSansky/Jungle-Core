@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class AnimationClipMethodInvokerValue : MethodInvokerValue<AnimationClip>, IAnimationClipValue
+    public class AnimationClipClassMembersValue : ClassMembersValue<AnimationClip>, IAnimationClipValue
     {
     }
 }

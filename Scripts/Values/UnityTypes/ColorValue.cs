@@ -16,7 +16,7 @@ namespace Jungle.Values.UnityTypes
     }
 
     [Serializable]
-    public class ColorMethodInvokerValue : MethodInvokerValue<Color>, IColorValue
+    public class ColorClassMembersValue : ClassMembersValue<Color>, IColorValue
     {
     }
 }

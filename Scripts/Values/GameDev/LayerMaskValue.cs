@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class LayerMaskMethodInvokerValue : MethodInvokerValue<LayerMask>, ILayerMaskValue
+    public class LayerMaskClassMembersValue : ClassMembersValue<LayerMask>, ILayerMaskValue
     {
     }
 }

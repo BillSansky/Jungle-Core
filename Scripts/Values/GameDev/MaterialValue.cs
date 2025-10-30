@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class MaterialMethodInvokerValue : MethodInvokerValue<Material>, IMaterialValue
+    public class MaterialClassMembersValue : ClassMembersValue<Material>, IMaterialValue
     {
     }
 }

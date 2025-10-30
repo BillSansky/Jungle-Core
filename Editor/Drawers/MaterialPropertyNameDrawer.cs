@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ namespace Jungle.Editor
                 {
                     try
                     {
-                        var renderers = iRendererValue.Refs;
+                        var renderers = iRendererValue.Values;
                         if (renderers != null)
                         {
                             var rendererList = renderers.ToList();

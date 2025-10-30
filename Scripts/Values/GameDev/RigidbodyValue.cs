@@ -16,7 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    public class RigidbodyMethodInvokerValue : MethodInvokerValue<Rigidbody>, IRigidbodyValue
+    public class RigidbodyClassMembersValue : ClassMembersValue<Rigidbody>, IRigidbodyValue
     {
     }
 }
