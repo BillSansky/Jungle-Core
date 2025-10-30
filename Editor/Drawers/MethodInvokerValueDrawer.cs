@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jungle.Editor;
+using Jungle.Values;
 using Jungle.Values.Primitives;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -30,36 +32,55 @@ namespace Jungle.Values.Editor
 
             Type returnType = GetExpectedReturnType(property);
 
-            // Create ObjectField
-            var componentField = new ObjectField("Component")
-            {
-                objectType = typeof(Component),
-                value = componentProp.objectReferenceValue
-            };
-            componentField.BindProperty(componentProp);
+            // Create component field with class selection support
+            var componentField = new PropertyField(componentProp, "Component");
 
             // Dropdown for method/property names
             var methodDropdown = new DropdownField("Member", new List<string> { "Select a component first" }, 0);
 
             container.Add(componentField);
             container.Add(methodDropdown);
-            
+
+            bool selectorInitialized = false;
+            componentField.schedule.Execute(() =>
+            {
+                if (selectorInitialized || componentField.panel == null)
+                {
+                    return;
+                }
+
+                selectorInitialized = true;
+                EditorUtils.SetupFieldWithClassSelectionButton(componentField, typeof(IComponentReference), componentProp, null);
+            });
 
             // Initial dropdown population
             UpdateMethodDropdown(componentProp, memberNameProp, methodDropdown, returnType);
 
+            Component lastResolvedComponent = ResolveComponent(componentProp);
+
             // Update dropdown when component changes
-            componentField.RegisterValueChangedCallback(evt =>
+            container.TrackPropertyValue(componentProp, _ =>
             {
+                Component currentComponent = ResolveComponent(componentProp);
+                bool componentChanged = currentComponent != lastResolvedComponent;
+
                 UpdateMethodDropdown(componentProp, memberNameProp, methodDropdown, returnType);
-                memberNameProp.stringValue = string.Empty;
-                memberNameProp.serializedObject.ApplyModifiedProperties();
+
+                if (componentChanged)
+                {
+                    var serializedObject = memberNameProp.serializedObject;
+                    serializedObject.Update();
+                    memberNameProp.stringValue = string.Empty;
+                    serializedObject.ApplyModifiedProperties();
+                }
+
+                lastResolvedComponent = currentComponent;
             });
 
             // Update property when dropdown changes
             methodDropdown.RegisterValueChangedCallback(evt =>
             {
-                if (componentProp.objectReferenceValue != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
+                if (ResolveComponent(componentProp) != null && evt.newValue != "Select a component first" && !evt.newValue.StartsWith("No"))
                 {
                     memberNameProp.stringValue = evt.newValue;
                     memberNameProp.serializedObject.ApplyModifiedProperties();
@@ -71,8 +92,8 @@ namespace Jungle.Values.Editor
 
         private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty memberNameProp, DropdownField dropdown, Type returnType)
         {
-            Component component = componentProp.objectReferenceValue as Component;
-            
+            Component component = ResolveComponent(componentProp);
+
             if (component == null)
             {
                 dropdown.choices = new List<string> { "Select a component first" };
@@ -90,12 +111,36 @@ namespace Jungle.Values.Editor
             }
 
             dropdown.choices = methodNames;
-            
+
             // Set current value
             string currentMethod = memberNameProp.stringValue;
             int currentIndex = methodNames.IndexOf(currentMethod);
             dropdown.index = currentIndex >= 0 ? currentIndex : 0;
             dropdown.value = dropdown.choices[dropdown.index];
+        }
+
+        private Component ResolveComponent(SerializedProperty componentProp)
+        {
+            if (componentProp == null)
+            {
+                return null;
+            }
+
+            if (componentProp.propertyType == SerializedPropertyType.ObjectReference)
+            {
+                return componentProp.objectReferenceValue as Component;
+            }
+
+            if (componentProp.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                var reference = componentProp.managedReferenceValue as IComponentReference;
+                if (reference != null)
+                {
+                    return reference.Component;
+                }
+            }
+
+            return null;
         }
 
         private Type GetExpectedReturnType(SerializedProperty property)
