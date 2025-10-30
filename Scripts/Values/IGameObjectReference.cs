@@ -2,8 +2,9 @@
 
 namespace Jungle.Values
 {
-    public interface IGameObjectReference
+    public interface IGameObjectReference 
     {
+        
         GameObject GameObject { get; }
     }
 }

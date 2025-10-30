@@ -37,7 +37,6 @@ namespace Jungle.Values.Editor
             container.Add(componentField);
             container.Add(methodDropdown);
             
-            Debug.Log($"Added {container.childCount} children to container");
 
             // Initial dropdown population
             UpdateMethodDropdown(componentProp, methodNameProp, methodDropdown, returnType);
@@ -59,13 +58,7 @@ namespace Jungle.Values.Editor
                     methodNameProp.serializedObject.ApplyModifiedProperties();
                 }
             });
-
-            // Debug: check if container is actually attached
-            container.RegisterCallback<AttachToPanelEvent>(e =>
-            {
-                Debug.Log($"Container attached to panel. Children: {container.childCount}");
-            });
-
+            
             return container;
         }
 

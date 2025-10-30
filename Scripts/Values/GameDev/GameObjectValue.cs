@@ -4,13 +4,15 @@ using UnityEngine;
 
 namespace Jungle.Values.GameDev
 {
-    public interface IGameObjectValue : IGameObjectReference, IValue<GameObject>
+    public interface IGameObjectValue : IGameObjectReference, IValue<GameObject>,IComponentReference
     {
-        GameObject G => ((IValue<GameObject>)this).Value();
+        Component IComponentReference.Component => V.transform;
 
-        IEnumerable<GameObject> Gs => ((IValue<GameObject>)this).Values;
+        GameObject G => Value();
+
+        IEnumerable<GameObject> Gs => Values;
         
-        GameObject IGameObjectReference.GameObject => ((IValue<GameObject>)this).Value();
+        GameObject IGameObjectReference.GameObject => Value();
     }
 
     [Serializable]

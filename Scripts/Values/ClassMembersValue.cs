@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Reflection;
 using UnityEngine;
+using Component = UnityEngine.Component;
 
 namespace Jungle.Values
 {
     [Serializable]
     public class ClassMembersValue<T> : IValue<T>
     {
-        [SerializeField] private Component component;
+        [SerializeReference] private IComponentReference component;
         [SerializeField] private string memberName;
 
         private Func<T> cachedFunc;
         private bool isInitialized;
 
-        public Component Component
-        {
-            get => component;
-            set
-            {
-                component = value;
-                isInitialized = false;
-                cachedFunc = null;
-            }
-        }
+        public Component Component => component.C;
 
         public string MethodName
         {
