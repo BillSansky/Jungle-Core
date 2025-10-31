@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Rigidbody Member Value", "Returns a rigidbody component from a component field, property, or method.", null, "Values/Game Dev")]
-    public class RigidbodyClassMembersValue : ClassMembersValue<Rigidbody>, IRigidbodyValue
+    public class RigidbodyClassMembersValue : ComponentClassMembersValue<Rigidbody>, IRigidbodyValue
     {
     }
 }

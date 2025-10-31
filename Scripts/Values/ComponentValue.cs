@@ -13,7 +13,7 @@ namespace Jungle.Values
 
     [Serializable]
     [JungleClassInfo("Component Member Value", "Fetches a component reference via a reflected member.", null, "Values/Game Dev")]
-    public class ComponentClassMembers : ClassMembersValue<Component>, IComponent<Component>
+    public class ComponentClassMembers : ComponentClassMembersValue<Component>, IComponent<Component>
     {
     }
 }

@@ -26,7 +26,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Transform Member Value", "Returns a transform component from a component field, property, or method.", null, "Values/Game Dev")]
-    public class TransformClassMembersValue : ClassMembersValue<Transform>, ITransformValue
+    public class TransformClassMembersValue : ComponentClassMembersValue<Transform>, ITransformValue
     {
     }
 }

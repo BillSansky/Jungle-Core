@@ -10,11 +10,11 @@ namespace Jungle.Values
     [JungleClassInfo("Class Member Value", "Invokes a component member to produce a value.", null, "Values/Core")]
     public class ClassMembersValue<T> : IValue<T>
     {
-        [SerializeReference] private IComponentReference component;
-        [SerializeField] private string memberName;
+        [SerializeReference] protected IComponentReference component;
+        [SerializeField] protected string memberName;
 
-        private Func<T> cachedFunc;
-        private bool isInitialized;
+        protected Func<T> cachedFunc;
+        protected bool isInitialized;
 
         public Component Component => component.C;
 
@@ -51,7 +51,7 @@ namespace Jungle.Values
             return default(T);
         }
 
-        private void InitializeAction()
+        protected virtual void InitializeAction()
         {
             isInitialized = true;
             cachedFunc = null;

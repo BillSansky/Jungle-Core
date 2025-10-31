@@ -20,7 +20,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Audio Source Member Value", "Returns an audio source component from a component field, property, or method.", null, "Values/Game Dev")]
-    public class AudioSourceClassMembersValue : ClassMembersValue<AudioSource>, IAudioSourceValue
+    public class AudioSourceClassMembersValue : ComponentClassMembersValue<AudioSource>, IAudioSourceValue
     {
     }
 }
