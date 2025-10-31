@@ -19,7 +19,7 @@ namespace Jungle.Actions
 
         private Transform resolvedTransform;
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Resolves the transform reference before interpolation begins.
         /// </summary>
         protected override void OnBeforeStart()
         {

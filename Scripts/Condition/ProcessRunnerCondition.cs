@@ -10,7 +10,7 @@ namespace Jungle.Actions
     public class ProcessRunnerCondition : Condition
     {
         /// <summary>
-        /// Enumerates the ProcessState values.
+        /// Represents the lifecycle states that can be checked on the process runner.
         /// </summary>
         public enum ProcessState
         {

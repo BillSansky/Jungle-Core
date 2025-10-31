@@ -10,7 +10,7 @@ namespace Jungle.Attributes
     public class MaterialPropertyNameAttribute : PropertyAttribute
     {
         /// <summary>
-        /// Enumerates the PropertyType values.
+        /// Restricts the dropdown to specific shader property categories.
         /// </summary>
         public enum PropertyType
         {

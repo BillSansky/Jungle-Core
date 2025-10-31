@@ -67,7 +67,7 @@ public class JunglePackageHubWindow : EditorWindow
         w.Show();
     }
     /// <summary>
-    /// Handles the OnEnable event.
+    /// Sets up the UI tree and starts polling package data when the window opens.
     /// </summary>
     private void OnEnable()
     {
@@ -102,7 +102,7 @@ public class JunglePackageHubWindow : EditorWindow
         EditorApplication.update += Pump;
     }
     /// <summary>
-    /// Handles the OnDisable event.
+    /// Stops background polling and disposes pending image downloads when the window closes.
     /// </summary>
     private void OnDisable()
     {

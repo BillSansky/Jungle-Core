@@ -182,7 +182,7 @@ namespace Jungle.Editor
 
         // ---------------- Buttons ----------------
         /// <summary>
-        /// Handles the OnPickOrSwapClicked event.
+        /// Launches the picker so the user can choose or replace the referenced type.
         /// </summary>
         private void OnPickOrSwapClicked()
         {
@@ -333,7 +333,7 @@ namespace Jungle.Editor
             return Selection.activeGameObject; // fallback
         }
         /// <summary>
-        /// Handles the OnClearClicked event.
+        /// Clears the current reference and refreshes the field visuals.
         /// </summary>
         private void OnClearClicked()
         {

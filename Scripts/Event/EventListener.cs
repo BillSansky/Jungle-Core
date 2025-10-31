@@ -15,7 +15,7 @@ namespace Jungle.Events
 
         private bool isRegistered;
         /// <summary>
-        /// Handles the OnEnable event.
+        /// Subscribes to the configured event asset when the listener becomes active.
         /// </summary>
         private void OnEnable()
         {
@@ -24,7 +24,7 @@ namespace Jungle.Events
             isRegistered = true;
         }
         /// <summary>
-        /// Handles the OnDisable event.
+        /// Unsubscribes from the event asset when the listener is disabled.
         /// </summary>
         private void OnDisable()
         {
@@ -37,7 +37,7 @@ namespace Jungle.Events
             isRegistered = false;
         }
         /// <summary>
-        /// Handles the OnEventRaised event.
+        /// Relays the raised event to the UnityEvent response.
         /// </summary>
         private void OnEventRaised()
         {

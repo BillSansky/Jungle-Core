@@ -92,7 +92,7 @@ namespace Jungle.Editor
                 public float BaseStartTime;
             }
             /// <summary>
-            /// Enumerates the DragMode values.
+            /// Indicates whether the pointer is moving the step start or stretching its duration.
             /// </summary>
             private enum DragMode
             {

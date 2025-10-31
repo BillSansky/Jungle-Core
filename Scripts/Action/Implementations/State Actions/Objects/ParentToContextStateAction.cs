@@ -28,7 +28,7 @@ namespace Jungle.Actions
         private List<Transform> originalParents = new();
         private bool skipStop;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Records each target's current parent and moves it under the resolved context transform.
         /// </summary>
         public void OnStateEnter()
         {
@@ -51,7 +51,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Restores the original parents when the state ends unless skipStop is set.
         /// </summary>
         public void OnStateExit()
         {

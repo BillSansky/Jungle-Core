@@ -48,7 +48,7 @@ namespace Jungle.Actions
             director.time = value;
         }
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Rewinds and starts the director so the timeline scrubs from the beginning.
         /// </summary>
         protected override void OnBeforeStart()
         {
@@ -57,7 +57,7 @@ namespace Jungle.Actions
             director.Play();
         }
         /// <summary>
-        /// Handles the OnInterrupted event.
+        /// Stops the director if the tween is cancelled before completion.
         /// </summary>
         protected override void OnInterrupted()
         {

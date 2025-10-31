@@ -65,7 +65,7 @@ namespace Jungle.Actions
 
         public bool IsInProgress { get; private set; }
         /// <summary>
-        /// Enumerates the StepLoopMode values.
+        /// Describes how an individual step should loop before advancing the sequence.
         /// </summary>
         public enum StepLoopMode
         {
@@ -204,7 +204,7 @@ namespace Jungle.Actions
             InterruptOrCompleteCleanup();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Cancels the running sequence when the parent state finishes.
         /// </summary>
         public void OnStateExit()
         {

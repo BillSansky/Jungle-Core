@@ -13,7 +13,7 @@ namespace Jungle.Actions
     public class ListProcessAction : IProcessAction
     {
         /// <summary>
-        /// Enumerates the ExecutionMode values.
+        /// Indicates whether the child processes should run together or one after another.
         /// </summary>
         public enum ExecutionMode
         {
@@ -200,7 +200,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnChildProcessCompleted event.
+        /// Reacts to a child process finishing so the list runner can continue or wrap up.
         /// </summary>
         private void OnChildProcessCompleted()
         {

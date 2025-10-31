@@ -21,7 +21,7 @@ namespace Jungle.Actions
 
         private Vector3 originalScale;
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Captures the initial scale so the tween can blend from the live value.
         /// </summary>
         protected override void OnBeforeStart()
         {

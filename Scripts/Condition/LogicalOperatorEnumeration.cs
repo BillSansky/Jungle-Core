@@ -1,7 +1,7 @@
 ﻿namespace Jungle.Conditions
 {
     /// <summary>
-    /// Enumerates the LogicalOperator values.
+    /// Provides logical combination modes for aggregating multiple conditions.
     /// </summary>
     public enum LogicalOperator
     {

@@ -21,7 +21,7 @@ namespace Jungle.Actions
 
         private PlayableDirector cachedDirector;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Starts the timeline playback when the state begins, optionally rewinding first.
         /// </summary>
         public void OnStateEnter()
         {
@@ -35,7 +35,7 @@ namespace Jungle.Actions
             director.Play();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Stops the director when the state ends so it does not keep running in the background.
         /// </summary>
         public void OnStateExit()
         {

@@ -21,21 +21,21 @@ namespace Jungle.Actions
         private float cachedInitialValue;
         private string cachedParameterName;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Starts driving the tween when the parent state becomes active.
         /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Stops the tween when the parent state exits.
         /// </summary>
         public void OnStateExit()
         {
             Interrupt();
         }
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Caches the animator parameter and its starting value before the tween begins.
         /// </summary>
         protected override void OnBeforeStart()
         {
@@ -73,7 +73,7 @@ namespace Jungle.Actions
             cachedAnimator.SetFloat(cachedParameterName, value);
         }
         /// <summary>
-        /// Handles the OnInterrupted event.
+        /// Restores the original parameter value if the tween is cancelled.
         /// </summary>
         protected override void OnInterrupted()
         {

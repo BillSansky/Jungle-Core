@@ -13,7 +13,7 @@ namespace Jungle.Conditions
     public class DoubleValueCondition : Condition
     {
         /// <summary>
-        /// Enumerates the ComparisonOperator values.
+        /// Lists the comparisons that can be evaluated between the two double values.
         /// </summary>
         public enum ComparisonOperator
         {

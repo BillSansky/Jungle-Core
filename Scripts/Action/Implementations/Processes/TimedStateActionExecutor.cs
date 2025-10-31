@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Enumerates the EndLogic values.
+    /// Determines whether the executor completes after a duration or on the next frame.
     /// </summary>
     public enum EndLogic
     {

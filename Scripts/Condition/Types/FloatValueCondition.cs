@@ -13,7 +13,7 @@ namespace Jungle.Conditions
     public class FloatValueCondition : Condition
     {
         /// <summary>
-        /// Enumerates the ComparisonOperator values.
+        /// Lists the comparison checks supported by this condition.
         /// </summary>
         public enum ComparisonOperator
         {

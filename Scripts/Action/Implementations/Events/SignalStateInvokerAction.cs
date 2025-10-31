@@ -33,14 +33,14 @@ namespace Jungle.Actions
         [SerializeField]
         private bool includeInactiveChildren;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Fires the configured enter signal as soon as the state activates.
         /// </summary>
         public void OnStateEnter()
         {
             InvokeSignal(enterSignal, "enter");
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Fires the configured exit signal right before the state finishes.
         /// </summary>
         public void OnStateExit()
         {

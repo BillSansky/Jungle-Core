@@ -18,7 +18,7 @@ namespace Jungle.Actions
 
         private Animator cachedAnimator;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Fires the trigger when the state starts so the animator can play the intended transition.
         /// </summary>
         public void OnStateEnter()
         {
@@ -32,7 +32,7 @@ namespace Jungle.Actions
             animator.SetTrigger(triggerName);
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Optionally resets the trigger when the state stops to keep animator state predictable.
         /// </summary>
         public void OnStateExit()
         {

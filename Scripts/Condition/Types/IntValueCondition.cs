@@ -13,7 +13,7 @@ namespace Jungle.Conditions
     public class IntValueCondition : Condition
     {
         /// <summary>
-        /// Enumerates the ComparisonOperator values.
+        /// Lists the integer comparison operations available to the condition.
         /// </summary>
         public enum ComparisonOperator
         {

@@ -13,19 +13,19 @@ namespace Jungle.Actions
     [System.Serializable]
     public class UnityEventAction : IStateAction
     {
-        /// <summary>
-        /// Handles the OnStateEnter event.
-        /// </summary>
         [SerializeField] private UnityEvent onStart = new();
         [SerializeField] private UnityEvent onStop = new();
         [SerializeField] private UnityEvent onOneShot = new();
-        
+
+        /// <summary>
+        /// Invokes the configured start event when the action begins.
+        /// </summary>
         public void OnStateEnter()
         {
             onStart?.Invoke();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Invokes the configured stop event when the action ends.
         /// </summary>
         public void OnStateExit()
         {

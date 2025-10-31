@@ -96,7 +96,7 @@ namespace Jungle.Actions
             hasCompleted = false;
         }
         /// <summary>
-        /// Handles the OnNestedProcessCompleted event.
+        /// Propagates nested process completion so the wrapper can finish its lifecycle.
         /// </summary>
         private void OnNestedProcessCompleted()
         {

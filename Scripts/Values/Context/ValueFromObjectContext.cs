@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// Enumerates the ComponentRetrievalStrategy values.
+/// Specifies where component lookups should search when resolving values from a context object.
 /// </summary>
 public enum ComponentRetrievalStrategy
 {

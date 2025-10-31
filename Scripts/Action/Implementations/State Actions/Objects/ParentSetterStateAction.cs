@@ -24,7 +24,7 @@ namespace Jungle.Actions
         private List<Transform> originalParents;
         private bool skipStop;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Optionally moves each target under the configured parent and records its original parent.
         /// </summary>
         public void OnStateEnter()
         {
@@ -39,7 +39,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Restores original parenting when the state completes if configured to do so.
         /// </summary>
         public void OnStateExit()
         {

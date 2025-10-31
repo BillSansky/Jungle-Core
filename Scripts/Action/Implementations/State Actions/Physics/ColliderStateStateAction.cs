@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Enumerates the ColliderStateModification values.
+    /// Describes how the collider should be toggled when the state runs.
     /// </summary>
     public enum ColliderStateModification
     {
@@ -27,7 +27,7 @@ namespace Jungle.Actions
 
         private readonly Dictionary<Collider, bool> originalStates = new();
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Records the current collider states and applies the entry behaviour.
         /// </summary>
         public void OnStateEnter()
         {
@@ -46,7 +46,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Applies the exit behaviour so colliders end in the requested state.
         /// </summary>
         public void OnStateExit()
         {

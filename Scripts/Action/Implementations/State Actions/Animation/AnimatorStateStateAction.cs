@@ -26,7 +26,7 @@ namespace Jungle.Actions
         private int previousStateHash;
         private float previousNormalizedTime;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Stores the current animator pose and plays the requested state when the Jungle state starts.
         /// </summary>
         public void OnStateEnter()
         {
@@ -55,7 +55,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Restores the animator to its previous state when the Jungle state finishes.
         /// </summary>
         public void OnStateExit()
         {

@@ -20,14 +20,14 @@ namespace Jungle.Actions
         
         private Transform resolvedTransform;
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Resolves the transform reference before the movement begins.
         /// </summary>
         protected override void OnBeforeStart()
         {
             resolvedTransform = ResolveTargetTransform();
         }
         /// <summary>
-        /// Handles the OnInterrupted event.
+        /// Leaves the transform at its last evaluated position when the tween is interrupted.
         /// </summary>
         protected override void OnInterrupted()
         {

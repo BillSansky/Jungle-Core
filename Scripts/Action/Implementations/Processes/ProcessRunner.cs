@@ -10,7 +10,7 @@ namespace Jungle.Actions
     public class ProcessRunner : MonoBehaviour
     {
         /// <summary>
-        /// Enumerates the ProcessTiming values.
+        /// Identifies which Unity lifecycle hook should trigger process start or interruption.
         /// </summary>
         public enum ProcessTiming
         {
@@ -52,7 +52,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnEnable event.
+        /// Starts or interrupts the process when the object is enabled if configured to do so.
         /// </summary>
         private void OnEnable()
         {
@@ -82,7 +82,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnDisable event.
+        /// Evaluates disable-time start or interrupt triggers.
         /// </summary>
         private void OnDisable()
         {
@@ -97,7 +97,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnDestroy event.
+        /// Executes any teardown-time start or interrupt rules before destruction.
         /// </summary>
         private void OnDestroy()
         {

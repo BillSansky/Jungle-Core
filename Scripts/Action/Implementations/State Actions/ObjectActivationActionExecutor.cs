@@ -8,11 +8,11 @@ namespace Jungle.Actions
     /// </summary>
     public class ObjectActivationActionExecutor : MonoBehaviour
     {
-        /// <summary>
-        /// Handles the OnEnable event.
-        /// </summary>
         [SerializeReference] private List<IStateAction> actions;
 
+        /// <summary>
+        /// Notifies each state action that the host object has been enabled.
+        /// </summary>
         public void OnEnable()
         {
             foreach (var action in actions)
@@ -21,7 +21,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnDisable event.
+        /// Signals to the state actions that the object is disabling so they can clean up.
         /// </summary>
         public void OnDisable()
         {

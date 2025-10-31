@@ -17,10 +17,11 @@ namespace Jungle.Actions
         [SerializeField] private bool revertOnStop = true;
 
         private readonly Dictionary<GameObject, int> storedLayers = new();
-       /// <summary>
-       /// Handles the OnStateEnter event.
-       /// </summary>
-       public void OnStateEnter()
+
+        /// <summary>
+        /// Saves current layer assignments and applies the override layer when the state starts.
+        /// </summary>
+        public void OnStateEnter()
         {
             if (revertOnStop)
                 storedLayers.Clear();
@@ -38,7 +39,7 @@ namespace Jungle.Actions
            
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Restores the stored layers when the state completes if revert is enabled.
         /// </summary>
         public void OnStateExit()
         {

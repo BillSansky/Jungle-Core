@@ -29,7 +29,7 @@ namespace Jungle.Actions
 
         private Dictionary<Renderer, Color[]> originalColorsMap = new();
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Caches each renderer's original color so the effect can animate from and back to it.
         /// </summary>
         protected override void OnBeforeStart()
         {
@@ -122,14 +122,14 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Starts the color tween when the parent state activates.
         /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Stops the tween and restores the original colors when the state finishes.
         /// </summary>
         public void OnStateExit()
         {

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Enumerates the ImmediateActionExecute values.
+    /// Specifies when the immediate action should fire relative to the state lifecycle.
     /// </summary>
     public enum ImmediateActionExecute
     {
@@ -25,7 +25,7 @@ namespace Jungle.Actions
 
         public ImmediateActionExecute executionMode = ImmediateActionExecute.OnBeginAndEnd;
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Triggers the immediate action if the state is configured to run on entry.
         /// </summary>
         public virtual void OnStateEnter()
         {
@@ -43,7 +43,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Triggers the immediate action if the configuration requests an exit pulse.
         /// </summary>
         public virtual void OnStateExit()
         {

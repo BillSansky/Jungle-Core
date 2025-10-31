@@ -27,7 +27,7 @@ namespace Jungle.Actions
 
         private Dictionary<Renderer, float[]> originalValuesMap = new();
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Records the starting float for each targeted material before the effect begins.
         /// </summary>
         protected override void OnBeforeStart()
         {
@@ -133,14 +133,14 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Kicks off the material property tween when the parent state activates.
         /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Stops the tween and restores the original property values once the state ends.
         /// </summary>
         public void OnStateExit()
         {

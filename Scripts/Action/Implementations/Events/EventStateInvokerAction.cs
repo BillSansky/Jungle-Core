@@ -12,18 +12,18 @@ namespace Jungle.Actions
     [Serializable]
     public class EventStateInvokerAction : IStateAction
     {
-        /// <summary>
-        /// Handles the OnStateEnter event.
-        /// </summary>
         [SerializeField] private EventAsset enterEvent;
         [SerializeField] private EventAsset exitEvent;
 
+        /// <summary>
+        /// Raises the configured enter event when the state begins.
+        /// </summary>
         public void OnStateEnter()
         {
             RaiseEvent(enterEvent);
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Raises the configured exit event when the state finishes.
         /// </summary>
         public void OnStateExit()
         {

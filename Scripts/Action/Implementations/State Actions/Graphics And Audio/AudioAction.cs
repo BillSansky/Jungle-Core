@@ -10,14 +10,14 @@ namespace Jungle.Actions
     [System.Serializable]
     public class AudioAction : IStateAction
     {
-        /// <summary>
-        /// Handles the OnStateEnter event.
-        /// </summary>
         [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;
         [SerializeField] private AudioClip dragEndSound;
         [SerializeField] private AudioClip targetReachedSound;
 
+        /// <summary>
+        /// Plays the configured start clip on every resolved AudioSource when the state begins.
+        /// </summary>
         public void OnStateEnter()
         {
             if (!dragStartSound) return;
@@ -29,7 +29,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Plays the configured end clip when the state stops.
         /// </summary>
         public void OnStateExit()
         {

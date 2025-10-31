@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Enumerates the InterruptBehavior values.
+    /// Specifies how the tween should resolve when interrupted mid-way.
     /// </summary>
     public enum InterruptBehavior
     {
@@ -129,15 +129,15 @@ namespace Jungle.Actions
         /// </summary>
         protected abstract void ApplyValue(T value);
         /// <summary>
-        /// Handles the OnBeforeStart event.
+        /// Lets derived classes cache state before the interpolation begins.
         /// </summary>
         protected virtual void OnBeforeStart() { }
         /// <summary>
-        /// Handles the OnIterationCompleted event.
+        /// Lets derived classes react whenever a loop iteration has ended.
         /// </summary>
         protected virtual void OnIterationCompleted() { }
         /// <summary>
-        /// Handles the OnInterrupted event.
+        /// Gives derived classes a chance to revert any temporary state when the tween stops early.
         /// </summary>
         protected virtual void OnInterrupted() { }
         /// <summary>

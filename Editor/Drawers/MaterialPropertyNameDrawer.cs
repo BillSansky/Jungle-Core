@@ -18,7 +18,7 @@ namespace Jungle.Editor
         private const string NoPropertiesFound = "<No Properties Found>";
         private const string NoRendererSet = "<Set Renderer First>";
         /// <summary>
-        /// Handles the OnGUI event.
+        /// Draws the shader property selector and writes back the user's choice.
         /// </summary>
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

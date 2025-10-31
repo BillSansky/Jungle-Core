@@ -169,7 +169,7 @@ namespace Jungle.Editor
             rootVisualElement.Focus();
         }
         /// <summary>
-        /// Handles the OnLostFocus event.
+        /// Closes the picker when focus leaves so it behaves like a dropdown popup.
         /// </summary>
         private void OnLostFocus()
         {
@@ -181,7 +181,7 @@ namespace Jungle.Editor
             }
         }
         /// <summary>
-        /// Handles the OnDestroy event.
+        /// Releases captured callbacks to avoid keeping editor references alive.
         /// </summary>
         private void OnDestroy()
         {

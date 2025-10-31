@@ -17,7 +17,7 @@ namespace Jungle.Actions
     public class GameObjectActivationStateAction : IStateAction
     {
         /// <summary>
-        /// Enumerates the ActivationState values.
+        /// Describes how each GameObject's active flag should change during the state.
         /// </summary>
         private enum ActivationState
         {
@@ -32,7 +32,7 @@ namespace Jungle.Actions
 
         private readonly Dictionary<GameObject, bool> originalStates = new();
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Captures initial active states and applies the entry behaviour.
         /// </summary>
         public void OnStateEnter()
         {
@@ -40,7 +40,7 @@ namespace Jungle.Actions
             SetObjectStates();
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Restores or toggles the GameObjects when the state stops.
         /// </summary>
         public void OnStateExit()
         {

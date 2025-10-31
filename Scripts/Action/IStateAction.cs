@@ -1,16 +1,16 @@
 ﻿namespace Jungle.Actions
 {
     /// <summary>
-    /// Defines the IStateAction contract.
+    /// Exposes lifecycle hooks for actions that should react to state entry and exit.
     /// </summary>
     public interface IStateAction
     {
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Signals that the owning state just activated so the action can start its behaviour.
         /// </summary>
         void OnStateEnter();
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Signals that the state is leaving so the action can clean up or stop.
         /// </summary>
         void OnStateExit();
     }

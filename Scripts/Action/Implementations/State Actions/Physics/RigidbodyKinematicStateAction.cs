@@ -12,7 +12,7 @@ namespace Jungle.Actions
     public class RigidbodyKinematicStateAction : IStateAction
     {
         /// <summary>
-        /// Enumerates the KinematicOption values.
+        /// Defines how the kinematic flag should change during the state lifecycle.
         /// </summary>
         public enum KinematicOption
         {
@@ -30,7 +30,7 @@ namespace Jungle.Actions
         [SerializeField] private KinematicOption endAction = KinematicOption.None;
         private List<bool> wasKinematic = new();
         /// <summary>
-        /// Handles the OnStateEnter event.
+        /// Caches the current kinematic state and applies the entry rule to each body.
         /// </summary>
         public void OnStateEnter()
         {
@@ -57,7 +57,7 @@ namespace Jungle.Actions
             }
         }
         /// <summary>
-        /// Handles the OnStateExit event.
+        /// Applies the configured exit rule so rigidbodies leave in the desired mode.
         /// </summary>
         public void OnStateExit()
         {

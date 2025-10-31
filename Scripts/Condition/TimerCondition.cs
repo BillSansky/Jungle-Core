@@ -38,7 +38,7 @@ namespace Jungle.Conditions
             };
         }
         /// <summary>
-        /// Enumerates the TimerState values.
+        /// Represents the timer states this condition can validate against.
         /// </summary>
         private enum TimerState
         {
