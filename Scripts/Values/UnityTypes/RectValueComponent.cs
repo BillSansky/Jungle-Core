@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
+    [JungleClassInfo("Rect Value Component", "Component exposing a Rect area.", null, "Values/Unity Types")]
     public class RectValueComponent : ValueComponent<Rect>
     {
         [SerializeField]
@@ -20,16 +22,19 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [JungleClassInfo("Rect List Component", "Component exposing a list of rectangles.", null, "Values/Unity Types")]
     public class RectListValueComponent : SerializedValueListComponent<Rect>
     {
     }
 
     [Serializable]
+    [JungleClassInfo("Rect Value From Component", "Reads a Rect area from a RectValueComponent.", null, "Values/Unity Types")]
     public class RectValueFromComponent : ValueFromComponent<Rect, RectValueComponent>, IRectValue
     {
     }
 
     [Serializable]
+    [JungleClassInfo("Rect List From Component", "Reads rectangles from a RectListValueComponent.", null, "Values/Unity Types")]
     public class RectListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Rect>, RectListValueComponent>
     {

@@ -1,8 +1,10 @@
 ﻿using System;
+using Jungle.Attributes;
 using Jungle.Values;
 using UnityEngine;
 
 
+[JungleClassInfo("Value From Context", "Resolves a value from the active Jungle context.", null, "Values/Context")]
 public abstract class ValueFromContext<T> : IValue<T>
 {
     [SerializeReference] private IContextKey contextKey;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -14,7 +15,8 @@ namespace Jungle.Actions
         Toggle
     }
     
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Collider State Action", "Enables, disables, or toggles colliders during the state lifecycle.", null, "Actions/State")]
     public class ColliderStateStateAction : IStateAction
     {
         [SerializeReference][JungleClassSelection] private IColliderValue targetColliders;

@@ -7,8 +7,10 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "Animator State Action",
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
-        "d_AnimationClip")]
+        "d_AnimationClip",
+        "Actions/State")]
     [Serializable]
     public class AnimatorStateStateAction : IStateAction
     {

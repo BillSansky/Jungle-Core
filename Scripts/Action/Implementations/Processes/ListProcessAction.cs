@@ -10,6 +10,7 @@ namespace Jungle.Actions
     /// Unlike SequenceAction, this is a simpler implementation without delays, time limits, or looping.
     /// </summary>
     [Serializable]
+    [JungleClassInfo("List Process Action", "Runs multiple process actions in parallel or sequence.", null, "Actions/Process")]
     public class ListProcessAction : IProcessAction
     {
         public enum ExecutionMode

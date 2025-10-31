@@ -1,4 +1,5 @@
 using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values
@@ -9,6 +10,7 @@ namespace Jungle.Values
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
     /// <typeparam name="TComponent">Concrete component type used to fetch the value.</typeparam>
     [Serializable]
+    [JungleClassInfo("Value From Component", "Reads a value provided by a ValueComponent reference.", null, "Values/Core")]
     public class ValueFromComponent<T, TComponent> : ISettableValue<T>
         where TComponent : ValueComponentBase<T>
     {

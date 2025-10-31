@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Raises a Jungle Event asset when executed.", "d_UnityEvent Icon")]
+    [JungleClassInfo("Event Invoke Action", "Raises a Jungle Event asset when executed.", "d_UnityEvent Icon", "Actions/Events")]
     [Serializable]
     public class EventInvokeAction : IImmediateAction
     {

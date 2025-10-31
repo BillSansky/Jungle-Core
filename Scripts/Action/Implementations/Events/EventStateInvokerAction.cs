@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Raises Jungle Event assets when the state enters or exits.", "d_UnityEvent Icon")]
+    [JungleClassInfo("Event State Invoker", "Raises Jungle Event assets when the state enters or exits.", "d_UnityEvent Icon", "Actions/Events")]
     [Serializable]
     public class EventStateInvokerAction : IStateAction
     {

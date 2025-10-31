@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using Jungle.Actions;
+using Jungle.Attributes;
 using Jungle.Values.GameDev;
 using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects while the state is active.", null, "Actions/State")]
     public class LayerModifierStateAction : IStateAction
     {
         [SerializeReference] private IGameObjectValue targetObjects = new GameObjectValue();
@@ -16,7 +19,7 @@ namespace Jungle.Actions
         private readonly Dictionary<GameObject, int> storedLayers = new();
 
 
-       public void OnStateEnter()
+        public void OnStateEnter()
         {
             if (revertOnStop)
                 storedLayers.Clear();

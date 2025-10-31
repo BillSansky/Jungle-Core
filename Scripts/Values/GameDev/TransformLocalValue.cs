@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using Jungle.Values;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
+    [JungleClassInfo("Transform Value", "Stores a transform component directly on the owner.", null, "Values/Game Dev", true)]
     public class TransformLocalValue : LocalValue<Transform>, ITransformValue
     {
         public override bool HasMultipleValues => false;
@@ -23,6 +25,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
+    [JungleClassInfo("Transform Member Value", "Returns a transform component from a component field, property, or method.", null, "Values/Game Dev")]
     public class TransformClassMembersValue : ClassMembersValue<Transform>, ITransformValue
     {
     }

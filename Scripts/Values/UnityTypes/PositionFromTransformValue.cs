@@ -7,6 +7,7 @@ using UnityEngine;
 namespace Jungle.Values.UnityTypes
 {
     [Serializable]
+    [JungleClassInfo("Position From Transform", "Reads the world position from a referenced transform value.", null, "Values/Unity Types")]
     public class PositionFromTransformValue : IVector3Value
     {
 
@@ -18,7 +19,7 @@ namespace Jungle.Values.UnityTypes
             return transform.Position;
         }
 
-        public bool HasMultipleValues =>transform.HasMultipleValues;
+        public bool HasMultipleValues => transform.HasMultipleValues;
 
         public IEnumerable<Vector3> Values
         {

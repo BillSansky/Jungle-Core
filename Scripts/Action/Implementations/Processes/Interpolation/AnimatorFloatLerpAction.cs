@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip")]
+    [JungleClassInfo("Animator Float Lerp Process", "Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip", "Actions/Process")]
     [Serializable]
     public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
     {

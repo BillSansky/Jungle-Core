@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Interpolates a transform toward a target rotation with curve-based easing.", "d_RotateTool")]
+    [JungleClassInfo("Rotation Lerp Process", "Interpolates a transform toward a target rotation with curve-based easing.", "d_RotateTool", "Actions/Process")]
     [Serializable]
     public class RotationLerpProcessAction : LerpProcessAction<Quaternion>
     {
