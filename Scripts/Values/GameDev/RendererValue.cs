@@ -18,7 +18,7 @@ namespace Jungle.Values
 
     [Serializable]
     [JungleClassInfo("Renderer Member Value", "Returns a renderer component from a component field, property, or method.", null, "Values/Game Dev")]
-    public class RendererClassMembersValue : ClassMembersValue<Renderer>, IRendererValue
+    public class RendererClassMembersValue : ComponentClassMembersValue<Renderer>, IRendererValue
     {
     }
 }

@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Collider Member Value", "Returns a collider component from a component field, property, or method.", null, "Values/Game Dev")]
-    public class ColliderClassMembersValue : ClassMembersValue<Collider>, IColliderValue
+    public class ColliderClassMembersValue : ComponentClassMembersValue<Collider>, IColliderValue
     {
     }
 }
