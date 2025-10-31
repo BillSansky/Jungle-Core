@@ -9,6 +9,9 @@ using Jungle.Attributes;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Editor window that lets users browse available Jungle types and paste the generated attribute usage.
+    /// </summary>
     public class ClassSelectionWindow : EditorWindow
     {
         private List<Type> classTypes;
@@ -18,7 +21,9 @@ namespace Jungle.Editor
 
         private ScrollView scrollView;
         private VisualElement contentContainer;
-
+        /// <summary>
+        /// Displays the window.
+        /// </summary>
         public static void Show(Vector2 position, List<Type> types, Action<Type> onTypeSelected, string title = "Select Class")
         {
             var window = CreateInstance<ClassSelectionWindow>();
@@ -51,7 +56,9 @@ namespace Jungle.Editor
             window.ShowPopup();
             window.Focus();
         }
-
+        /// <summary>
+        /// Adjusts the window position relative to the invoking button.
+        /// </summary>
         private static Vector2 AdjustPositionForButton(Vector2 buttonPosition, float windowWidth, float windowHeight)
         {
             // The position is already in screen coordinates, so we just need to offset it properly
@@ -91,7 +98,9 @@ namespace Jungle.Editor
             
             return adjustedPosition;
         }
-
+        /// <summary>
+        /// Builds the window's UI layout.
+        /// </summary>
         private void CreateGUI()
         {
             if (classTypes == null)
@@ -159,7 +168,9 @@ namespace Jungle.Editor
             rootVisualElement.focusable = true;
             rootVisualElement.Focus();
         }
-
+        /// <summary>
+        /// Handles the OnLostFocus event.
+        /// </summary>
         private void OnLostFocus()
         {
             // Safely close the popup when focus is lost
@@ -169,14 +180,18 @@ namespace Jungle.Editor
                 Close();
             }
         }
-
+        /// <summary>
+        /// Handles the OnDestroy event.
+        /// </summary>
         private void OnDestroy()
         {
             // Clean up any remaining references
             onClassSelected = null;
             classTypes = null;
         }
-
+        /// <summary>
+        /// Creates a row for a selectable class type.
+        /// </summary>
         private void CreateClassItem(Type classType)
         {
             var displayName = EditorUtils.FormatActionTypeName(classType);
@@ -240,7 +255,9 @@ namespace Jungle.Editor
             // Add the entire item element (including separator) to content container
             contentContainer.Add(itemElement);
         }
-
+        /// <summary>
+        /// Creates the icon element for a class row.
+        /// </summary>
         private VisualElement CreateClassIcon(Type classType, (string description, string iconPath, string category) classInfo)
         {
             Texture2D icon = null;
@@ -306,7 +323,9 @@ namespace Jungle.Editor
                 return fallbackContainer;
             }
         }
-
+        /// <summary>
+        /// Calculates the height needed for a class entry.
+        /// </summary>
         private float CalculateItemHeight(string description)
         {
             float baseHeight = 60f; // Minimum height for icon + padding
@@ -324,7 +343,9 @@ namespace Jungle.Editor
 
             return baseHeight;
         }
-
+        /// <summary>
+        /// Retrieves the JungleClassInfo attribute for the type.
+        /// </summary>
         private (string description, string iconPath, string category) GetClassInfo(Type classType)
         {
             if (classType.GetCustomAttributes(typeof(JungleClassInfoAttribute), true)
@@ -338,7 +359,9 @@ namespace Jungle.Editor
             var defaultCategory = GetDefaultCategoryForClassType(classType);
             return (defaultDescription, null, defaultCategory);
         }
-
+        /// <summary>
+        /// Determines the default category for the given class type.
+        /// </summary>
         private string GetDefaultCategoryForClassType(Type classType)
         {
             var typeName = classType.Name.ToLower();
@@ -362,7 +385,9 @@ namespace Jungle.Editor
 
             return "General";
         }
-
+        /// <summary>
+        /// Determines the default icon for the given class type.
+        /// </summary>
         private string GetDefaultIconForClassType(Type classType)
         {
             var typeName = classType.Name.ToLower();
@@ -378,7 +403,9 @@ namespace Jungle.Editor
 
             return "cs Script Icon"; // Default fallback
         }
-
+        /// <summary>
+        /// Determines which USS class should be applied for the icon.
+        /// </summary>
         private string GetIconCssClassForClassType(Type classType)
         {
             var typeName = classType.Name.ToLower();
@@ -392,7 +419,9 @@ namespace Jungle.Editor
 
             return "class-icon-default";
         }
-        
+        /// <summary>
+        /// Groups the available types by their display category.
+        /// </summary>
         private Dictionary<string, List<Type>> GroupTypesByCategory(List<Type> types)
         {
             var categorizedTypes = new Dictionary<string, List<Type>>();
@@ -412,7 +441,9 @@ namespace Jungle.Editor
 
             return categorizedTypes;
         }
-
+        /// <summary>
+        /// Creates a header row for a type category.
+        /// </summary>
         private void CreateCategoryHeader(string categoryName)
         {
             var categoryHeader = new Label(categoryName);
@@ -426,7 +457,9 @@ namespace Jungle.Editor
             
             contentContainer.Add(categoryHeader);
         }
-
+        /// <summary>
+        /// Creates a spacer element between categories.
+        /// </summary>
         private void CreateCategorySpacing()
         {
             var spacer = new VisualElement();

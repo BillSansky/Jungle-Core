@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Base class that surfaces state entry and exit callbacks to derived process actions.
+    /// </summary>
     [Serializable]
     public class ProcessActionWithStateCallbacks : IProcessAction
     {
@@ -26,12 +29,16 @@ namespace Jungle.Actions
         public bool IsInProgress => isInProgress;
 
         public bool HasCompleted => hasCompleted;
-
+        /// <summary>
+        /// Begins the wrapped process action, matching the <see cref="IProcessAction.Execute"/> contract.
+        /// </summary>
         public void Execute()
         {
             Start();
         }
-
+        /// <summary>
+        /// Starts the nested process and fires OnStateEnter on every linked state action.
+        /// </summary>
         public void Start()
         {
             Debug.Assert(ProcessAction != null, "ProcessAction must be set before starting");
@@ -62,7 +69,9 @@ namespace Jungle.Actions
                 Complete();
             }
         }
-
+        /// <summary>
+        /// Stops the running process and calls OnStateExit on each state action.
+        /// </summary>
         public void Interrupt()
         {
             if (!isInProgress)
@@ -86,12 +95,16 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = false;
         }
-
+        /// <summary>
+        /// Handles the OnNestedProcessCompleted event.
+        /// </summary>
         private void OnNestedProcessCompleted()
         {
             Complete();
         }
-
+        /// <summary>
+        /// Finalizes the process run, unsubscribes from callbacks, and notifies listeners of completion.
+        /// </summary>
         private void Complete()
         {
             if (!isInProgress)

@@ -6,13 +6,18 @@ using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
+    /// <summary>
+    /// Reads a Transform local scale and exposes it as a reusable value.
+    /// </summary>
     [Serializable]
     public class ScaleFromTransformValue : IVector3Value
     {
 
         [SerializeReference] [JungleClassSelection]
         public ITransformValue transform;
-        
+        /// <summary>
+        /// Reads the local scale from the referenced transform value.
+        /// </summary>
         public Vector3 Value()
         {
             return transform.LocalScale;

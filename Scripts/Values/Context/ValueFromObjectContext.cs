@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Enumerates the ComponentRetrievalStrategy values.
+/// </summary>
 public enum ComponentRetrievalStrategy
 {
     First,
     InObjectAndChildren,
 }
-
+/// <summary>
+/// Fetches a value by using a UnityEngine.Object reference stored in the context.
+/// </summary>
 public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
 {
     public abstract ComponentRetrievalStrategy Strategy { get; }
@@ -16,7 +20,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
     private T cachedComponent;
     private List<T> cachedComponents;
     private bool hasValidCache;
-
+    /// <summary>
+    /// Resolves a value for the provided context object, caching results when the context repeats.
+    /// </summary>
     public override T GetValueFromContext(object context)
     {
         Debug.Assert(context != null, "Context object cannot be null");
@@ -51,7 +57,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
 
         return component;
     }
-
+    /// <summary>
+    /// Extracts a <see cref="GameObject"/> from the supplied Unity object.
+    /// </summary>
     private GameObject GetGameObjectFromContext(UnityEngine.Object unityObject)
     {
         if (unityObject is GameObject gameObject)
@@ -67,7 +75,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
         // For other UnityEngine.Object types, we cannot extract a GameObject
         return null;
     }
-
+    /// <summary>
+    /// Dispatches component retrieval based on the configured strategy.
+    /// </summary>
     private T GetValueBasedOnStrategy(GameObject gameObject)
     {
         switch (Strategy)
@@ -83,7 +93,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
                 return default(T);
         }
     }
-
+    /// <summary>
+    /// Returns a component located directly on the GameObject (or the GameObject itself when requested).
+    /// </summary>
     private T GetComponentValue(GameObject gameObject)
     {
         if (typeof(T) == typeof(GameObject))
@@ -100,7 +112,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
         // Try to get a component that might provide the value
         return default(T);
     }
-
+    /// <summary>
+    /// Gathers components from the GameObject's hierarchy and caches them for multi-value access.
+    /// </summary>
     private T GetComponentInChildrenValue(GameObject gameObject)
     {
         if (typeof(T) == typeof(GameObject))

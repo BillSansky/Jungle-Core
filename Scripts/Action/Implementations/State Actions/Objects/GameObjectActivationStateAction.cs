@@ -10,9 +10,15 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
         "d_GameObject Icon")]
+    /// <summary>
+    /// Enables or disables a GameObject for the duration of the state.
+    /// </summary>
     [Serializable]
     public class GameObjectActivationStateAction : IStateAction
     {
+        /// <summary>
+        /// Enumerates the ActivationState values.
+        /// </summary>
         private enum ActivationState
         {
             Enable,
@@ -25,21 +31,24 @@ namespace Jungle.Actions
         [SerializeField] private ActivationState endAction = ActivationState.Toggle;
 
         private readonly Dictionary<GameObject, bool> originalStates = new();
-        
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             StoreOriginalStates();
             SetObjectStates();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             RestoreOriginalStates();
         }
-
-      
-
+        /// <summary>
+        /// Records the active state of each target so it can be restored later.
+        /// </summary>
         private void StoreOriginalStates()
         {
             originalStates.Clear();
@@ -49,7 +58,9 @@ namespace Jungle.Actions
                 originalStates.Add(obj,obj.activeSelf);
             }
         }
-
+        /// <summary>
+        /// Applies the configured begin action to each target object.
+        /// </summary>
         private void SetObjectStates()
         {
             foreach (var obj in targetObjects.Gs)
@@ -57,7 +68,9 @@ namespace Jungle.Actions
                 ApplyAction(obj, beginAction, false);
             }
         }
-
+        /// <summary>
+        /// Performs the configured end action, using the stored state when reverting is requested.
+        /// </summary>
         private void RestoreOriginalStates()
         {
             foreach (var obj in targetObjects.Gs)
@@ -67,7 +80,9 @@ namespace Jungle.Actions
 
             originalStates.Clear();
         }
-
+        /// <summary>
+        /// Applies the chosen activation state to the object, optionally restoring its original value.
+        /// </summary>
         private void ApplyAction(GameObject obj, ActivationState state, bool revertToOriginal)
         {
             if (obj == null)

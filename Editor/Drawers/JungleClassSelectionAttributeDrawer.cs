@@ -8,9 +8,15 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Shows a searchable dropdown that lets designers pick a type matching the JungleClassSelectionAttribute filter.
+    /// </summary>
     [CustomPropertyDrawer(typeof(JungleClassSelectionAttribute))]
     public class JungleClassSelectionAttributeDrawer : PropertyDrawer
     {
+        /// <summary>
+        /// Builds the property field UI for the drawer.
+        /// </summary>
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var classSelectionAttribute = (JungleClassSelectionAttribute)attribute;

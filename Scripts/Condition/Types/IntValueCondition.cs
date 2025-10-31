@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates an integer value against a comparison operator.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Int Value Condition", "Evaluates an int value against a comparison.", null, "Values")]
     public class IntValueCondition : Condition
     {
+        /// <summary>
+        /// Enumerates the ComparisonOperator values.
+        /// </summary>
         public enum ComparisonOperator
         {
             Equals,
@@ -31,7 +37,9 @@ namespace Jungle.Conditions
         [JungleClassSelection(typeof(IIntValue))]
         [SerializeReference]
         private IIntValue comparisonValue;
-
+        /// <summary>
+        /// Evaluates the configured comparison between the provided int values.
+        /// </summary>
         protected internal override bool IsValidImpl()
         {
             if (valueProvider == null)

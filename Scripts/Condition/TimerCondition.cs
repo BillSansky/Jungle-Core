@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Compares the elapsed time on a timer against configured thresholds.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Timer Condition", "Evaluates the state of a Jungle timer instance.", null, "Timing")]
     public class TimerCondition : Condition
@@ -14,7 +17,9 @@ namespace Jungle.Conditions
 
         [SerializeField]
         private TimerState expectedState = TimerState.Running;
-
+        /// <summary>
+        /// Checks whether the referenced timer is currently in the expected state.
+        /// </summary>
         protected internal override bool IsValidImpl()
         {
             if (timer == null)
@@ -32,7 +37,9 @@ namespace Jungle.Conditions
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
-
+        /// <summary>
+        /// Enumerates the TimerState values.
+        /// </summary>
         private enum TimerState
         {
             Started,

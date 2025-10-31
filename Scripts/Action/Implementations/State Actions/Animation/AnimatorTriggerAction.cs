@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Sets or resets Animator trigger parameters as part of the state change.
+    /// </summary>
     [JungleClassInfo("Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip")]
     [Serializable]
     public class AnimatorTriggerAction : IStateAction
@@ -14,7 +17,9 @@ namespace Jungle.Actions
         [SerializeField] private bool resetOnStop = true;
 
         private Animator cachedAnimator;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             var animator = ResolveAnimator();
@@ -26,7 +31,9 @@ namespace Jungle.Actions
 
             animator.SetTrigger(triggerName);
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             if (!resetOnStop)
@@ -42,7 +49,9 @@ namespace Jungle.Actions
 
             animator.ResetTrigger(triggerName);
         }
-
+        /// <summary>
+        /// Finds and caches the animator that should receive trigger commands.
+        /// </summary>
         private Animator ResolveAnimator()
         {
             if (targetAnimatorObject == null)

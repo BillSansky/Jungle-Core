@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Animates a material color property between two values over the action duration.
+    /// </summary>
     [System.Serializable]
     public class MaterialColorLerpAction : LerpProcessAction<Color>, IStateAction
     {
@@ -25,7 +28,9 @@ namespace Jungle.Actions
         private IRendererValue targetRenderer;
 
         private Dictionary<Renderer, Color[]> originalColorsMap = new();
-
+        /// <summary>
+        /// Handles the OnBeforeStart event.
+        /// </summary>
         protected override void OnBeforeStart()
         {
             base.OnBeforeStart();
@@ -51,7 +56,9 @@ namespace Jungle.Actions
                 originalColorsMap[renderer] = originalColors;
             }
         }
-
+        /// <summary>
+        /// Uses the cached original material color as the baseline for interpolation.
+        /// </summary>
         protected override Color GetStartValue()
         {
             // Return the first renderer's first material color as reference
@@ -71,17 +78,23 @@ namespace Jungle.Actions
 
             return Color.white;
         }
-
+        /// <summary>
+        /// Returns the configured highlight color the renderer should approach.
+        /// </summary>
         protected override Color GetEndValue()
         {
             return highlightColor;
         }
-
+        /// <summary>
+        /// Blends from the stored color toward the highlight while applying the intensity multiplier.
+        /// </summary>
         protected override Color LerpValue(Color start, Color end, float t)
         {
             return Color.Lerp(start, end, t * highlightIntensity);
         }
-
+        /// <summary>
+        /// Writes the interpolated color to each targeted material slot.
+        /// </summary>
         protected override void ApplyValue(Color value)
         {
             foreach (var renderer in targetRenderer.Values)
@@ -108,12 +121,16 @@ namespace Jungle.Actions
                 }
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             Interrupt();

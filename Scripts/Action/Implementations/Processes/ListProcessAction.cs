@@ -12,6 +12,9 @@ namespace Jungle.Actions
     [Serializable]
     public class ListProcessAction : IProcessAction
     {
+        /// <summary>
+        /// Enumerates the ExecutionMode values.
+        /// </summary>
         public enum ExecutionMode
         {
             Parallel,   // Execute all processes at once
@@ -91,7 +94,9 @@ namespace Jungle.Actions
         public bool IsInProgress => isInProgress;
 
         public bool HasCompleted => hasCompleted;
-
+        /// <summary>
+        /// Begins running the child processes using either parallel or sequential scheduling.
+        /// </summary>
         public void Start()
         {
             if (isInProgress)
@@ -117,7 +122,9 @@ namespace Jungle.Actions
                 StartSequentialExecution();
             }
         }
-
+        /// <summary>
+        /// Stops any in-flight child processes and unregisters completion callbacks.
+        /// </summary>
         public void Interrupt()
         {
             if (!isInProgress)
@@ -137,7 +144,9 @@ namespace Jungle.Actions
 
             runningProcesses.Clear();
         }
-
+        /// <summary>
+        /// Starts every configured process simultaneously and tracks their completion.
+        /// </summary>
         private void StartParallelExecution()
         {
             // Start all processes at once
@@ -157,13 +166,17 @@ namespace Jungle.Actions
                 Complete();
             }
         }
-
+        /// <summary>
+        /// Begins the sequential chain by launching the first available process.
+        /// </summary>
         private void StartSequentialExecution()
         {
             // Start the first process
             StartNextSequentialProcess();
         }
-
+        /// <summary>
+        /// Finds the next non-null process in the list, hooks completion, and starts it.
+        /// </summary>
         private void StartNextSequentialProcess()
         {
             // Find the next valid process
@@ -186,7 +199,9 @@ namespace Jungle.Actions
                 Complete();
             }
         }
-
+        /// <summary>
+        /// Handles the OnChildProcessCompleted event.
+        /// </summary>
         private void OnChildProcessCompleted()
         {
             if (!isInProgress)
@@ -201,7 +216,9 @@ namespace Jungle.Actions
                 HandleSequentialCompletion();
             }
         }
-
+        /// <summary>
+        /// Removes completed parallel processes and finishes when the set is empty.
+        /// </summary>
         private void HandleParallelCompletion()
         {
             // Find which process completed
@@ -227,7 +244,9 @@ namespace Jungle.Actions
                 Complete();
             }
         }
-
+        /// <summary>
+        /// Advances the sequential index after a process finishes and starts the next entry.
+        /// </summary>
         private void HandleSequentialCompletion()
         {
             // Remove completed process
@@ -251,7 +270,9 @@ namespace Jungle.Actions
             currentProcessIndex++;
             StartNextSequentialProcess();
         }
-
+        /// <summary>
+        /// Finalizes the list action, clears listeners, and notifies observers of completion.
+        /// </summary>
         private void Complete()
         {
             if (!isInProgress)

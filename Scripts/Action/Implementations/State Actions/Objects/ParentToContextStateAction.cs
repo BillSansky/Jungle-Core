@@ -9,6 +9,9 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Moves a GameObject under a drag contextual parent transform during drag operations.",
         "d_UnityEditor.HierarchyWindow")]
+    /// <summary>
+    /// Reparents a Transform to one resolved from the action context.
+    /// </summary>
     public class ParentToContextStateAction : IStateAction
     {
         [Header("Target Configuration")] [SerializeField]
@@ -24,7 +27,9 @@ namespace Jungle.Actions
         // Cache original parents for potential reversion
         private List<Transform> originalParents = new();
         private bool skipStop;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             originalParents.Clear();
@@ -45,7 +50,9 @@ namespace Jungle.Actions
                 t.SetParent(parent, preserveWorldPosition);
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             if (skipStop)

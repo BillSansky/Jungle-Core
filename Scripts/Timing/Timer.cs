@@ -4,6 +4,9 @@ using UnityEngine.Events;
 
 namespace Jungle.Timing
 {
+    /// <summary>
+    /// Counts up time and exposes helpers for delays, looping, and completion checks.
+    /// </summary>
     public class Timer : MonoBehaviour, Jungle.Actions.IProcessAction
     {
         [SerializeField]
@@ -71,22 +74,30 @@ namespace Jungle.Timing
         public bool IsInProgress => isRunning;
 
         public bool HasCompleted => hasCompleted;
-
+        /// <summary>
+        /// Begins the timer using the configured duration.
+        /// </summary>
         public void Start()
         {
             StartTimer();
         }
-
+        /// <summary>
+        /// Stops the timer without firing completion callbacks.
+        /// </summary>
         public void Interrupt()
         {
             StopTimer();
         }
-
+        /// <summary>
+        /// Starts the timer using its current duration value.
+        /// </summary>
         public void StartTimer()
         {
             StartTimer(duration);
         }
-
+        /// <summary>
+        /// Starts the timer with a custom duration, resetting all tracking flags.
+        /// </summary>
         public void StartTimer(float customDuration)
         {
             duration = Mathf.Max(0f, customDuration);
@@ -97,7 +108,9 @@ namespace Jungle.Timing
             hasCompleted = false;
             onStarted.Invoke();
         }
-
+        /// <summary>
+        /// Stops the timer and clears its running state.
+        /// </summary>
         public void StopTimer()
         {
             if (!isRunning)
@@ -109,7 +122,9 @@ namespace Jungle.Timing
             isPaused = false;
             isWaitingForFrame = false;
         }
-
+        /// <summary>
+        /// Temporarily pauses countdown progress while keeping state intact.
+        /// </summary>
         public void Pause()
         {
             if (isRunning)
@@ -117,7 +132,9 @@ namespace Jungle.Timing
                 isPaused = true;
             }
         }
-
+        /// <summary>
+        /// Resumes countdown progress after a pause.
+        /// </summary>
         public void Resume()
         {
             if (isRunning)
@@ -125,7 +142,9 @@ namespace Jungle.Timing
                 isPaused = false;
             }
         }
-
+        /// <summary>
+        /// Advances the timer each frame and triggers completion when the duration elapses.
+        /// </summary>
         private void Update()
         {
             if (!isRunning || isPaused)
@@ -153,7 +172,9 @@ namespace Jungle.Timing
                 Complete();
             }
         }
-
+        /// <summary>
+        /// Finalizes the timer run, fires events, and notifies listeners.
+        /// </summary>
         private void Complete()
         {
             isRunning = false;

@@ -11,6 +11,9 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Sets the parent of targets  when the action starts. Can optionally reset to original parent when stopped.",
         "d_UnityEditor.HierarchyWindow")]
+    /// <summary>
+    /// Reparents a target Transform to the specified container when the state activates.
+    /// </summary>
     public class ParentSetterStateAction : IStateAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransforms = new TransformLocalValue();
@@ -20,7 +23,9 @@ namespace Jungle.Actions
 
         private List<Transform> originalParents;
         private bool skipStop;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             if (!setParentOnStart) return;
@@ -33,7 +38,9 @@ namespace Jungle.Actions
                 transform.SetParent(parentTransform, true);
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             if (skipStop)

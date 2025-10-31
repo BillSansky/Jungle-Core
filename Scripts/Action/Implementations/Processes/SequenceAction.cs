@@ -64,14 +64,18 @@ namespace Jungle.Actions
         }
 
         public bool IsInProgress { get; private set; }
-
+        /// <summary>
+        /// Enumerates the StepLoopMode values.
+        /// </summary>
         public enum StepLoopMode
         {
             Once, // Start only once
             Infinite, // Infinite indefinitely
             Limited // Infinite a specific number of times
         }
-
+        /// <summary>
+        /// Describes a single sequence step, including its action and timing configuration.
+        /// </summary>
         [Serializable]
         public class Step
         {
@@ -159,6 +163,9 @@ namespace Jungle.Actions
         [NonSerialized] private readonly List<Step> parallelRunning = new List<Step>();
 
         // Coroutine handle
+        /// <summary>
+        /// Prepares the sequence state, evaluates time limits, and begins progressing through the configured steps.
+        /// </summary>
         [NonSerialized] private Coroutine tickRoutine;
 
         public void Start()
@@ -186,7 +193,9 @@ namespace Jungle.Actions
             // drives only time limits via coroutine
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
-
+        /// <summary>
+        /// Halts the sequence mid-run and performs shared cleanup.
+        /// </summary>
         public void Interrupt()
         {
             if (!IsInProgress) return;
@@ -194,7 +203,9 @@ namespace Jungle.Actions
             IsInProgress = false;
             InterruptOrCompleteCleanup();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             if (IsInProgress)
@@ -205,7 +216,9 @@ namespace Jungle.Actions
             InterruptOrCompleteCleanup();
             HasCompleted = false;
         }
-
+        /// <summary>
+        /// Marks the sequence as finished, stops tracking, and notifies listeners.
+        /// </summary>
         private void Complete()
         {
             if (!IsInProgress) return;
@@ -215,7 +228,9 @@ namespace Jungle.Actions
             InterruptOrCompleteCleanup();
             OnProcessCompleted?.Invoke();
         }
-
+        /// <summary>
+        /// Stops timers and detaches listeners to leave the sequence in a neutral state.
+        /// </summary>
         protected void InterruptOrCompleteCleanup()
         {
             if (tickRoutine != null)
@@ -309,7 +324,9 @@ namespace Jungle.Actions
         }
 
         // ---------- progression helpers (event-driven) ----------
-
+        /// <summary>
+        /// Updates countdowns for pending step start delays and reports if any became ready.
+        /// </summary>
         private bool UpdateStartDelays(float deltaTime)
         {
             var anyElapsed = false;
@@ -338,7 +355,9 @@ namespace Jungle.Actions
 
             return anyElapsed;
         }
-
+        /// <summary>
+        /// Determines whether time-limit countdowns should pause while waiting for delayed blocking steps.
+        /// </summary>
         private bool ShouldPauseTimeLimits()
         {
             if (parallelRunning.Count > 0)
@@ -354,7 +373,9 @@ namespace Jungle.Actions
             var step = Steps[currentIndex];
             return !step.started && step.waitingForStartDelay && step.startDelayRemaining > 0f;
         }
-
+        /// <summary>
+        /// Starts every step whose prerequisites are satisfied, respecting blocking and delay rules.
+        /// </summary>
         private void StartNextEligibleSteps()
         {
             while (currentIndex < Steps.Count)
@@ -391,7 +412,9 @@ namespace Jungle.Actions
                 currentIndex++;
             }
         }
-
+        /// <summary>
+        /// Initializes a single step's runtime data, subscribes to completion, and kicks off its action.
+        /// </summary>
         private void StartStep(Step s)
         {
             if (s.Action == null) return;
@@ -408,7 +431,9 @@ namespace Jungle.Actions
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
         }
-
+        /// <summary>
+        /// Replays a step by interrupting it, resetting state, and starting it again.
+        /// </summary>
         private void RestartStep(Step s)
         {
             // Clean slate: cancel & detach, then re-attach and start
@@ -419,7 +444,9 @@ namespace Jungle.Actions
 
             StartStep(s);
         }
-
+        /// <summary>
+        /// Responds to a step finishing or being interrupted, advancing the sequence or scheduling restarts as needed.
+        /// </summary>
         private void HandleStepTerminal(Step s)
         {
             DetachStepListeners(s);
@@ -451,7 +478,9 @@ namespace Jungle.Actions
         }
 
         // ---------- event wiring ----------
-
+        /// <summary>
+        /// Registers completion handlers on a step while preventing duplicate subscriptions.
+        /// </summary>
         private void AttachStepListeners(Step s)
         {
             if (s.Action == null) return;
@@ -477,7 +506,9 @@ namespace Jungle.Actions
 
             s.Action.OnProcessCompleted += s.completedHandler;
         }
-
+        /// <summary>
+        /// Removes completion handlers from the step's action.
+        /// </summary>
         private void DetachStepListeners(Step s)
         {
             if (s?.Action == null) return;
@@ -488,7 +519,9 @@ namespace Jungle.Actions
                 s.completedHandler = null;
             }
         }
-
+        /// <summary>
+        /// Interrupts and resets every step so the sequence can run again from the beginning.
+        /// </summary>
         private void ResetAllForRepeat()
         {
             foreach (var s in Steps)
@@ -504,7 +537,9 @@ namespace Jungle.Actions
             // sequenceTimeLeft is preserved in TimeLimited mode (counting down in coroutine)
             // and left as +inf in Infinite mode.
         }
-
+        /// <summary>
+        /// Initializes runtime bookkeeping values for each step before the sequence starts.
+        /// </summary>
         private void InitializeStepRuntime()
         {
             for (int i = 0; i < Steps.Count; i++)
@@ -512,7 +547,9 @@ namespace Jungle.Actions
                 ResetStepRuntimeState(Steps[i], true);
             }
         }
-
+        /// <summary>
+        /// Resets per-step tracking fields such as delays, timers, and loop counters.
+        /// </summary>
         private void ResetStepRuntimeState(Step step, bool resetLoopCount)
         {
             step.started = false;
@@ -526,7 +563,9 @@ namespace Jungle.Actions
                 step.loopsCompleted = 0;
             }
         }
-
+        /// <summary>
+        /// Evaluates whether a completed step should loop again based on its configured mode.
+        /// </summary>
         private bool ShouldRestartStep(Step step)
         {
             if (step.suppressLoopOnce)

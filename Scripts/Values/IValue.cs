@@ -24,9 +24,14 @@ namespace Jungle.Values
             get { yield return Value(); }
         }
     }
-
+    /// <summary>
+    /// Defines the ISettableValue contract.
+    /// </summary>
     public interface ISettableValue<T> : IValue<T>
     {
+        /// <summary>
+        /// Replaces the value produced by the provider.
+        /// </summary>
         void SetValue(T value);
     }
 }

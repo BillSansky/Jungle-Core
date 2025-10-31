@@ -8,9 +8,15 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Draws the inspector UI for individual SequenceAction steps so their timing and actions can be configured.
+    /// </summary>
     [CustomPropertyDrawer(typeof(SequenceAction.Step))]
     public class ActionSequenceStepDrawer : PropertyDrawer
     {
+        /// <summary>
+        /// Builds the property field UI for the drawer.
+        /// </summary>
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var root = new VisualElement();
@@ -141,7 +147,9 @@ namespace Jungle.Editor
 
             return root;
         }
-
+        /// <summary>
+        /// Builds the label displayed on the step foldout.
+        /// </summary>
         private static string BuildFoldoutLabel(SerializedProperty property)
         {
             var actionProperty = property.FindPropertyRelative(nameof(SequenceAction.Step.Action));
@@ -182,7 +190,9 @@ namespace Jungle.Editor
 
             return $"Step: {displayName}{loopInfo}";
         }
-
+        /// <summary>
+        /// Resolves the concrete managed-reference type for the property.
+        /// </summary>
         private static Type ResolveManagedReferenceType(SerializedProperty property)
         {
             var fullTypeName = property.managedReferenceFullTypename;
@@ -202,7 +212,9 @@ namespace Jungle.Editor
             var qualifiedName = $"{typeName}, {assemblyName}";
             return Type.GetType(qualifiedName);
         }
-
+        /// <summary>
+        /// Retrieves a required relative property and throws if missing.
+        /// </summary>
         private static SerializedProperty RequireRelativeProperty(SerializedProperty parent, string name)
         {
             var property = parent.FindPropertyRelative(name);
@@ -213,7 +225,9 @@ namespace Jungle.Editor
 
             return property;
         }
-
+        /// <summary>
+        /// Applies display flags to the foldout entry.
+        /// </summary>
         private static void SetElementDisplay(VisualElement element, bool visible)
         {
             element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;

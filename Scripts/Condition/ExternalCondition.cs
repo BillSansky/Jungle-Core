@@ -24,7 +24,9 @@ namespace Jungle.Conditions
             return ((IBooleanCondition)conditionProvider).Condition;
         }
     }
-    
+    /// <summary>
+    /// Defines the IBooleanCondition contract.
+    /// </summary>
     public interface IBooleanCondition
     {
         bool Condition { get; }

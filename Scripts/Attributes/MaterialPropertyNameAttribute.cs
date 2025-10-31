@@ -9,6 +9,9 @@ namespace Jungle.Attributes
     [AttributeUsage(AttributeTargets.Field)]
     public class MaterialPropertyNameAttribute : PropertyAttribute
     {
+        /// <summary>
+        /// Enumerates the PropertyType values.
+        /// </summary>
         public enum PropertyType
         {
             Float,

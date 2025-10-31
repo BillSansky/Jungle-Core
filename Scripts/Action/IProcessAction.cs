@@ -9,8 +9,13 @@ namespace Jungle.Actions
     /// </summary>
     public interface IProcessAction : IImmediateAction
     {
+        /// <summary>
+        /// Begins running the action as a process.
+        /// </summary>
         void Start();
-        
+        /// <summary>
+        /// Stops the process before it completes naturally.
+        /// </summary>
         void Interrupt();
         
         public event Action OnProcessCompleted;

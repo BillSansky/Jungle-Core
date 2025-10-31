@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Animates a material float property between two values over the action duration.
+    /// </summary>
     [System.Serializable]
     public class MaterialFloatLerpAction : LerpProcessAction<float>, IStateAction
     {
@@ -23,7 +26,9 @@ namespace Jungle.Actions
         private IRendererValue targetRenderer;
 
         private Dictionary<Renderer, float[]> originalValuesMap = new();
-
+        /// <summary>
+        /// Handles the OnBeforeStart event.
+        /// </summary>
         protected override void OnBeforeStart()
         {
             base.OnBeforeStart();
@@ -55,7 +60,9 @@ namespace Jungle.Actions
                 originalValuesMap[renderer] = originalValues;
             }
         }
-
+        /// <summary>
+        /// Uses the stored material property value as the interpolation baseline.
+        /// </summary>
         protected override float GetStartValue()
         {
             // Return the first renderer's first material float value as reference
@@ -74,17 +81,23 @@ namespace Jungle.Actions
 
             return 0f;
         }
-
+        /// <summary>
+        /// Returns the target float value that should be written to the material property.
+        /// </summary>
         protected override float GetEndValue()
         {
             return targetValue;
         }
-
+        /// <summary>
+        /// Computes a float that moves toward the target while respecting the configured intensity multiplier.
+        /// </summary>
         protected override float LerpValue(float start, float end, float t)
         {
             return Mathf.Lerp(start, end, t * lerpIntensity);
         }
-
+        /// <summary>
+        /// Applies the interpolated float to each renderer's material property.
+        /// </summary>
         protected override void ApplyValue(float value)
         {
             foreach (var renderer in targetRenderer.Values)
@@ -119,12 +132,16 @@ namespace Jungle.Actions
                 }
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             Interrupt();

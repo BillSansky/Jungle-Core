@@ -27,7 +27,9 @@ namespace Jungle.Values
 
             return valueAsset.Value();
         }
-
+        /// <summary>
+        /// Forwards the value update to the referenced asset.
+        /// </summary>
         public void SetValue(T value)
         {
             if (valueAsset == null)

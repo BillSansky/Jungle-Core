@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Broadcasts the configured signal through the central dispatcher when executed.
+    /// </summary>
     [JungleClassInfo("Sends a signal to the target receiver when executed.", "d_EventSystem Icon")]
     [Serializable]
     public class SignalInvokeAction : IImmediateAction
@@ -26,7 +29,9 @@ namespace Jungle.Actions
 
         [SerializeField]
         private bool includeInactiveChildren;
-
+        /// <summary>
+        /// Resolves the target receiver and forwards the configured signal.
+        /// </summary>
         public void Execute()
         {
             if (signalType == null)

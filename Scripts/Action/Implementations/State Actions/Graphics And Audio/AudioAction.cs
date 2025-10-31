@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Plays or stops an AudioSource when the state transitions.
+    /// </summary>
     [System.Serializable]
     public class AudioAction : IStateAction
     {
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;
         [SerializeField] private AudioClip dragEndSound;
@@ -22,7 +28,9 @@ namespace Jungle.Actions
                     source.PlayOneShot(dragStartSound);
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             if (!dragEndSound) return;

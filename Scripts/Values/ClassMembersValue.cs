@@ -5,6 +5,9 @@ using Component = UnityEngine.Component;
 
 namespace Jungle.Values
 {
+    /// <summary>
+    /// Resolves values by invoking a parameterless method or property on a component.
+    /// </summary>
     [Serializable]
     public class ClassMembersValue<T> : IValue<T>
     {
@@ -28,12 +31,16 @@ namespace Jungle.Values
         }
 
         public bool HasMultipleValues => false;
-
+        /// <summary>
+        /// Returns the resolved member value using <see cref="Value"/>, boxed as an object.
+        /// </summary>
         public object GetValue()
         {
             return Value();
         }
-
+        /// <summary>
+        /// Lazily resolves and invokes the configured member on the component.
+        /// </summary>
         public T Value()
         {
             if (!isInitialized)
@@ -48,7 +55,9 @@ namespace Jungle.Values
 
             return default(T);
         }
-
+        /// <summary>
+        /// Builds the cached delegate that reads the requested method or property.
+        /// </summary>
         private void InitializeAction()
         {
             isInitialized = true;
@@ -129,7 +138,9 @@ namespace Jungle.Values
                 Debug.LogError($"ClassMembersValue: Failed to create delegate for property '{memberName}': {e.Message}");
             }
         }
-
+        /// <summary>
+        /// Clears the cached delegate so the member lookup runs again on next access.
+        /// </summary>
         public void ResetCache()
         {
             isInitialized = false;

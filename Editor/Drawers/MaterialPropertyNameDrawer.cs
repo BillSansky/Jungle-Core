@@ -9,12 +9,17 @@ using Jungle.Values;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Displays shader property names in a popup so users can pick the material slot to target.
+    /// </summary>
     [CustomPropertyDrawer(typeof(MaterialPropertyNameAttribute))]
     public class MaterialPropertyNameDrawer : PropertyDrawer
     {
         private const string NoPropertiesFound = "<No Properties Found>";
         private const string NoRendererSet = "<Set Renderer First>";
-        
+        /// <summary>
+        /// Handles the OnGUI event.
+        /// </summary>
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (property.propertyType != SerializedPropertyType.String)
@@ -50,7 +55,9 @@ namespace Jungle.Editor
             
             EditorGUI.EndProperty();
         }
-
+        /// <summary>
+        /// Gathers material properties from the provided renderer.
+        /// </summary>
         private List<string> GetMaterialPropertiesFromRenderer(SerializedProperty property, Jungle.Attributes.MaterialPropertyNameAttribute attr)
         {
             // Find the parent object that contains both the property field and the renderer field
@@ -112,7 +119,9 @@ namespace Jungle.Editor
 
             return new List<string>();
         }
-
+        /// <summary>
+        /// Collects property names from the renderer's materials.
+        /// </summary>
         private void CollectPropertiesFromRenderer(Renderer renderer, HashSet<string> properties, Jungle.Attributes.MaterialPropertyNameAttribute.PropertyType filterType)
         {
             if (renderer == null) return;
@@ -141,7 +150,9 @@ namespace Jungle.Editor
                 }
             }
         }
-
+        /// <summary>
+        /// Determines whether a material property should appear in the dropdown.
+        /// </summary>
         private bool ShouldIncludeProperty(UnityEngine.Rendering.ShaderPropertyType propType, Jungle.Attributes.MaterialPropertyNameAttribute.PropertyType filterType)
         {
             switch (filterType)
@@ -166,7 +177,9 @@ namespace Jungle.Editor
                     return false;
             }
         }
-
+        /// <summary>
+        /// Returns the parent SerializedProperty of the current field.
+        /// </summary>
         private SerializedProperty GetParentProperty(SerializedProperty property)
         {
             var path = property.propertyPath;
@@ -176,7 +189,9 @@ namespace Jungle.Editor
             var parentPath = path.Substring(0, lastDotIndex);
             return property.serializedObject.FindProperty(parentPath);
         }
-
+        /// <summary>
+        /// Uses reflection to fetch a field value by name.
+        /// </summary>
         private object GetFieldValueByName(SerializedProperty parentProperty, string fieldName)
         {
             if (parentProperty == null || parentProperty.managedReferenceValue == null)

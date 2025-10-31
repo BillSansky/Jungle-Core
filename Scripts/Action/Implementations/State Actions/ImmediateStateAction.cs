@@ -4,14 +4,18 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Enumerates the ImmediateActionExecute values.
+    /// </summary>
     public enum ImmediateActionExecute
     {
         OnBegin,
         OnEnd,
         OnBeginAndEnd
     }
-
-
+    /// <summary>
+    /// Runs a nested immediate action as soon as the state becomes active.
+    /// </summary>
     [JungleClassInfo("Immediate Action", "Executes an immediate action when the state is entered or exited.")]
     [Serializable]
     public class ImmediateStateAction : IStateAction
@@ -20,7 +24,9 @@ namespace Jungle.Actions
         private IImmediateAction action;
 
         public ImmediateActionExecute executionMode = ImmediateActionExecute.OnBeginAndEnd;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public virtual void OnStateEnter()
         {
             switch (executionMode)
@@ -36,7 +42,9 @@ namespace Jungle.Actions
                     throw new ArgumentOutOfRangeException();
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public virtual void OnStateExit()
         {
             switch (executionMode)

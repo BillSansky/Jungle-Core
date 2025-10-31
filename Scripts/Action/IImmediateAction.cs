@@ -5,6 +5,9 @@
     /// </summary>
     public interface IImmediateAction
     {
+        /// <summary>
+        /// Performs the action immediately when invoked.
+        /// </summary>
         void Execute();
     }
 }

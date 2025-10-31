@@ -4,8 +4,14 @@ using UnityEngine.Events;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Coordinates long-running process actions, advancing them and handling cancellation.
+    /// </summary>
     public class ProcessRunner : MonoBehaviour
     {
+        /// <summary>
+        /// Enumerates the ProcessTiming values.
+        /// </summary>
         public enum ProcessTiming
         {
             Awake,
@@ -30,7 +36,9 @@ namespace Jungle.Actions
         public bool IsComplete { get; private set; }
 
         public UnityEvent OnProcessCompleted => onProcessCompleted;
-
+        /// <summary>
+        /// Starts or interrupts the configured process when the object awakens, depending on the timing settings.
+        /// </summary>
         private void Awake()
         {
             if (startEvent == ProcessTiming.Awake)
@@ -43,7 +51,9 @@ namespace Jungle.Actions
                 InterruptProcess();
             }
         }
-
+        /// <summary>
+        /// Handles the OnEnable event.
+        /// </summary>
         private void OnEnable()
         {
             if (startEvent == ProcessTiming.OnEnable)
@@ -56,7 +66,9 @@ namespace Jungle.Actions
                 InterruptProcess();
             }
         }
-
+        /// <summary>
+        /// Triggers start or interrupt behavior during Unity's Start callback based on the selected timing options.
+        /// </summary>
         private void Start()
         {
             if (startEvent == ProcessTiming.Start)
@@ -69,7 +81,9 @@ namespace Jungle.Actions
                 InterruptProcess();
             }
         }
-
+        /// <summary>
+        /// Handles the OnDisable event.
+        /// </summary>
         private void OnDisable()
         {
             if (startEvent == ProcessTiming.OnDisable)
@@ -82,7 +96,9 @@ namespace Jungle.Actions
                 InterruptProcess();
             }
         }
-
+        /// <summary>
+        /// Handles the OnDestroy event.
+        /// </summary>
         private void OnDestroy()
         {
             if (startEvent == ProcessTiming.OnDestroy)
@@ -95,7 +111,9 @@ namespace Jungle.Actions
                 InterruptProcess();
             }
         }
-
+        /// <summary>
+        /// Handles process completion by updating state, invoking listeners, and removing the subscription.
+        /// </summary>
         private void NotifyProcessCompleted()
         {
             IsRunning = false;
@@ -103,7 +121,9 @@ namespace Jungle.Actions
             OnProcessCompleted?.Invoke();
             Process.OnProcessCompleted -= NotifyProcessCompleted;
         }
-
+        /// <summary>
+        /// Manually begins the process, tracking running state and subscribing for completion notification.
+        /// </summary>
         public void StartProcess()
         {
             IsRunning = true;
@@ -111,7 +131,9 @@ namespace Jungle.Actions
             Process.Start();
             Process.OnProcessCompleted += NotifyProcessCompleted;
         }
-
+        /// <summary>
+        /// Stops the active process and marks the runner as no longer running.
+        /// </summary>
         public void InterruptProcess()
         {
             IsRunning = false;

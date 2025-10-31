@@ -6,12 +6,17 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Enumerates the EndLogic values.
+    /// </summary>
     public enum EndLogic
     {
         Timed,
         OneFrame,
     }
-    
+    /// <summary>
+    /// Runs an action for a fixed duration and reports progress back to the state runner.
+    /// </summary>
     [Serializable]
     public class TimedStateActionExecutor : IProcessAction
     {
@@ -53,12 +58,16 @@ namespace Jungle.Actions
         public bool IsInProgress => isInProgress;
 
         public bool HasCompleted => hasCompleted;
-
+        /// <summary>
+        /// Invokes <see cref="Start"/> so the executor can be triggered through the process interface.
+        /// </summary>
         public void Execute()
         {
             Start();
         }
-
+        /// <summary>
+        /// Enters each state action and optionally schedules an automatic completion.
+        /// </summary>
         public void Start()
         {
             Debug.Assert(coroutineRunner != null, "coroutineRunner must be set before starting the action");
@@ -82,7 +91,9 @@ namespace Jungle.Actions
                 autoEndCoroutine = coroutineRunner.StartCoroutine(AutoEndCoroutine());
             }
         }
-
+        /// <summary>
+        /// Stops the executor early, reversing state entries and cancelling timers.
+        /// </summary>
         public void Interrupt()
         {
             if (!isInProgress)
@@ -94,7 +105,9 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = false;
         }
-
+        /// <summary>
+        /// Cancels the auto-end coroutine and calls OnStateExit on all actions.
+        /// </summary>
         private void Cleanup()
         {
             // Stop the auto-end coroutine if it's running
@@ -109,7 +122,9 @@ namespace Jungle.Actions
                 action?.OnStateExit();
             }
         }
-
+        /// <summary>
+        /// Finishes the run, performs cleanup, and fires the completion event.
+        /// </summary>
         private void Complete()
         {
             if (!isInProgress)
@@ -122,7 +137,9 @@ namespace Jungle.Actions
             hasCompleted = true;
             OnProcessCompleted?.Invoke();
         }
-
+        /// <summary>
+        /// Waits for the configured duration (or one frame) before automatically completing the executor.
+        /// </summary>
         private IEnumerator AutoEndCoroutine()
         {
             if (endLogic == EndLogic.OneFrame)

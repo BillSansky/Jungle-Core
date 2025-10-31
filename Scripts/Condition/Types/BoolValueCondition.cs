@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates a boolean value to determine if the condition passes.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Bool Value Condition", "Evaluates a bool value against an expected value.", null, "Values")]
     public class BoolValueCondition : Condition
@@ -18,7 +21,9 @@ namespace Jungle.Conditions
         [SerializeReference]
         [JungleClassSelection]
         private IBoolValue expectedValue = new BoolValue(true);
-
+        /// <summary>
+        /// Compares the value provider's boolean against the expected boolean.
+        /// </summary>
         protected internal override bool IsValidImpl()
         {
             if (valueProvider == null)

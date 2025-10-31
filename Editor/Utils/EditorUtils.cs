@@ -10,6 +10,9 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Provides shared editor helpers for layout, colors, and icon retrieval used throughout Jungle tooling.
+    /// </summary>
     public static class EditorUtils
     {
         public static Type ResolveElementType(Type overrideBase,
@@ -26,7 +29,9 @@ namespace Jungle.Editor
  
             return typeof(object);
         }
-
+        /// <summary>
+        /// Determines the element type of an enumerable property if possible.
+        /// </summary>
         private static Type TryGetEnumerableElementType(Type t)
         {
             if (t == null) return null;
@@ -58,7 +63,9 @@ namespace Jungle.Editor
 
             return t;
         }
-
+        /// <summary>
+        /// Resolves a field type by walking the serialized property path.
+        /// </summary>
         private static Type GetFieldTypeFromPropertyPath(Type rootType, string propertyPath)
         {
             const BindingFlags BF = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -88,7 +95,9 @@ namespace Jungle.Editor
         {
             return GetAllSubclassTypes(typeof(T));
         }
-
+        /// <summary>
+        /// Finds all types that derive from the specified base type.
+        /// </summary>
         public static List<Type> GetAllSubclassTypes(Type type)
         {
             // Use TypeCache instead of reflection for better performance
@@ -169,7 +178,9 @@ namespace Jungle.Editor
 
             parent.Insert(index, selector);
         }
-
+        /// <summary>
+        /// Attaches Jungle editor styles to the root element.
+        /// </summary>
         private static void AttachJungleEditorStyles(VisualElement element)
         {
             if (element == null)
@@ -223,7 +234,9 @@ namespace Jungle.Editor
 
             ShowAddTypeMenu(componentType, CreateComponent);
         }
-
+        /// <summary>
+        /// Shows the add-type menu and creates a managed reference instance.
+        /// </summary>
         public static void ShowAddManagedReferenceTypeMenuAndCreate(Type referenceType, SerializedProperty property)
         {
             void CreateReference(Type type)

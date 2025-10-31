@@ -1,5 +1,8 @@
 ﻿namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Enumerates the LogicalOperator values.
+    /// </summary>
     public enum LogicalOperator
     {
         And,        // All conditions must be true

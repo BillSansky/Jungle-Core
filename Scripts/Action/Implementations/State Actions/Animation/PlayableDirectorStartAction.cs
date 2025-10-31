@@ -9,6 +9,9 @@ namespace Jungle.Actions
     [JungleClassInfo(
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
         "d_AnimationClip")]
+    /// <summary>
+    /// Starts a Timeline PlayableDirector and optionally rewinds it when the state ends.
+    /// </summary>
     [Serializable]
     public class PlayableDirectorStartAction : IStateAction
     {
@@ -17,7 +20,9 @@ namespace Jungle.Actions
 
 
         private PlayableDirector cachedDirector;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             var director = ResolveDirector();
@@ -29,14 +34,18 @@ namespace Jungle.Actions
 
             director.Play();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
 
             var director = cachedDirector ?? ResolveDirector();
             director.Stop();
         }
-
+        /// <summary>
+        /// Locates and caches the PlayableDirector component to control.
+        /// </summary>
         private PlayableDirector ResolveDirector()
         {
             Debug.Assert(targetDirectorObject != null, "PlayableDirector GameObject provider has not been assigned.");

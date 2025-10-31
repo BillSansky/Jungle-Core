@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates a double value against a comparison operator.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Double Value Condition", "Evaluates a double value against a comparison.", null, "Values")]
     public class DoubleValueCondition : Condition
     {
+        /// <summary>
+        /// Enumerates the ComparisonOperator values.
+        /// </summary>
         public enum ComparisonOperator
         {
             Equals,
@@ -34,7 +40,9 @@ namespace Jungle.Conditions
 
         [SerializeField]
         private double tolerance = 0.0001;
-
+        /// <summary>
+        /// Evaluates the chosen comparison between the provided doubles, applying tolerance where relevant.
+        /// </summary>
         protected internal override bool IsValidImpl()
         {
             if (valueProvider == null)

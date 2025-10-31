@@ -33,12 +33,16 @@ namespace Jungle.Values
         {
             this.value = value;
         }
-        
+        /// <summary>
+        /// Returns the value currently stored on this reference.
+        /// </summary>
         public T Value()
         {
             return value;
         }
-
+        /// <summary>
+        /// Updates the stored value.
+        /// </summary>
         public virtual void SetValue(T value)
         {
             this.value = value;

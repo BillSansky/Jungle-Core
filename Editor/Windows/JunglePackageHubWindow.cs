@@ -9,7 +9,9 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
-
+/// <summary>
+/// Editor window that lists recommended Jungle packages and short descriptions for onboarding.
+/// </summary>
 public class JunglePackageHubWindow : EditorWindow
 {
     [Serializable] private class PackageEntry
@@ -24,7 +26,9 @@ public class JunglePackageHubWindow : EditorWindow
     {
         public List<PackageEntry> packages = new();
     }
-
+    /// <summary>
+    /// Stores metadata for a package hub image so the UI can render icons with tooltips.
+    /// </summary>
     private class ImageRecord
     {
         public string URL;
@@ -52,7 +56,9 @@ public class JunglePackageHubWindow : EditorWindow
 
     private const string PackageRoot = "Packages/com.jungle.core";
     private const string DefaultConfigAssetSearch = "upm-sources t:TextAsset";
-
+    /// <summary>
+    /// Opens the window.
+    /// </summary>
     [MenuItem("Tools/Jungle/Package Hub")]
     public static void Open()
     {
@@ -60,7 +66,9 @@ public class JunglePackageHubWindow : EditorWindow
         w.minSize = new Vector2(620, 420);
         w.Show();
     }
-
+    /// <summary>
+    /// Handles the OnEnable event.
+    /// </summary>
     private void OnEnable()
     {
         // Load UXML/USS
@@ -93,7 +101,9 @@ public class JunglePackageHubWindow : EditorWindow
 
         EditorApplication.update += Pump;
     }
-
+    /// <summary>
+    /// Handles the OnDisable event.
+    /// </summary>
     private void OnDisable()
     {
         EditorApplication.update -= Pump;
@@ -101,6 +111,9 @@ public class JunglePackageHubWindow : EditorWindow
     }
 
     // -------- UI Refresh --------
+    /// <summary>
+    /// Rebuilds the UI list of available packages.
+    /// </summary>
     private void RebuildList()
     {
         listView?.Clear();
@@ -156,6 +169,9 @@ public class JunglePackageHubWindow : EditorWindow
     }
 
     // -------- Config I/O --------
+    /// <summary>
+    /// Determines the configuration file path for package metadata.
+    /// </summary>
     private string FindConfigPath()
     {
         var direct = "Assets/UPM Package Hub/upm-sources.json";
@@ -170,7 +186,9 @@ public class JunglePackageHubWindow : EditorWindow
         }
         return null;
     }
-
+    /// <summary>
+    /// Loads package configuration data from disk.
+    /// </summary>
     private void LoadConfig()
     {
         config = new PackageConfig();
@@ -206,13 +224,18 @@ public class JunglePackageHubWindow : EditorWindow
     }
 
     // -------- UPM ops --------
+    /// <summary>
+    /// Refreshes the list of installed packages.
+    /// </summary>
     private void RefreshInstalled()
     {
         installed.Clear();
         listRequest = Client.List(true);
         footerMsg.text = "Refreshing installed packages…";
     }
-
+    /// <summary>
+    /// Begins installing the selected package.
+    /// </summary>
     private void StartInstall(PackageEntry p)
     {
         try
@@ -227,7 +250,9 @@ public class JunglePackageHubWindow : EditorWindow
             footerMsg.text = $"Install error: {e.Message}";
         }
     }
-
+    /// <summary>
+    /// Advances the asynchronous install process.
+    /// </summary>
     private void Pump()
     {
         if (EditorApplication.timeSinceStartup - lastPump > 0.05f)
@@ -300,6 +325,9 @@ public class JunglePackageHubWindow : EditorWindow
     }
 
     // -------- Images --------
+    /// <summary>
+    /// Retrieves the image asset for the specified package entry.
+    /// </summary>
     private Texture2D GetImageForPackage(PackageEntry p)
     {
         var url = ResolveImageUrl(p);
@@ -315,7 +343,9 @@ public class JunglePackageHubWindow : EditorWindow
         BeginFetchImage(url);
         return null;
     }
-
+    /// <summary>
+    /// Starts fetching the package image asynchronously.
+    /// </summary>
     private void BeginFetchImage(string url)
     {
         if (images.ContainsKey(url)) return;
@@ -332,7 +362,9 @@ public class JunglePackageHubWindow : EditorWindow
         }
         images[url] = rec;
     }
-
+    /// <summary>
+    /// Constructs the URL used to download the package image.
+    /// </summary>
     private string ResolveImageUrl(PackageEntry p)
     {
         if (!string.IsNullOrEmpty(p.imageUrl)) return p.imageUrl;
@@ -345,7 +377,9 @@ public class JunglePackageHubWindow : EditorWindow
         }
         return null;
     }
-
+    /// <summary>
+    /// Extracts the web URL from a repository slug.
+    /// </summary>
     private string ExtractRepoWebUrl(string gitUrl)
     {
         if (string.IsNullOrEmpty(gitUrl)) return "https://github.com/";
@@ -365,7 +399,9 @@ public class JunglePackageHubWindow : EditorWindow
     // -------- Helpers --------
     private static T Load<T>(string path) where T : UnityEngine.Object
         => AssetDatabase.LoadAssetAtPath<T>(path);
-
+    /// <summary>
+    /// Attempts to load and apply the specified style sheet.
+    /// </summary>
     private static void TryAddStyle(VisualElement root, string ussPath)
     {
         var sheet = Load<StyleSheet>(ussPath);

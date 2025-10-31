@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Sends a signal and optionally waits for a state response before continuing.
+    /// </summary>
     [JungleClassInfo("Sends signals when the state enters and exits.", "d_EventSystem Icon")]
     [Serializable]
     public class SignalStateInvokerAction : IStateAction
@@ -29,17 +32,23 @@ namespace Jungle.Actions
 
         [SerializeField]
         private bool includeInactiveChildren;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             InvokeSignal(enterSignal, "enter");
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             InvokeSignal(exitSignal, "exit");
         }
-
+        /// <summary>
+        /// Resolves the configured receiver and sends the supplied signal for the given phase.
+        /// </summary>
         private void InvokeSignal(SignalType signal, string phase)
         {
             if (signal == null)

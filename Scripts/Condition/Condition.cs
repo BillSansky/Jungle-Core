@@ -22,8 +22,13 @@ namespace Jungle.Conditions
         {
             return invertCondition ? !IsValidImpl() : IsValidImpl();
         }
-        
+        /// <summary>
+        /// Performs the concrete condition evaluation before inversion is applied.
+        /// </summary>
         protected internal abstract bool IsValidImpl();
+        /// <summary>
+        /// Exposes the condition result through the <see cref="IBoolValue"/> interface.
+        /// </summary>
         public bool Value()
         {
             return IsValid();

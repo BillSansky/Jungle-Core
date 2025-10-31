@@ -8,13 +8,18 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Enumerates the InterruptBehavior values.
+    /// </summary>
     public enum InterruptBehavior
     {
         StayAtCurrent,
         GoToStart,
         GoToEnd
     }
-
+    /// <summary>
+    /// Base class that provides interpolation helpers and timing for lerp-based actions.
+    /// </summary>
     [Serializable]
     public abstract class LerpProcessAction<T> : IProcessAction
     {
@@ -35,12 +40,16 @@ namespace Jungle.Actions
         public float Duration => duration?.V ?? 0f;
         public bool IsInProgress => isInProgress;
         public bool HasCompleted => hasCompleted;
-
+        /// <summary>
+        /// Triggers the action as part of a process by delegating to <see cref="Start"/>.
+        /// </summary>
         public void Execute()
         {
             Start();
         }
-
+        /// <summary>
+        /// Initializes interpolation state and begins lerping, falling back to the end value if the duration is zero.
+        /// </summary>
         public void Start()
         {
             if (isInProgress)
@@ -71,7 +80,9 @@ namespace Jungle.Actions
 
             activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpCoroutine(totalDuration, curve));
         }
-
+        /// <summary>
+        /// Stops the active interpolation and snaps to the configured interrupt position.
+        /// </summary>
         public void Interrupt()
         {
             if (!isInProgress)
@@ -101,16 +112,37 @@ namespace Jungle.Actions
 
             OnInterrupted();
         }
-
+        /// <summary>
+        /// Returns the value that should be applied at the start of the interpolation.
+        /// </summary>
         protected abstract T GetStartValue();
+        /// <summary>
+        /// Returns the value the interpolation should reach when it finishes.
+        /// </summary>
         protected abstract T GetEndValue();
+        /// <summary>
+        /// Calculates an interpolated value between the start and end values for a given progress ratio.
+        /// </summary>
         protected abstract T LerpValue(T start, T end, float t);
+        /// <summary>
+        /// Pushes the supplied value to the concrete destination controlled by the action.
+        /// </summary>
         protected abstract void ApplyValue(T value);
-
+        /// <summary>
+        /// Handles the OnBeforeStart event.
+        /// </summary>
         protected virtual void OnBeforeStart() { }
+        /// <summary>
+        /// Handles the OnIterationCompleted event.
+        /// </summary>
         protected virtual void OnIterationCompleted() { }
+        /// <summary>
+        /// Handles the OnInterrupted event.
+        /// </summary>
         protected virtual void OnInterrupted() { }
-
+        /// <summary>
+        /// Marks the process as finished and notifies listeners once the interpolation ends.
+        /// </summary>
         private void Complete()
         {
             if (!isInProgress)
@@ -122,7 +154,9 @@ namespace Jungle.Actions
             hasCompleted = true;
             OnProcessCompleted?.Invoke();
         }
-
+        /// <summary>
+        /// Drives the interpolation coroutine, looping according to the configured strategy until completion.
+        /// </summary>
         private IEnumerator LerpCoroutine(float totalDuration, AnimationCurve curve)
         {
             Debug.Assert(loopStrategy != null, "Loop strategy is null.");
@@ -152,7 +186,9 @@ namespace Jungle.Actions
 
             Complete();
         }
-
+        /// <summary>
+        /// Cancels the currently running interpolation coroutine, if any.
+        /// </summary>
         private void StopActiveRoutine()
         {
             if (activeRoutine == null)

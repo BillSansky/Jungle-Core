@@ -14,7 +14,9 @@ namespace Jungle.Conditions
     {
         [JungleClassSelection] [SerializeReference]
         private List<Condition> conditions;
-
+        /// <summary>
+        /// Combines all child conditions using the selected logical operator.
+        /// </summary>
         [SerializeField] private LogicalOperator logicalOperator = LogicalOperator.And;
 
         protected internal override bool IsValidImpl()
@@ -32,7 +34,9 @@ namespace Jungle.Conditions
                 _ => false
             };
         }
-
+        /// <summary>
+        /// Returns true only when every child condition evaluates to true.
+        /// </summary>
         private bool EvaluateAnd()
         {
             foreach (var condition in conditions)
@@ -43,7 +47,9 @@ namespace Jungle.Conditions
 
             return true;
         }
-
+        /// <summary>
+        /// Returns true when at least one child condition evaluates to true.
+        /// </summary>
         private bool EvaluateOr()
         {
             foreach (var condition in conditions)
@@ -54,7 +60,9 @@ namespace Jungle.Conditions
 
             return false;
         }
-
+        /// <summary>
+        /// Returns true when exactly one child condition evaluates to true.
+        /// </summary>
         private bool EvaluateXor()
         {
             int trueCount = 0;

@@ -5,9 +5,15 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Switches Rigidbody components between kinematic and simulated modes for the state.
+    /// </summary>
     [System.Serializable]
     public class RigidbodyKinematicStateAction : IStateAction
     {
+        /// <summary>
+        /// Enumerates the KinematicOption values.
+        /// </summary>
         public enum KinematicOption
         {
             None,
@@ -23,8 +29,9 @@ namespace Jungle.Actions
         [SerializeField] private KinematicOption beginAction = KinematicOption.Kinematic;
         [SerializeField] private KinematicOption endAction = KinematicOption.None;
         private List<bool> wasKinematic = new();
-
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             wasKinematic.Clear();
@@ -49,7 +56,9 @@ namespace Jungle.Actions
                 }
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             int i = 0;

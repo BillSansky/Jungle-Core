@@ -14,14 +14,18 @@ namespace Jungle.Events
         [SerializeField] private UnityEvent response = new();
 
         private bool isRegistered;
-
+        /// <summary>
+        /// Handles the OnEnable event.
+        /// </summary>
         private void OnEnable()
         {
             EnsureEventAssetAssigned();
             eventAsset.Register(OnEventRaised);
             isRegistered = true;
         }
-
+        /// <summary>
+        /// Handles the OnDisable event.
+        /// </summary>
         private void OnDisable()
         {
             if (!isRegistered)
@@ -32,12 +36,16 @@ namespace Jungle.Events
             eventAsset.Unregister(OnEventRaised);
             isRegistered = false;
         }
-
+        /// <summary>
+        /// Handles the OnEventRaised event.
+        /// </summary>
         private void OnEventRaised()
         {
             response.Invoke();
         }
-
+        /// <summary>
+        /// Throws a descriptive error if the listener has not been wired to an event asset.
+        /// </summary>
         private void EnsureEventAssetAssigned()
         {
             if (eventAsset == null)

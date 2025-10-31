@@ -13,7 +13,9 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
-   
+    /// <summary>
+    /// Wizard window that generates boilerplate wrapper classes for custom value types.
+    /// </summary>
     public class ValueWrapperGeneratorWindow : EditorWindow
     {
         private static readonly Dictionary<string, Type> TypeAliases = new(StringComparer.OrdinalIgnoreCase)
@@ -91,7 +93,9 @@ namespace Jungle.Editor
         private Button resolveTypeButton;
 
         private Type resolvedType;
-
+        /// <summary>
+        /// Opens the value wrapper generator window.
+        /// </summary>
         [MenuItem("Tools/Jungle/Values/Value Wrapper Generator")]
         public static void ShowWindow()
         {
@@ -100,7 +104,9 @@ namespace Jungle.Editor
             wnd.minSize = new Vector2(420, 320);
             wnd.Show();
         }
-
+        /// <summary>
+        /// Builds the window's UI layout.
+        /// </summary>
         public void CreateGUI()
         {
             rootVisualElement.Clear();
@@ -125,7 +131,9 @@ namespace Jungle.Editor
             UpdateAssetFieldsState();
             UpdateGenerateButtonState();
         }
-
+        /// <summary>
+        /// Caches frequently accessed UI controls.
+        /// </summary>
         private void CacheControls()
         {
             scriptTypeField = rootVisualElement.Q<ObjectField>("script-type-field");
@@ -143,7 +151,9 @@ namespace Jungle.Editor
             resolvedTypeHelpBox = rootVisualElement.Q<HelpBox>("resolved-type-status");
             resolveTypeButton = rootVisualElement.Q<Button>("resolve-type-button");
         }
-
+        /// <summary>
+        /// Populates the controls with the current serialized values.
+        /// </summary>
         private void BindInitialValues()
         {
             if (scriptTypeField != null)
@@ -190,7 +200,9 @@ namespace Jungle.Editor
             assetToggle?.SetValueWithoutNotify(generateAssetWrapper);
             arrayToggle?.SetValueWithoutNotify(generateArrayWrapper);
         }
-
+        /// <summary>
+        /// Registers event callbacks for the UI controls.
+        /// </summary>
         private void RegisterCallbacks()
         {
             if (scriptTypeField != null)
@@ -313,7 +325,9 @@ namespace Jungle.Editor
                 };
             }
         }
-
+        /// <summary>
+        /// Updates the label showing the resolved wrapper type.
+        /// </summary>
         private void UpdateResolvedTypeDisplay()
         {
             if (resolvedTypeHelpBox == null)
@@ -337,20 +351,26 @@ namespace Jungle.Editor
                 resolvedTypeHelpBox.messageType = HelpBoxMessageType.None;
             }
         }
-
+        /// <summary>
+        /// Enables or disables asset fields based on configuration.
+        /// </summary>
         private void UpdateAssetFieldsState()
         {
             var enabled = generateAssetWrapper;
             assetMenuField?.SetEnabled(enabled);
             assetFileField?.SetEnabled(enabled);
         }
-
+        /// <summary>
+        /// Enables or disables the generate button depending on validation.
+        /// </summary>
         private void UpdateGenerateButtonState()
         {
             generateButton?.SetEnabled(CanGenerate());
             UpdateResolvedTypeDisplay();
         }
-
+        /// <summary>
+        /// Auto-fills the wrapper name when no name has been provided.
+        /// </summary>
         private void SetWrapperNameIfEmpty(Type type)
         {
             if (!string.IsNullOrEmpty(wrapperName) || type == null)
@@ -361,7 +381,9 @@ namespace Jungle.Editor
             wrapperName = SuggestWrapperName(type);
             SyncWrapperNameField();
         }
-
+        /// <summary>
+        /// Keeps the wrapper name field synchronized with the selected type.
+        /// </summary>
         private void SyncWrapperNameField()
         {
             if (wrapperNameField == null)
@@ -374,7 +396,9 @@ namespace Jungle.Editor
                 wrapperNameField.SetValueWithoutNotify(wrapperName);
             }
         }
-
+        /// <summary>
+        /// Determines whether the generator has enough data to produce files.
+        /// </summary>
         private bool CanGenerate()
         {
             return ResolveType() != null
@@ -383,7 +407,9 @@ namespace Jungle.Editor
                 && outputFolder != null
                 && (generateInterfaceAndLocalValue || generateComponentWrapper || generateAssetWrapper || generateArrayWrapper);
         }
-
+        /// <summary>
+        /// Resolves the selected type from the user's input.
+        /// </summary>
         private Type ResolveType()
         {
             if (resolvedType != null)
@@ -475,7 +501,9 @@ namespace Jungle.Editor
 
             return resolvedType;
         }
-
+        /// <summary>
+        /// Generates the wrapper files based on the current configuration.
+        /// </summary>
         private void Generate()
         {
             var type = ResolveType();
@@ -548,13 +576,17 @@ namespace Jungle.Editor
 
             EditorUtility.DisplayDialog("Value Wrapper Generator", message, "OK");
         }
-
+        /// <summary>
+        /// Writes the generated file content to disk.
+        /// </summary>
         private void WriteFile(string path, string content)
         {
             File.WriteAllText(path, content, Encoding.UTF8);
             generatedFiles.Add(path);
         }
-
+        /// <summary>
+        /// Builds the source for the interface and local value file.
+        /// </summary>
         private string BuildInterfaceAndLocalValueFile(Type type, string interfaceName, string localValueClass)
         {
             var usings = CollectUsings(type, includeUnity: false, includeJungleValues: true);
@@ -579,7 +611,9 @@ namespace Jungle.Editor
 
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Builds the source for the component wrapper file.
+        /// </summary>
         private string BuildComponentFile(Type type, string interfaceName, string componentClass, string fromComponentClass)
         {
             var usings = CollectUsings(type, includeUnity: true, includeJungleValues: true);
@@ -610,7 +644,9 @@ namespace Jungle.Editor
 
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Builds the source for the asset wrapper file.
+        /// </summary>
         private string BuildAssetFile(Type type, string interfaceName, string assetClass, string fromAssetClass)
         {
             var usings = CollectUsings(type, includeUnity: true, includeJungleValues: true);
@@ -642,7 +678,9 @@ namespace Jungle.Editor
 
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Builds the source for the array wrapper file.
+        /// </summary>
         private string BuildArrayFile(Type type, string interfaceName, string arrayClass)
         {
             var usings = CollectUsings(type, includeUnity: false, includeJungleValues: true);
@@ -662,7 +700,9 @@ namespace Jungle.Editor
 
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Collects the namespace imports required by the generated code.
+        /// </summary>
         private IReadOnlyList<string> CollectUsings(Type type, bool includeUnity, bool includeJungleValues)
         {
             var namespaces = new HashSet<string>();
@@ -688,7 +728,9 @@ namespace Jungle.Editor
                 .OrderBy(n => n, StringComparer.Ordinal)
                 .ToList();
         }
-
+        /// <summary>
+        /// Appends using directives to the provided StringBuilder.
+        /// </summary>
         private static void AppendUsings(StringBuilder sb, IEnumerable<string> namespaces)
         {
             foreach (var ns in namespaces)
@@ -698,7 +740,9 @@ namespace Jungle.Editor
                 sb.AppendLine(";");
             }
         }
-
+        /// <summary>
+        /// Suggests a wrapper class name based on the selected type.
+        /// </summary>
         private static string SuggestWrapperName(Type type)
         {
             if (type == null)
@@ -725,7 +769,9 @@ namespace Jungle.Editor
 
             return type.Name;
         }
-
+        /// <summary>
+        /// Returns the display name for a reflected type.
+        /// </summary>
         private static string GetTypeDisplayName(Type type)
         {
             if (AliasByType.TryGetValue(type, out var alias))

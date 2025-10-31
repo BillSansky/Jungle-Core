@@ -15,6 +15,9 @@ namespace Jungle.Events
     [DisallowMultipleComponent]
     public class SignalReceiver : MonoBehaviour
     {
+        /// <summary>
+        /// Serializes the signal configuration and responses for a specific SignalType.
+        /// </summary>
         [Serializable]
         private class SignalHandler
         {
@@ -27,12 +30,16 @@ namespace Jungle.Events
 
             [SerializeField]
             private UnityEvent onSignal = new UnityEvent();
-
+            /// <summary>
+            /// Determines whether this handler should respond to the incoming signal.
+            /// </summary>
             public bool Handles(SignalType incomingSignal)
             {
                 return signalType == incomingSignal;
             }
-
+            /// <summary>
+            /// Runs each configured action and UnityEvent in response to the signal.
+            /// </summary>
             public void InvokeActions(SignalReceiver receiver, SignalType incomingSignal)
             {
                 for (var index = 0; index < immediateActions.Count; index++)

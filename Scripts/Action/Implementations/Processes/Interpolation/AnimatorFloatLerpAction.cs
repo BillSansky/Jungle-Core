@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Tweens an Animator float parameter from its start value to a target over time.
+    /// </summary>
     [JungleClassInfo("Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip")]
     [Serializable]
     public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
@@ -17,17 +20,23 @@ namespace Jungle.Actions
         private Animator cachedAnimator;
         private float cachedInitialValue;
         private string cachedParameterName;
-
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             Start();
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
             Interrupt();
         }
-
+        /// <summary>
+        /// Handles the OnBeforeStart event.
+        /// </summary>
         protected override void OnBeforeStart()
         {
             cachedAnimator = ResolveAnimator();
@@ -35,27 +44,37 @@ namespace Jungle.Actions
             ValidateParameter(cachedAnimator, cachedParameterName);
             cachedInitialValue = cachedAnimator.GetFloat(cachedParameterName);
         }
-
+        /// <summary>
+        /// Reads the animator parameter's current value so interpolation begins from its live state.
+        /// </summary>
         protected override float GetStartValue()
         {
             return cachedAnimator.GetFloat(cachedParameterName);
         }
-
+        /// <summary>
+        /// Returns the target parameter value that the tween should reach.
+        /// </summary>
         protected override float GetEndValue()
         {
             return targetValue.V;
         }
-
+        /// <summary>
+        /// Produces a float interpolated toward the end value using unclamped linear interpolation.
+        /// </summary>
         protected override float LerpValue(float start, float end, float t)
         {
             return Mathf.LerpUnclamped(start, end, t);
         }
-
+        /// <summary>
+        /// Writes the interpolated value back to the animator parameter.
+        /// </summary>
         protected override void ApplyValue(float value)
         {
             cachedAnimator.SetFloat(cachedParameterName, value);
         }
-
+        /// <summary>
+        /// Handles the OnInterrupted event.
+        /// </summary>
         protected override void OnInterrupted()
         {
             if (cachedAnimator != null && !string.IsNullOrEmpty(cachedParameterName))
@@ -63,7 +82,9 @@ namespace Jungle.Actions
                 cachedAnimator.SetFloat(cachedParameterName, cachedInitialValue);
             }
         }
-
+        /// <summary>
+        /// Locates the animator component that should receive the parameter updates.
+        /// </summary>
         private Animator ResolveAnimator()
         {
             if (targetAnimatorObject == null)
@@ -85,12 +106,16 @@ namespace Jungle.Actions
 
             return cachedAnimator;
         }
-
+        /// <summary>
+        /// Resolves the parameter name string from the value wrapper, defaulting to empty when missing.
+        /// </summary>
         private string ResolveParameterName()
         {
             return parameterName?.V ?? string.Empty;
         }
-
+        /// <summary>
+        /// Ensures the animator actually exposes the configured float parameter before tweening begins.
+        /// </summary>
         private void ValidateParameter(Animator animator, string parameter)
         {
             if (string.IsNullOrEmpty(parameter))

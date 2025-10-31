@@ -23,7 +23,9 @@ namespace Jungle.Actions
         public bool IsInProgress => processRunner != null && processRunner.IsRunning;
 
         public bool HasCompleted => processRunner != null && processRunner.IsComplete;
-
+        /// <summary>
+        /// Starts the referenced runner and hooks completion so the wrapper can relay notifications.
+        /// </summary>
         public void Start()
         {
             Debug.Assert(processRunner != null, "ProcessRunner reference is null");
@@ -39,7 +41,9 @@ namespace Jungle.Actions
             // Start the process runner manually
             processRunner.StartProcess();
         }
-
+        /// <summary>
+        /// Cancels the external runner if it is active and detaches event listeners.
+        /// </summary>
         public void Interrupt()
         {
             if (processRunner != null && processRunner.IsRunning)
@@ -48,13 +52,17 @@ namespace Jungle.Actions
                 Cleanup();
             }
         }
-
+        /// <summary>
+        /// Relays the completion event from the runner and performs cleanup.
+        /// </summary>
         private void HandleProcessCompleted()
         {
             OnProcessCompleted?.Invoke();
             Cleanup();
         }
-
+        /// <summary>
+        /// Removes the completion listener from the referenced runner.
+        /// </summary>
         private void Cleanup()
         {
             if (processRunner != null)

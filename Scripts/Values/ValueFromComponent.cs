@@ -27,7 +27,9 @@ namespace Jungle.Values
 
             return component.Value();
         }
-
+        /// <summary>
+        /// Pushes the new value down to the referenced component.
+        /// </summary>
         public void SetValue(T value)
         {
             if (component == null)

@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Stores named objects at runtime so actions can resolve context-specific references.
+/// </summary>
 public static class DynamicContext
 {
     private static readonly Dictionary<Type, Context> Contexts = new Dictionary<Type, Context>();
-
+    /// <summary>
+    /// Represents a single context slot that resolves objects by key or cached reference.
+    /// </summary>
     public class Context
     {
         public readonly Stack<IContextProvider> contextProviders = new Stack<IContextProvider>();
-
+        /// <summary>
+        /// Returns the provider at the top of the stack or null when no providers are registered.
+        /// </summary>
         public IContextProvider GetCurrentContextProvider()
         {
             return contextProviders.Count > 0 ? contextProviders.Peek() : null;
         }
     }
-
+    /// <summary>
+    /// Pushes a provider onto the stack so subsequent lookups resolve against it.
+    /// </summary>
     public static void PushContext(IContextProvider contextProvider)
     {
         Debug.Assert(contextProvider != null, "Context provider cannot be null");
@@ -30,7 +38,9 @@ public static class DynamicContext
 
         context.contextProviders.Push(contextProvider);
     }
-
+    /// <summary>
+    /// Removes the most recently pushed provider for the given type, validating stack order.
+    /// </summary>
     public static void PopContext(IContextProvider contextProvider)
     {
         Debug.Assert(contextProvider != null, "Context provider cannot be null");
@@ -53,7 +63,9 @@ public static class DynamicContext
 
         context.contextProviders.Pop();
     }
-
+    /// <summary>
+    /// Retrieves the active provider instance for the specified type, if one is registered.
+    /// </summary>
     public static IContextProvider GetContextProvider(Type providerType)
     {
         Debug.Assert(providerType != null, "Provider type cannot be null");
@@ -70,12 +82,16 @@ public static class DynamicContext
     {
         return GetContextProvider(typeof(T)) as T;
     }
-
+    /// <summary>
+    /// Removes every registered provider stack, resetting the dynamic context system.
+    /// </summary>
     public static void ClearAllContexts()
     {
         Contexts.Clear();
     }
-
+    /// <summary>
+    /// Clears the provider stack associated with the specified type.
+    /// </summary>
     public static void ClearContext(Type providerType)
     {
         Debug.Assert(providerType != null, "Provider type cannot be null");

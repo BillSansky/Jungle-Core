@@ -7,6 +7,9 @@ namespace Jungle.Attributes
         AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property |
         AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Enum, AllowMultiple = false,
         Inherited = true)]
+    /// <summary>
+    /// Attribute that stores metadata about Jungle classes for use in tooling.
+    /// </summary>
     [Serializable]
     public class JungleClassInfoAttribute : Attribute
     {

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Overrides the layer of selected GameObjects while the state is active.
+    /// </summary>
     [System.Serializable]
     public class LayerModifierStateAction : IStateAction
     {
@@ -14,8 +17,9 @@ namespace Jungle.Actions
         [SerializeField] private bool revertOnStop = true;
 
         private readonly Dictionary<GameObject, int> storedLayers = new();
-
-
+       /// <summary>
+       /// Handles the OnStateEnter event.
+       /// </summary>
        public void OnStateEnter()
         {
             if (revertOnStop)
@@ -33,7 +37,9 @@ namespace Jungle.Actions
             }
            
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
      
@@ -42,9 +48,9 @@ namespace Jungle.Actions
                 RestoreOriginalLayers();
             }
         }
-
-       
-
+        /// <summary>
+        /// Restores previously captured layer assignments when the action ends.
+        /// </summary>
         private void RestoreOriginalLayers()
         {
             foreach (var pair in storedLayers)
@@ -57,7 +63,9 @@ namespace Jungle.Actions
 
             storedLayers.Clear();
         }
-
+        /// <summary>
+        /// Extracts the first layer index contained within the provided mask.
+        /// </summary>
         private int GetFirstLayerFromMask(LayerMask layerMask)
         {
             int bitmask = layerMask.value;
@@ -76,7 +84,9 @@ namespace Jungle.Actions
 
 
         private int previousLayerValue;
-
+        /// <summary>
+        /// Keeps the editor field constrained to a single selected layer.
+        /// </summary>
         private void EnsureSingleLayerSelection()
         {
             if (targetLayer.value == 0) return; // No layer selected

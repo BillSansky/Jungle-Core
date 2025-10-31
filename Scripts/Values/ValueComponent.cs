@@ -11,7 +11,9 @@ namespace Jungle.Values
     {
         /// <inheritdoc />
         public abstract T Value();
-
+        /// <summary>
+        /// Assigns a new value to the component's underlying data source.
+        /// </summary>
         public abstract void SetValue(T value);
 
         public abstract bool HasMultipleValues { get; }
@@ -42,12 +44,16 @@ namespace Jungle.Values
         /// </summary>
         /// <param name="value">New list reference.</param>
         protected abstract void SetItems(IReadOnlyList<TElement> value);
-
+        /// <summary>
+        /// Returns the list currently exposed by the component.
+        /// </summary>
         public override IReadOnlyList<TElement> Value()
         {
             return Items;
         }
-
+        /// <summary>
+        /// Replaces the component's list with the provided collection.
+        /// </summary>
         public override void SetValue(IReadOnlyList<TElement> value)
         {
             SetItems(value);
@@ -77,7 +83,9 @@ namespace Jungle.Values
         private List<TElement> values = new();
 
         protected override IReadOnlyList<TElement> Items => values;
-
+        /// <summary>
+        /// Copies the supplied collection into the serialized backing list.
+        /// </summary>
         protected override void SetItems(IReadOnlyList<TElement> value)
         {
             if (value is List<TElement> list)

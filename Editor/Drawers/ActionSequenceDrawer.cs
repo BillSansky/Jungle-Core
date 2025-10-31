@@ -11,11 +11,16 @@ using Debug = UnityEngine.Debug;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Renders the inspector for a SequenceAction, including controls and a timeline preview.
+    /// </summary>
     [CustomPropertyDrawer(typeof(SequenceAction))]
     public class ActionSequenceDrawer : PropertyDrawer
     {
         private const float LabelColumnWidth = 220f;
-
+        /// <summary>
+        /// Builds the property field UI for the drawer.
+        /// </summary>
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var root = new VisualElement();
@@ -51,8 +56,9 @@ namespace Jungle.Editor
             root.Bind(property.serializedObject);
             return root;
         }
-
-
+        /// <summary>
+        /// Builds the visual timeline that previews how SequenceAction steps play back in the editor.
+        /// </summary>
         private sealed class ActionSequenceTimeline : VisualElement
         {
             private const float PixelsPerSecond = 80f;
@@ -70,7 +76,9 @@ namespace Jungle.Editor
 
             private float currentTimelineWidth = MinimumTimelineWidth;
             private DragState currentDrag;
-
+            /// <summary>
+            /// Tracks the pointer information for a step bar while the user drags or resizes it.
+            /// </summary>
             private sealed class DragState
             {
                 public TimelineEntry Entry;
@@ -83,7 +91,9 @@ namespace Jungle.Editor
                 public float StartValue;
                 public float BaseStartTime;
             }
-
+            /// <summary>
+            /// Enumerates the DragMode values.
+            /// </summary>
             private enum DragMode
             {
                 MoveStart,
@@ -166,7 +176,9 @@ namespace Jungle.Editor
                 var sequenceLimitCopy = property.FindPropertyRelative(nameof(SequenceAction.SequenceTimeLimit)).Copy();
                 this.TrackPropertyValue(sequenceLimitCopy, _ => Refresh());
             }
-
+            /// <summary>
+            /// Refreshes the visual timeline to match the current sequence data.
+            /// </summary>
             private void Refresh()
             {
                 serializedObject.UpdateIfRequiredOrScript();
@@ -214,7 +226,9 @@ namespace Jungle.Editor
                     modeInfoLabel.text = "Sequence runs once through all steps.";
                 }
             }
-
+            /// <summary>
+            /// Creates the legend container that explains timeline colors.
+            /// </summary>
             private void CreateLegend()
             {
                 legendContainer.Clear();
@@ -224,7 +238,9 @@ namespace Jungle.Editor
                 legendContainer.Add(CreateLegendEntry(new Color(0.95f, 0.67f, 0.25f, 0.9f), "Loops"));
                 legendContainer.Add(CreateLegendEntry(new Color(0.4f, 0.4f, 0.4f, 0.9f), "Unknown duration"));
             }
-
+            /// <summary>
+            /// Creates a single legend entry describing a step state.
+            /// </summary>
             private static VisualElement CreateLegendEntry(Color color, string label)
             {
                 var entry = new VisualElement();
@@ -252,7 +268,9 @@ namespace Jungle.Editor
                 entry.Add(labelElement);
                 return entry;
             }
-
+            /// <summary>
+            /// Builds the timeline rows for each sequence step.
+            /// </summary>
             private void BuildRows(List<TimelineEntry> entries, float totalDuration, float? sequenceTimeLimit, bool hasSequenceTimeLimit)
             {
                 var fallbackWidth = entries.Count > 0 ? Mathf.Max(totalDuration / entries.Count, 1f) : 1f;
@@ -455,7 +473,9 @@ namespace Jungle.Editor
 
                 rowsContainer.Add(timelineContainer);
             }
-
+            /// <summary>
+            /// Creates a UI label for a loop iteration marker.
+            /// </summary>
             private static TimelineEntry CreateLoopIterationEntry(TimelineEntry originalEntry, int iterationIndex, float iterationStart)
             {
                 var iterationEntry = new TimelineEntry
@@ -484,6 +504,9 @@ namespace Jungle.Editor
             }
 
             // Fixed, deterministic fallback placement without undefined variables.
+            /// <summary>
+            /// Calculates provisional start times when offsets are missing.
+            /// </summary>
             private static float[] CalculateFallbackStartTimes(IReadOnlyList<TimelineEntry> entries, float fallbackWidth)
             {
                 var result = new float[entries.Count];
@@ -527,7 +550,9 @@ namespace Jungle.Editor
 
                 return result;
             }
-
+            /// <summary>
+            /// Creates the visual bar representing a step's run window.
+            /// </summary>
             private VisualElement CreateBar(TimelineEntry entry, out Label label)
             {
                 // Determine base color from properties
@@ -648,7 +673,9 @@ namespace Jungle.Editor
 
                 return bar;
             }
-
+            /// <summary>
+            /// Configures pointer interactions for a timeline bar.
+            /// </summary>
             private void SetupBarInteractions(VisualElement bar, Label label, TimelineEntry entry)
             {
                 if (entry.BaseStartTime.HasValue && !entry.IsLoopIteration && entry.StartDelayProperty != null)
@@ -817,7 +844,9 @@ namespace Jungle.Editor
                     });
                 }
             }
-
+            /// <summary>
+            /// Begins the drag interaction for a timeline bar.
+            /// </summary>
             private void BeginDrag(TimelineEntry entry, DragMode mode, VisualElement bar, Label label, int pointerId, Vector2 position, float startValue, VisualElement pointerOwner)
             {
                 currentDrag = new DragState
@@ -842,7 +871,9 @@ namespace Jungle.Editor
                     Undo.RecordObjects(targets, description);
                 }
             }
-
+            /// <summary>
+            /// Updates the bar's position while it is being dragged.
+            /// </summary>
             private void UpdateMoveDrag(Vector2 position)
             {
                 var drag = currentDrag;
@@ -865,7 +896,9 @@ namespace Jungle.Editor
                     drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
                 }
             }
-
+            /// <summary>
+            /// Updates the bar's duration while the resize handle is dragged.
+            /// </summary>
             private void UpdateResizeDrag(Vector2 position)
             {
                 var drag = currentDrag;
@@ -886,7 +919,9 @@ namespace Jungle.Editor
                     drag.LabelElement.text = BuildTimingLabel(drag.Entry.StartTime, drag.Entry.Duration, drag.Entry);
                 }
             }
-
+            /// <summary>
+            /// Finalizes the drag interaction and applies the new timing.
+            /// </summary>
             private void EndDrag(bool refresh)
             {
                 var drag = currentDrag;
@@ -905,7 +940,9 @@ namespace Jungle.Editor
                     }
                 }
             }
-
+            /// <summary>
+            /// Refreshes the bar's visuals to reflect current timings.
+            /// </summary>
             private static void UpdateBarVisual(VisualElement bar, TimelineEntry entry)
             {
                 var startPixels = Mathf.Max(0f, entry.DisplayStart) * PixelsPerSecond;
@@ -914,7 +951,9 @@ namespace Jungle.Editor
                 bar.style.left = startPixels;
                 bar.style.width = widthPixels;
             }
-
+            /// <summary>
+            /// Builds the tooltip label describing the bar's timing.
+            /// </summary>
             private static string BuildInfoLabel(TimelineEntry entry)
             {
                 var info = entry.Blocking ? "Blocking" : "Parallel";
@@ -956,7 +995,9 @@ namespace Jungle.Editor
                 return info;
             }
         }
-
+        /// <summary>
+        /// Builds the list of timeline entries shown in the drawer.
+        /// </summary>
         private static List<TimelineEntry> BuildEntries(SerializedProperty stepsProp, float sequenceStartDelay)
         {
             var entries = new List<TimelineEntry>();
@@ -1059,7 +1100,9 @@ namespace Jungle.Editor
 
             return entries;
         }
-
+        /// <summary>
+        /// Determines the total duration that the timeline should display.
+        /// </summary>
         private static float DetermineTimelineDuration(List<TimelineEntry> entries, SerializedProperty hasSequenceTimeLimitProp, SerializedProperty sequenceTimeLimitProp)
         {
             var max = 0f;
@@ -1095,7 +1138,9 @@ namespace Jungle.Editor
 
             return max;
         }
-
+        /// <summary>
+        /// Builds the formatted name shown for a step.
+        /// </summary>
         private static string BuildStepDisplayName(SerializedProperty actionProp, int index)
         {
             if (string.IsNullOrEmpty(actionProp.managedReferenceFullTypename))
@@ -1118,7 +1163,9 @@ namespace Jungle.Editor
             displayName = displayName.Replace('+', '.');
             return ObjectNames.NicifyVariableName(displayName);
         }
-
+        /// <summary>
+        /// Builds the timing summary label for a step.
+        /// </summary>
         private static string BuildTimingLabel(float? startTime, float? duration, TimelineEntry entry)
         {
             var startLabel = startTime.HasValue
@@ -1163,7 +1210,9 @@ namespace Jungle.Editor
 
             return entry.IsLoopIteration ? durationLabel : $"{startLabel}\n{durationLabel}";
         }
-
+        /// <summary>
+        /// Caches the flattened timing details used to draw a single step on the timeline.
+        /// </summary>
         private sealed class TimelineEntry
         {
             public string DisplayName = string.Empty;

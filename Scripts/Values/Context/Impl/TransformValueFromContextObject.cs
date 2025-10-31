@@ -5,6 +5,9 @@ using Jungle.Values.GameDev;
 
 namespace Jungle.Values.Context.Impl
 {
+    /// <summary>
+    /// Resolves a Transform reference from the context object lookup.
+    /// </summary>
     [Serializable]
     public class TransformValueFromContextObject : ValueFromObjectContext<Transform>, ITransformValue
     {

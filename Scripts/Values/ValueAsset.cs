@@ -11,7 +11,9 @@ namespace Jungle.Values
     {
         /// <inheritdoc />
         public abstract T Value();
-
+        /// <summary>
+        /// Updates the stored value inside the ScriptableObject asset.
+        /// </summary>
         public abstract void SetValue(T value);
 
         public abstract bool HasMultipleValues { get; }
@@ -42,12 +44,16 @@ namespace Jungle.Values
         /// </summary>
         /// <param name="value">New list reference.</param>
         protected abstract void SetItems(IReadOnlyList<TElement> value);
-
+        /// <summary>
+        /// Returns the list maintained by the asset.
+        /// </summary>
         public override IReadOnlyList<TElement> Value()
         {
             return Items;
         }
-
+        /// <summary>
+        /// Replaces the asset's list contents with the supplied collection.
+        /// </summary>
         public override void SetValue(IReadOnlyList<TElement> value)
         {
             SetItems(value);
@@ -77,7 +83,9 @@ namespace Jungle.Values
         private List<TElement> values = new();
 
         protected override IReadOnlyList<TElement> Items => values;
-
+        /// <summary>
+        /// Copies the provided values into the serialized list backing the asset.
+        /// </summary>
         protected override void SetItems(IReadOnlyList<TElement> value)
         {
             if (value is List<TElement> list)

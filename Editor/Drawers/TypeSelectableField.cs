@@ -11,6 +11,9 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Wraps a VisualElement control that offers filtered type selection with search and favorites.
+    /// </summary>
     public sealed class TypeSelectableField : BindableElement
     {
         private bool allowRowToggle;
@@ -178,8 +181,9 @@ namespace Jungle.Editor
         }
 
         // ---------------- Buttons ----------------
-
-
+        /// <summary>
+        /// Handles the OnPickOrSwapClicked event.
+        /// </summary>
         private void OnPickOrSwapClicked()
         {
             if (prop == null) return;
@@ -318,6 +322,9 @@ namespace Jungle.Editor
         }
 
 // Helpers (put inside the same class)
+        /// <summary>
+        /// Resolves the GameObject that provides the editing context.
+        /// </summary>
         private static GameObject ResolveContextGameObject(SerializedProperty p)
         {
             var target = p.serializedObject.targetObject;
@@ -325,7 +332,9 @@ namespace Jungle.Editor
             if (target is GameObject go) return go;
             return Selection.activeGameObject; // fallback
         }
-
+        /// <summary>
+        /// Handles the OnClearClicked event.
+        /// </summary>
         private void OnClearClicked()
         {
             if (prop == null) return;
@@ -343,7 +352,9 @@ namespace Jungle.Editor
             RepaintContentOnly();
             RefreshButtons();
         }
-
+        /// <summary>
+        /// Refreshes the button states to reflect the current selection.
+        /// </summary>
         private void RefreshButtons()
         {
             if (prop == null) return;
@@ -367,7 +378,9 @@ namespace Jungle.Editor
           
             btnClear.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
         }
-
+        /// <summary>
+        /// Captures the current managed reference information for later comparison.
+        /// </summary>
         private void CaptureReferenceState()
         {
             if (prop == null) return;
@@ -382,7 +395,9 @@ namespace Jungle.Editor
                 lastObjectRefValue = prop.objectReferenceValue;
             }
         }
-
+        /// <summary>
+        /// Determines whether the reference structure changed since the last capture.
+        /// </summary>
         private bool HasStructuralChange()
         {
             if (prop == null) return false;
@@ -416,7 +431,9 @@ namespace Jungle.Editor
         }
 
         // --------------- Content rendering ---------------
-
+        /// <summary>
+        /// Requests a repaint without rebuilding the surrounding inspector.
+        /// </summary>
         private void RepaintContentOnly()
         {
             content.Clear();
@@ -515,7 +532,9 @@ namespace Jungle.Editor
                 content.Add(of);
             }
         }
-
+        /// <summary>
+        /// Returns a human-readable name for a managed reference type.
+        /// </summary>
         private static string GetManagedRefNiceName(SerializedProperty p)
         {
             // managedReferenceFullTypename is typically "AssemblyName Type.Full.Name"
@@ -527,7 +546,9 @@ namespace Jungle.Editor
             var shortName = dot >= 0 ? typeFull.Substring(dot + 1) : typeFull;
             return ObjectNames.NicifyVariableName(shortName);
         }
-
+        /// <summary>
+        /// Renders child property fields into the provided container.
+        /// </summary>
         private static void RenderManagedRefChildrenInto(SerializedProperty managedRefProp, VisualElement host, bool hideChildLabels = false, string parentLabel = null, FieldInfo fieldInfo = null)
         {
             if (managedRefProp == null) return;
@@ -675,7 +696,9 @@ namespace Jungle.Editor
             host.Add(imguiContainer);
             return true;
         }
-
+        /// <summary>
+        /// Returns the label that should be shown for the managed reference drawer.
+        /// </summary>
         private static GUIContent GetDrawerLabel(SerializedProperty managedRefProp, bool hideChildLabels, string parentLabel)
         {
             if (hideChildLabels)
@@ -685,12 +708,16 @@ namespace Jungle.Editor
 
             return new GUIContent(ObjectNames.NicifyVariableName(managedRefProp.name));
         }
-
+        /// <summary>
+        /// Bootstraps the type-selection drawer so it can load filters, menus, and icons before display.
+        /// </summary>
         private static class DrawerInitializer
         {
             private static readonly FieldInfo FieldInfoField = typeof(PropertyDrawer)
                 .GetField("m_FieldInfo", BindingFlags.Instance | BindingFlags.NonPublic);
-
+            /// <summary>
+            /// Initializes the cached drawer metadata.
+            /// </summary>
             public static void Initialize(PropertyDrawer drawer, FieldInfo fieldInfo)
             {
                 if (FieldInfoField != null)
@@ -699,9 +726,14 @@ namespace Jungle.Editor
                 }
             }
         }
-
+        /// <summary>
+        /// Resolves which property drawer should be used for a value type when building the inspector.
+        /// </summary>
         private static class CustomDrawerResolver
         {
+            /// <summary>
+            /// Represents the DrawerInfo data.
+            /// </summary>
             private struct DrawerInfo
             {
                 public Type TargetType;
@@ -717,7 +749,9 @@ namespace Jungle.Editor
 
             private static readonly FieldInfo CustomDrawerUseForChildrenField = typeof(CustomPropertyDrawer)
                 .GetField("m_UseForChildren", BindingFlags.Instance | BindingFlags.NonPublic);
-
+            /// <summary>
+            /// Returns the property drawer type that should render this reference.
+            /// </summary>
             public static Type GetDrawerType(Type runtimeType)
             {
                 if (runtimeType == null)
@@ -737,7 +771,9 @@ namespace Jungle.Editor
 
                 return null;
             }
-
+            /// <summary>
+            /// Ensures the managed reference drawer cache has been populated.
+            /// </summary>
             private static void EnsureCache()
             {
                 if (cacheInitialized)
@@ -766,7 +802,9 @@ namespace Jungle.Editor
                     }
                 }
             }
-
+            /// <summary>
+            /// Checks whether the cache entry matches the requested type.
+            /// </summary>
             private static bool Matches(DrawerInfo info, Type runtimeType)
             {
                 if (info.TargetType == runtimeType)
@@ -796,7 +834,9 @@ namespace Jungle.Editor
 
                 return false;
             }
-
+            /// <summary>
+            /// Determines whether the target type inherits from the specified generic type.
+            /// </summary>
             private static bool InheritsFromGeneric(Type type, Type genericDefinition)
             {
                 while (type != null && type != typeof(object))
@@ -811,12 +851,16 @@ namespace Jungle.Editor
 
                 return false;
             }
-
+            /// <summary>
+            /// Returns the target type associated with this cache entry.
+            /// </summary>
             private static Type GetTargetType(CustomPropertyDrawer attribute)
             {
                 return (Type)CustomDrawerTypeField?.GetValue(attribute);
             }
-
+            /// <summary>
+            /// Indicates whether the drawer should apply to child properties.
+            /// </summary>
             private static bool GetUseForChildren(CustomPropertyDrawer attribute)
             {
                 return CustomDrawerUseForChildrenField != null &&

@@ -95,7 +95,9 @@ namespace Jungle.Editor
         }
 
         // ---------- internals ----------
-
+        /// <summary>
+        /// Attempts to resolve icon tokens from the supplied name.
+        /// </summary>
         private static Texture2D TryTokens(IEnumerable<string> tokens, Func<string, Texture2D> tryOne)
         {
             foreach (var tok in tokens)
@@ -105,7 +107,9 @@ namespace Jungle.Editor
             }
             return null;
         }
-
+        /// <summary>
+        /// Loads an icon texture from the Jungle icon resources.
+        /// </summary>
         private static Texture2D LoadFromJungleIcons(string nameOrPathNoExt)
         {
             if (string.IsNullOrEmpty(JungleIconsRoot)) return null;
@@ -131,13 +135,17 @@ namespace Jungle.Editor
             }
             return null;
         }
-
+        /// <summary>
+        /// Attempts to match the token against built-in Jungle icon names.
+        /// </summary>
         private static Texture2D TryJungleToken(string token)
         {
             // Try token file directly inside JungleIconsRoot
             return LoadFromJungleIcons(token);
         }
-
+        /// <summary>
+        /// Attempts to resolve the token using Unity's builtin icons.
+        /// </summary>
         private static Texture2D TryBuiltinToken(string token)
         {
             foreach (var key in BuiltinKeysFor(token))
@@ -171,7 +179,9 @@ namespace Jungle.Editor
             }
             return null;
         }
-
+        /// <summary>
+        /// Returns the builtin icon keys that match the provided token.
+        /// </summary>
         private static IEnumerable<string> BuiltinKeysFor(string token)
         {
             token = token.ToLowerInvariant();
@@ -254,7 +264,9 @@ namespace Jungle.Editor
             }
             return Array.Empty<string>();
         }
-
+        /// <summary>
+        /// Splits the search string into lookup tokens.
+        /// </summary>
         private static IEnumerable<string> GetTokens(Type t)
         {
             foreach (var tok in SplitPascalCase(t.Name)) yield return tok;
@@ -265,14 +277,18 @@ namespace Jungle.Editor
                         yield return tok;
             }
         }
-
+        /// <summary>
+        /// Splits a PascalCase string into individual words.
+        /// </summary>
         private static IEnumerable<string> SplitPascalCase(string s)
         {
             if (string.IsNullOrEmpty(s)) yield break;
             foreach (Match m in Regex.Matches(s, @"([A-Z]+(?![a-z]))|([A-Z]?[a-z]+)|(\d+)"))
                 yield return m.Value.ToLowerInvariant();
         }
-
+        /// <summary>
+        /// Converts the provided tokens back into PascalCase.
+        /// </summary>
         private static string ToPascal(string token)
             => string.IsNullOrEmpty(token) ? token : char.ToUpperInvariant(token[0]) + token.Substring(1);
     }

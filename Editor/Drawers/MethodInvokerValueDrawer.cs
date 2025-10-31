@@ -10,9 +10,15 @@ using UnityEngine.UIElements;
 
 namespace Jungle.Values.Editor
 {
+    /// <summary>
+    /// Draws the UI for selecting a component method to invoke as a value source.
+    /// </summary>
     [CustomPropertyDrawer(typeof(ClassMembersValue<>),true)]
     public class MethodInvokerValueDrawer : PropertyDrawer
     {
+        /// <summary>
+        /// Builds the property field UI for the drawer.
+        /// </summary>
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             
@@ -68,7 +74,9 @@ namespace Jungle.Values.Editor
             
             return container;
         }
-
+        /// <summary>
+        /// Updates the dropdown choices based on the selected type.
+        /// </summary>
         private void UpdateMethodDropdown(SerializedProperty componentProp, SerializedProperty memberNameProp, DropdownField dropdown, Type returnType)
         {
             Component component = componentProp.objectReferenceValue as Component;
@@ -97,7 +105,9 @@ namespace Jungle.Values.Editor
             dropdown.index = currentIndex >= 0 ? currentIndex : 0;
             dropdown.value = dropdown.choices[dropdown.index];
         }
-
+        /// <summary>
+        /// Returns the return type that the method invocation should produce.
+        /// </summary>
         private Type GetExpectedReturnType(SerializedProperty property)
         {
             // Try to get the actual runtime type from the property
@@ -118,7 +128,9 @@ namespace Jungle.Values.Editor
             Type fieldType = fieldInfo.FieldType;
             return GetReturnTypeFromMethodInvokerType(fieldType);
         }
-
+        /// <summary>
+        /// Derives the expected return type from the method invoker configuration.
+        /// </summary>
         private Type GetReturnTypeFromMethodInvokerType(Type type)
         {
             // Check if this type is or inherits from ClassMembersValue<T>
@@ -135,7 +147,9 @@ namespace Jungle.Values.Editor
             // If no generic type found, return void
             return typeof(void);
         }
-
+        /// <summary>
+        /// Collects all compatible methods from the target object.
+        /// </summary>
         private List<string> GetAvailableMethods(Component component, Type expectedReturnType)
         {
             if (component == null)

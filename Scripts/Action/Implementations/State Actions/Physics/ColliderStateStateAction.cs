@@ -5,7 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    
+    /// <summary>
+    /// Enumerates the ColliderStateModification values.
+    /// </summary>
     public enum ColliderStateModification
     {
         Enable,
@@ -13,7 +15,9 @@ namespace Jungle.Actions
         Original,
         Toggle
     }
-    
+    /// <summary>
+    /// Enables or disables Collider components when the owning state enters or exits.
+    /// </summary>
     [System.Serializable]
     public class ColliderStateStateAction : IStateAction
     {
@@ -22,14 +26,17 @@ namespace Jungle.Actions
         [SerializeField] private ColliderStateModification onCompleteModification;
 
         private readonly Dictionary<Collider, bool> originalStates = new();
-      
-       
+        /// <summary>
+        /// Handles the OnStateEnter event.
+        /// </summary>
         public void OnStateEnter()
         {
             StoreOriginalState();
             ApplyColliderStates(onExecuteModification);
         }
-
+        /// <summary>
+        /// Captures the initial enabled state for each collider so it can be restored later.
+        /// </summary>
         private void StoreOriginalState()
         {
             originalStates.Clear();
@@ -38,14 +45,17 @@ namespace Jungle.Actions
                 originalStates[collider] = collider.enabled;
             }
         }
-
+        /// <summary>
+        /// Handles the OnStateExit event.
+        /// </summary>
         public void OnStateExit()
         {
 
             ApplyColliderStates(onCompleteModification);
         }
-
-
+        /// <summary>
+        /// Applies the requested modification to every targeted collider.
+        /// </summary>
         private void ApplyColliderStates(ColliderStateModification action)
         {
             foreach (var collider in targetColliders.Values)

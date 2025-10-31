@@ -7,14 +7,18 @@ using Jungle.Editor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-
+/// <summary>
+/// Implements the popup window that lists types users can assign to Jungle references.
+/// </summary>
 public class TypePickerDropdown : AdvancedDropdown
 {
     private readonly Type baseType;
     private readonly Action<Type> onPicked;
 
     private static readonly Dictionary<Type, Meta> MetaCache = new();
-
+    /// <summary>
+    /// Represents the Meta data.
+    /// </summary>
     private struct Meta
     {
         public string Display;
@@ -32,13 +36,17 @@ public class TypePickerDropdown : AdvancedDropdown
         // Wider so description isn’t immediately clipped
         minimumSize = new Vector2(520, 540);
     }
-
+    /// <summary>
+    /// Displays the window.
+    /// </summary>
     public static void Show(Rect anchorWorldRect, Type baseType, Action<Type> onPicked)
     {
         var dd = new TypePickerDropdown(baseType, onPicked);
         dd.Show(anchorWorldRect);
     }
-
+    /// <summary>
+    /// Builds the root visual tree for the dropdown.
+    /// </summary>
     protected override AdvancedDropdownItem BuildRoot()
     {
         var root = new AdvancedDropdownItem(baseType.Name);
@@ -82,23 +90,31 @@ public class TypePickerDropdown : AdvancedDropdown
 
         return root;
     }
-
+    /// <summary>
+    /// Handles selection of a type item.
+    /// </summary>
     protected override void ItemSelected(AdvancedDropdownItem item)
     {
         if (item is TypeItem ti)
             onPicked?.Invoke(ti.Type);
     }
-
+    /// <summary>
+    /// Represents one selectable type entry inside the type picker list.
+    /// </summary>
     private sealed class TypeItem : AdvancedDropdownItem
     {
         public readonly Type Type;
-
+        /// <summary>
+        /// Initializes the dropdown item with its display name and backing type.
+        /// </summary>
         public TypeItem(string name, Type type) : base(name)
         {
             Type = type;
         }
     }
-
+    /// <summary>
+    /// Retrieves metadata describing the type picker entry.
+    /// </summary>
     private static Meta GetMeta(Type t)
     {
         if (MetaCache.TryGetValue(t, out var m)) return m;
@@ -128,7 +144,9 @@ public class TypePickerDropdown : AdvancedDropdown
         MetaCache[t] = m;
         return m;
     }
-    
+    /// <summary>
+    /// Truncates the label to a single line with ellipsis.
+    /// </summary>
     private static string TruncateSingleLine(string s, int maxChars)
     {
         if (string.IsNullOrEmpty(s) || s.Length <= maxChars) return s;
