@@ -7,6 +7,7 @@ using UnityEngine;
 namespace Jungle.Values.UnityTypes
 {
     [Serializable]
+    [JungleClassInfo("Scale From Transform", "Reads the local scale from a referenced transform value.", null, "Values/Unity Types")]
     public class ScaleFromTransformValue : IVector3Value
     {
 
@@ -18,7 +19,7 @@ namespace Jungle.Values.UnityTypes
             return transform.LocalScale;
         }
 
-        public bool HasMultipleValues =>transform.HasMultipleValues;
+        public bool HasMultipleValues => transform.HasMultipleValues;
 
         public IEnumerable<Vector3> Values
         {

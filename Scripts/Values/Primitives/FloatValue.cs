@@ -1,4 +1,5 @@
 using System;
+using Jungle.Attributes;
 using Jungle.Values;
 
 namespace Jungle.Values.Primitives
@@ -8,6 +9,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
+    [JungleClassInfo("Float Value", "Stores a floating-point number directly on the owner.", null, "Values/Primitives", true)]
     public class FloatValue : LocalValue<float>, IFloatValue
     {
         public FloatValue()
@@ -24,6 +26,7 @@ namespace Jungle.Values.Primitives
     }
 
     [Serializable]
+    [JungleClassInfo("Float Member Value", "Returns a floating-point number from a component field, property, or method.", null, "Values/Primitives")]
     public class FloatClassMembersValue : ClassMembersValue<float>, IFloatValue
     {
     }

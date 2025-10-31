@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
+    [JungleClassInfo("Vector2Int Value Component", "Component exposing a 2D integer vector.", null, "Values/Unity Types")]
     public class Vector2IntValueComponent : ValueComponent<Vector2Int>
     {
         [SerializeField]
@@ -20,17 +22,20 @@ namespace Jungle.Values.UnityTypes
         }
     }
 
+    [JungleClassInfo("Vector2Int List Component", "Component exposing a list of 2D integer vectors.", null, "Values/Unity Types")]
     public class Vector2IntListValueComponent : SerializedValueListComponent<Vector2Int>
     {
     }
 
     [Serializable]
+    [JungleClassInfo("Vector2Int Value From Component", "Reads a 2D integer vector from a Vector2IntValueComponent.", null, "Values/Unity Types")]
     public class Vector2IntValueFromComponent :
         ValueFromComponent<Vector2Int, Vector2IntValueComponent>, IVector2IntValue
     {
     }
 
     [Serializable]
+    [JungleClassInfo("Vector2Int List From Component", "Reads 2D integer vectors from a Vector2IntListValueComponent.", null, "Values/Unity Types")]
     public class Vector2IntListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Vector2Int>, Vector2IntListValueComponent>
     {

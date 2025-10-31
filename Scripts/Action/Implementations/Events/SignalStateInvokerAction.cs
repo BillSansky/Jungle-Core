@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Sends signals when the state enters and exits.", "d_EventSystem Icon")]
+    [JungleClassInfo("Signal State Invoker", "Sends signals when the state enters and exits.", "d_EventSystem Icon", "Actions/Events")]
     [Serializable]
     public class SignalStateInvokerAction : IStateAction
     {

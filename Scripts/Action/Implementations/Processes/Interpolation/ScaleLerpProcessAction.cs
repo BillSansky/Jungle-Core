@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool")]
+    [JungleClassInfo("Scale Lerp Process", "Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool", "Actions/Process")]
     [Serializable]
     public class ScaleLerpProcessAction : LerpProcessAction<Vector3>
     {

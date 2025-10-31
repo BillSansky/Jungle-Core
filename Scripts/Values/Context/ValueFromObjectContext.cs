@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 public enum ComponentRetrievalStrategy
@@ -8,6 +9,7 @@ public enum ComponentRetrievalStrategy
     InObjectAndChildren,
 }
 
+[JungleClassInfo("Value From Object Context", "Extracts values from GameObject-based contexts.", null, "Values/Context")]
 public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
 {
     public abstract ComponentRetrievalStrategy Strategy { get; }

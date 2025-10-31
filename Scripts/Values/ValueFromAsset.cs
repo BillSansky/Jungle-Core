@@ -1,4 +1,5 @@
 using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values
@@ -9,6 +10,7 @@ namespace Jungle.Values
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
     /// <typeparam name="TAsset">Concrete asset type used to fetch the value.</typeparam>
     [Serializable]
+    [JungleClassInfo("Value From Asset", "Reads a value provided by a ScriptableObject asset.", null, "Values/Core")]
     public class ValueFromAsset<T, TAsset> : ISettableValue<T>
         where TAsset : ValueAssetBase<T>
     {

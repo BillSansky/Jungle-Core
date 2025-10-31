@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Reflection;
+using Jungle.Attributes;
 using UnityEngine;
 using Component = UnityEngine.Component;
 
 namespace Jungle.Values
 {
     [Serializable]
+    [JungleClassInfo("Class Member Value", "Invokes a component member to produce a value.", null, "Values/Core")]
     public class ClassMembersValue<T> : IValue<T>
     {
         [SerializeReference] private IComponentReference component;

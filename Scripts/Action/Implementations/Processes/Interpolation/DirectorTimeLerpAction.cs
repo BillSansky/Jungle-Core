@@ -7,8 +7,10 @@ using UnityEngine.Playables;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "Director Time Lerp Process",
         "Lerps a PlayableDirector's time from start to end using interpolation curves and loop strategies.",
-        "d_AnimationClip")]
+        "d_AnimationClip",
+        "Actions/Process")]
     [Serializable]
     public class DirectorTimeLerpAction : LerpProcessAction<double>
     {

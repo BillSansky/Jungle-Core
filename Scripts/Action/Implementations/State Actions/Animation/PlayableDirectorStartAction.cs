@@ -7,8 +7,10 @@ using UnityEngine.Playables;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "Playable Director Start Action",
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
-        "d_AnimationClip")]
+        "d_AnimationClip",
+        "Actions/State")]
     [Serializable]
     public class PlayableDirectorStartAction : IStateAction
     {

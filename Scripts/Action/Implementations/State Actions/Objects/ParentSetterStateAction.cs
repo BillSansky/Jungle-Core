@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jungle.Actions;
@@ -7,10 +8,12 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
     [JungleClassInfo(
-        "Sets the parent of targets  when the action starts. Can optionally reset to original parent when stopped.",
-        "d_UnityEditor.HierarchyWindow")]
+        "Parent Setter Action",
+        "Sets the parent of targets when the action starts and optionally restores the original parent on stop.",
+        "d_UnityEditor.HierarchyWindow",
+        "Actions/State")]
     public class ParentSetterStateAction : IStateAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransforms = new TransformLocalValue();

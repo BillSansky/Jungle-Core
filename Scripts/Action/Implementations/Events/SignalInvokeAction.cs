@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Sends a signal to the target receiver when executed.", "d_EventSystem Icon")]
+    [JungleClassInfo("Signal Invoke Action", "Sends a signal to the target receiver when executed.", "d_EventSystem Icon", "Actions/Events")]
     [Serializable]
     public class SignalInvokeAction : IImmediateAction
     {

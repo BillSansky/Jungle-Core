@@ -1,4 +1,5 @@
 ﻿using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Actions
@@ -8,6 +9,7 @@ namespace Jungle.Actions
     /// This allows ProcessRunner instances to be integrated into the Jungle Actions framework.
     /// </summary>
     [Serializable]
+    [JungleClassInfo("External Process Action", "Wraps a ProcessRunner component so it can run as a Jungle process.", null, "Actions/Process")]
     public class ExternalProcess : IProcessAction
     {
         [Tooltip("Reference to the ProcessRunner component that will execute the process.")]

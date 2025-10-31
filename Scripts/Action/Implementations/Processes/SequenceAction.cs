@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jungle.Attributes;
@@ -16,6 +17,7 @@ namespace Jungle.Actions
     /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
      /// </summary>
     [Serializable]
+    [JungleClassInfo("Sequence Action", "Runs a configurable sequence of process steps with delays and time limits.", null, "Actions/Process")]
     public class SequenceAction : IProcessAction
     {
         [SerializeField] public List<Step> Steps = new List<Step>();

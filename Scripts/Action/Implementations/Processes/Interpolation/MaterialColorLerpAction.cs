@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Jungle.Actions;
@@ -8,7 +9,8 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Material Color Lerp Process", "Tweens a renderer material color and restores it on exit.", null, "Actions/Process")]
     public class MaterialColorLerpAction : LerpProcessAction<Color>, IStateAction
     {
         [SerializeField] 
