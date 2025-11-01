@@ -2,6 +2,9 @@
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Defines the loop strategy interface.
+    /// </summary>
 
     public interface ILoopStrategy
     {

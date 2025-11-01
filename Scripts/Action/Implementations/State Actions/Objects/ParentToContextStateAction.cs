@@ -12,6 +12,9 @@ namespace Jungle.Actions
         "Moves a GameObject under a contextual parent transform during the active state.",
         "d_UnityEditor.HierarchyWindow",
         "Actions/State")]
+    /// <summary>
+    /// Implements the parent to context state action action.
+    /// </summary>
     public class ParentToContextStateAction : IStateAction
     {
         [Header("Target Configuration")] [SerializeField]
@@ -27,6 +30,9 @@ namespace Jungle.Actions
         // Cache original parents for potential reversion
         private List<Transform> originalParents = new();
         private bool skipStop;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
@@ -48,6 +54,9 @@ namespace Jungle.Actions
                 t.SetParent(parent, preserveWorldPosition);
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

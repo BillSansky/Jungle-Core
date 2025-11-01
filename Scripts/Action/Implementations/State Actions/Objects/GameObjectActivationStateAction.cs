@@ -12,6 +12,9 @@ namespace Jungle.Actions
         "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
         "d_GameObject Icon",
         "Actions/State")]
+    /// <summary>
+    /// Implements the game object activation state action action.
+    /// </summary>
     [Serializable]
     public class GameObjectActivationStateAction : IStateAction
     {
@@ -27,6 +30,9 @@ namespace Jungle.Actions
         [SerializeField] private ActivationState endAction = ActivationState.Toggle;
 
         private readonly Dictionary<GameObject, bool> originalStates = new();
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
         
 
         public void OnStateEnter()
@@ -34,6 +40,9 @@ namespace Jungle.Actions
             StoreOriginalStates();
             SetObjectStates();
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

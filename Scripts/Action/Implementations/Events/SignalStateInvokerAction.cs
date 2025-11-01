@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Sends signals when the state enters and exits.
+    /// </summary>
     [JungleClassInfo("Signal State Invoker", "Sends signals when the state enters and exits.", "d_EventSystem Icon", "Actions/Events")]
     [Serializable]
     public class SignalStateInvokerAction : IStateAction
@@ -29,11 +32,17 @@ namespace Jungle.Actions
 
         [SerializeField]
         private bool includeInactiveChildren;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
             InvokeSignal(enterSignal, "enter");
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

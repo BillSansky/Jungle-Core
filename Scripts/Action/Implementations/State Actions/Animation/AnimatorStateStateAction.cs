@@ -11,6 +11,9 @@ namespace Jungle.Actions
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
         "d_AnimationClip",
         "Actions/State")]
+    /// <summary>
+    /// Implements the animator state state action action.
+    /// </summary>
     [Serializable]
     public class AnimatorStateStateAction : IStateAction
     {
@@ -24,6 +27,9 @@ namespace Jungle.Actions
         private Animator cachedAnimator;
         private int previousStateHash;
         private float previousNormalizedTime;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
 
         public void OnStateEnter()
@@ -52,6 +58,9 @@ namespace Jungle.Actions
                 animator.Play(targetStateHash, layerIndex.V);
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

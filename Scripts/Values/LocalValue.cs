@@ -33,16 +33,25 @@ namespace Jungle.Values
         {
             this.value = value;
         }
+        /// <summary>
+        /// Gets the value produced by this provider.
+        /// </summary>
         
         public T Value()
         {
             return value;
         }
+        /// <summary>
+        /// Assigns a new value to the provider.
+        /// </summary>
 
         public virtual void SetValue(T value)
         {
             this.value = value;
         }
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public virtual bool HasMultipleValues => false;
     }

@@ -9,6 +9,10 @@ using UnityEngine.UIElements;
 namespace Jungle.Editor
 {
     [CustomPropertyDrawer(typeof(SequenceAction.Step))]
+    /// <summary>
+    /// Property drawer that renders individual <see cref="SequenceAction.Step"/>
+    /// entries with contextual loop and timing controls.
+    /// </summary>
     public class ActionSequenceStepDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)

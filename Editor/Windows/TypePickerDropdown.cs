@@ -8,6 +8,10 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+/// <summary>
+/// Editor dropdown that lists concrete subclasses of a requested base type using
+/// <see cref="JungleClassInfoAttribute"/> metadata for naming and grouping.
+/// </summary>
 public class TypePickerDropdown : AdvancedDropdown
 {
     private readonly Type baseType;
@@ -89,6 +93,9 @@ public class TypePickerDropdown : AdvancedDropdown
             onPicked?.Invoke(ti.Type);
     }
 
+    /// <summary>
+    /// Dropdown item that retains the <see cref="Type"/> represented by the row.
+    /// </summary>
     private sealed class TypeItem : AdvancedDropdownItem
     {
         public readonly Type Type;

@@ -12,6 +12,10 @@ using Debug = UnityEngine.Debug;
 namespace Jungle.Editor
 {
     [CustomPropertyDrawer(typeof(SequenceAction))]
+    /// <summary>
+    /// Custom inspector drawer that visualizes <see cref="SequenceAction"/> steps
+    /// with a collapsible timeline for quick sequencing tweaks.
+    /// </summary>
     public class ActionSequenceDrawer : PropertyDrawer
     {
         private const float LabelColumnWidth = 220f;
@@ -53,6 +57,10 @@ namespace Jungle.Editor
         }
 
 
+        /// <summary>
+        /// VisualElement that renders a horizontal timeline of sequence steps and
+        /// supports dragging to adjust their timing.
+        /// </summary>
         private sealed class ActionSequenceTimeline : VisualElement
         {
             private const float PixelsPerSecond = 80f;

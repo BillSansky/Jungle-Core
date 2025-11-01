@@ -9,6 +9,9 @@ namespace Jungle.Attributes
     [AttributeUsage(AttributeTargets.Field)]
     public class MaterialPropertyNameAttribute : PropertyAttribute
     {
+        /// <summary>
+        /// Lists the supported material property categories.
+        /// </summary>
         public enum PropertyType
         {
             Float,
@@ -19,14 +22,17 @@ namespace Jungle.Attributes
         }
 
         /// <summary>
-        /// The name of the field containing the IRendererValue reference
+        /// Gets the name of the field containing the renderer value reference.
         /// </summary>
         public string RendererFieldName { get; }
         
         /// <summary>
-        /// Filter properties by type
+        /// Gets the material property filter applied to the dropdown.
         /// </summary>
         public PropertyType FilterType { get; }
+        /// <summary>
+        /// Initializes the attribute with the renderer field name and optional filter.
+        /// </summary>
         
         public MaterialPropertyNameAttribute(string rendererFieldName, PropertyType filterType = PropertyType.All)
         {

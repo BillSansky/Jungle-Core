@@ -11,6 +11,9 @@ namespace Jungle.Actions
         "Lerps a PlayableDirector's time from start to end using interpolation curves and loop strategies.",
         "d_AnimationClip",
         "Actions/Process")]
+    /// <summary>
+    /// Implements the director time lerp action action.
+    /// </summary>
     [Serializable]
     public class DirectorTimeLerpAction : LerpProcessAction<double>
     {

@@ -9,6 +9,10 @@ using Jungle.Attributes;
 
 namespace Jungle.Editor
 {
+    /// <summary>
+    /// Popup window that presents grouped Jungle runtime types so designers can
+    /// quickly pick an implementation for serialized references.
+    /// </summary>
     public class ClassSelectionWindow : EditorWindow
     {
         private List<Type> classTypes;

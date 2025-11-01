@@ -12,6 +12,9 @@ namespace Jungle.Events
         [TextArea(2, 4)]
         [SerializeField] private string description;
 
+        /// <summary>
+        /// Optional description shown in the editor for designers.
+        /// </summary>
         public string Description => description;
     }
 }

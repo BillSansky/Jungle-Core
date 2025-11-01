@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Tweens a renderer material color and restores it on exit.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Material Color Lerp Process", "Tweens a renderer material color and restores it on exit.", null, "Actions/Process")]
     public class MaterialColorLerpAction : LerpProcessAction<Color>, IStateAction
@@ -110,11 +113,17 @@ namespace Jungle.Actions
                 }
             }
         }
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
             Start();
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

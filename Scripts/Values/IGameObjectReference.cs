@@ -2,6 +2,9 @@
 
 namespace Jungle.Values
 {
+    /// <summary>
+    /// Defines the game object reference interface.
+    /// </summary>
     public interface IGameObjectReference 
     {
         

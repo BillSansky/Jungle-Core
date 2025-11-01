@@ -6,6 +6,9 @@ using Component = UnityEngine.Component;
 
 namespace Jungle.Values
 {
+    /// <summary>
+    /// Invokes a component member to produce a value.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Class Member Value", "Invokes a component member to produce a value.", null, "Values/Core")]
     public class ClassMembersValue<T> : IValue<T>
@@ -15,8 +18,14 @@ namespace Jungle.Values
 
         protected Func<T> cachedFunc;
         protected bool isInitialized;
+        /// <summary>
+        /// Gets the component.
+        /// </summary>
 
         public Component Component => component.C;
+        /// <summary>
+        /// Gets the method name.
+        /// </summary>
 
         public string MethodName
         {
@@ -28,13 +37,22 @@ namespace Jungle.Values
                 cachedFunc = null;
             }
         }
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public bool HasMultipleValues => false;
+        /// <summary>
+        /// Retrieves the value.
+        /// </summary>
 
         public object GetValue()
         {
             return Value();
         }
+        /// <summary>
+        /// Gets the value produced by this provider.
+        /// </summary>
 
         public T Value()
         {
@@ -131,6 +149,9 @@ namespace Jungle.Values
                 Debug.LogError($"ClassMembersValue: Failed to create delegate for property '{memberName}': {e.Message}");
             }
         }
+        /// <summary>
+        /// Clears any cached member lookup state.
+        /// </summary>
 
         public void ResetCache()
         {

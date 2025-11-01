@@ -11,6 +11,9 @@ namespace Jungle.Actions
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
         "d_AnimationClip",
         "Actions/State")]
+    /// <summary>
+    /// Implements the playable director start action action.
+    /// </summary>
     [Serializable]
     public class PlayableDirectorStartAction : IStateAction
     {
@@ -19,6 +22,9 @@ namespace Jungle.Actions
 
 
         private PlayableDirector cachedDirector;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
@@ -31,6 +37,9 @@ namespace Jungle.Actions
 
             director.Play();
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

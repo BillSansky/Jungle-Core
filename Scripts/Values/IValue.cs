@@ -16,6 +16,9 @@ namespace Jungle.Values
         T Value();
 
         T V => Value();
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public bool HasMultipleValues { get; }
 
@@ -24,6 +27,9 @@ namespace Jungle.Values
             get { yield return Value(); }
         }
     }
+    /// <summary>
+    /// Represents a value provider that returns a value.
+    /// </summary>
 
     public interface ISettableValue<T> : IValue<T>
     {

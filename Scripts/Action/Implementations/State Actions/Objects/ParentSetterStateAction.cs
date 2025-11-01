@@ -14,6 +14,9 @@ namespace Jungle.Actions
         "Sets the parent of targets when the action starts and optionally restores the original parent on stop.",
         "d_UnityEditor.HierarchyWindow",
         "Actions/State")]
+    /// <summary>
+    /// Implements the parent setter state action action.
+    /// </summary>
     public class ParentSetterStateAction : IStateAction
     {
         [SerializeReference][JungleClassSelection] private ITransformValue targetTransforms = new TransformLocalValue();
@@ -23,6 +26,9 @@ namespace Jungle.Actions
 
         private List<Transform> originalParents;
         private bool skipStop;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
@@ -36,6 +42,9 @@ namespace Jungle.Actions
                 transform.SetParent(parentTransform, true);
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

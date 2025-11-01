@@ -3,50 +3,55 @@
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Defines an interface for asynchronous or long-running actions that can be started, interrupted,
-    /// and monitored for progress and completion. Extends the IImmediateAction interface to provide
-    /// additional functionality related to process management.
+    /// Describes an action that can run over time and be monitored for completion.
     /// </summary>
     public interface IProcessAction : IImmediateAction
     {
+        /// <summary>
+        /// Begins running the process using the current configuration.
+        /// </summary>
         void Start();
-        
+
+        /// <summary>
+        /// Stops the process before it completes naturally.
+        /// </summary>
         void Interrupt();
-        
+
+        /// <summary>
+        /// Raised when the process reports it has finished.
+        /// </summary>
         public event Action OnProcessCompleted;
 
         /// <summary>
-        /// Executes an action immediately without requiring a duration or delay.
-        /// Implements the functionality to initiate a process with no callback on completion.
+        /// Executes the process immediately without waiting for a completion callback.
         /// </summary>
         void IImmediateAction.Execute()
         {
             //start with no call back on completion
             Start();
         }
-        
+
         /// <summary>
-        /// false if it is infinite, or if the exact duration cannot be determined.
+        /// True when the action can report a finite duration.
         /// </summary>
         bool HasDefinedDuration { get; }
 
         /// <summary>
-        /// The time span, in seconds, required to complete the process or action.
-        /// Returns a precise value when the duration is known; otherwise, behavior depends on implementation.
+        /// Gets the expected duration in seconds when available.
         /// </summary>
         float Duration { get; }
 
 
         /// <summary>
-        /// Indicates whether the process is currently ongoing.
+        /// Indicates whether the process is currently active.
         /// </summary>
         bool IsInProgress { get; }
 
         /// <summary>
-        /// Indicates whether the action has finished execution.
+        /// Indicates whether the process has finished executing.
         /// </summary>
         bool HasCompleted { get; }
     }
-    
-    
+
+
 }

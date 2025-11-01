@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates a bool value against an expected value.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Bool Value Condition", "Evaluates a bool value against an expected value.", null, "Values")]
     public class BoolValueCondition : Condition
