@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [Serializable]
+    [JungleClassInfo("Process With State Callbacks", "Runs another process while invoking state actions on start and stop.", null, "Actions/Process")]
     public class ProcessActionWithStateCallbacks : IProcessAction
     {
         [SerializeReference][JungleClassSelection]

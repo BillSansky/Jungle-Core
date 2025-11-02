@@ -7,8 +7,10 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "Animator State Action",
         "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
-        "d_AnimationClip")]
+        "d_AnimationClip",
+        "Actions/State")]
     [Serializable]
     public class AnimatorStateStateAction : IStateAction
     {
@@ -22,7 +24,7 @@ namespace Jungle.Actions
         private Animator cachedAnimator;
         private int previousStateHash;
         private float previousNormalizedTime;
-        private bool hasPreviousState;
+
 
         public void OnStateEnter()
         {
@@ -36,7 +38,7 @@ namespace Jungle.Actions
             var stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex.V);
             previousStateHash = stateInfo.fullPathHash;
             previousNormalizedTime = stateInfo.normalizedTime;
-            hasPreviousState = true;
+  
 
 
             var targetStateHash = Animator.StringToHash(stateName.V);
@@ -60,7 +62,7 @@ namespace Jungle.Actions
 
         private Animator ResolveAnimator()
         {
-            var gameObject = targetAnimatorObject.V;
+            var gameObject = targetAnimatorObject.G;
             cachedAnimator = gameObject.GetComponent<Animator>();
 
             return cachedAnimator;

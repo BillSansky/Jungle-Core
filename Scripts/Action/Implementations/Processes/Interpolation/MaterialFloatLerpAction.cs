@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Jungle.Actions;
 using Jungle.Attributes;
@@ -8,7 +9,8 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Material Float Lerp Process", "Tweens a material float property and restores it on exit.", null, "Actions/Process")]
     public class MaterialFloatLerpAction : LerpProcessAction<float>, IStateAction
     {
         [SerializeField] [MaterialPropertyName("targetRenderer", MaterialPropertyNameAttribute.PropertyType.Float)]

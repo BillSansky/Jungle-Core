@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -5,7 +6,8 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Rigidbody Kinematic Action", "Adjusts the kinematic state of rigidbodies at state start and stop.", null, "Actions/State")]
     public class RigidbodyKinematicStateAction : IStateAction
     {
         public enum KinematicOption

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip")]
+    [JungleClassInfo("Animator Trigger Action", "Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip", "Actions/State")]
     [Serializable]
     public class AnimatorTriggerAction : IStateAction
     {
@@ -50,7 +50,7 @@ namespace Jungle.Actions
                 throw new InvalidOperationException("Animator GameObject provider has not been assigned.");
             }
 
-            var gameObject = targetAnimatorObject.V;
+            var gameObject = targetAnimatorObject.G;
             if (gameObject == null)
             {
                 throw new InvalidOperationException("The animator GameObject provider returned a null instance.");

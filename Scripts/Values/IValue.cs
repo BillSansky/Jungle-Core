@@ -19,9 +19,14 @@ namespace Jungle.Values
 
         public bool HasMultipleValues { get; }
 
-        virtual IEnumerable<T> Values
+        IEnumerable<T> Values
         {
             get { yield return Value(); }
         }
+    }
+
+    public interface ISettableValue<T> : IValue<T>
+    {
+        void SetValue(T value);
     }
 }

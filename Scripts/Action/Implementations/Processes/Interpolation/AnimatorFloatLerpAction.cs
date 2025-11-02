@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip")]
+    [JungleClassInfo("Animator Float Lerp Process", "Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip", "Actions/Process")]
     [Serializable]
     public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
     {
@@ -71,7 +71,7 @@ namespace Jungle.Actions
                 throw new InvalidOperationException("Animator GameObject provider has not been assigned.");
             }
 
-            var gameObject = targetAnimatorObject.V;
+            var gameObject = targetAnimatorObject.G;
             if (gameObject == null)
             {
                 throw new InvalidOperationException("The animator GameObject provider returned a null instance.");

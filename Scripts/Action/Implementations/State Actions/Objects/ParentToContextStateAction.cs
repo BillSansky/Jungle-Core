@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -5,10 +6,12 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
     [JungleClassInfo(
-        "Moves a GameObject under a drag contextual parent transform during drag operations.",
-        "d_UnityEditor.HierarchyWindow")]
+        "Parent To Context Action",
+        "Moves a GameObject under a contextual parent transform during the active state.",
+        "d_UnityEditor.HierarchyWindow",
+        "Actions/State")]
     public class ParentToContextStateAction : IStateAction
     {
         [Header("Target Configuration")] [SerializeField]

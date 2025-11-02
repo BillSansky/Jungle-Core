@@ -12,7 +12,7 @@ namespace Jungle.Actions
     }
 
 
-    [JungleClassInfo("Immediate Action", "Executes an immediate action when the state is entered or exited.")]
+    [JungleClassInfo("Immediate State Action", "Executes an immediate action when the state is entered or exited.", null, "Actions/State")]
     [Serializable]
     public class ImmediateStateAction : IStateAction
     {

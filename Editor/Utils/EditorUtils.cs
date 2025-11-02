@@ -119,7 +119,7 @@ namespace Jungle.Editor
             {
                 suffixesToRemove = new[]
                 {
-                    "Action", "Component", "Behaviour", "MonoBehaviour", "ScriptableObject", "Controller", "Manager",
+                    "Action", "Ref", "Behaviour", "MonoBehaviour", "ScriptableObject", "Controller", "Manager",
                     "Handler", "Service", "Provider"
                 };
             }
@@ -153,7 +153,7 @@ namespace Jungle.Editor
         private const string JungleEditorStyleSheetResource = "JungleEditorStyles";
 
         public static void SetupFieldWithClassSelectionButton(PropertyField propertyField, Type baseType,
-            SerializedProperty property)
+            SerializedProperty property, System.Reflection.FieldInfo fieldInfo)
         {
             // Remove the original field from layout…
             var parent = propertyField.parent;
@@ -162,7 +162,7 @@ namespace Jungle.Editor
 
             // …and insert our clean composite control in the same spot.
             var selector = new TypeSelectableField();
-            selector.Bind(property, baseType);
+            selector.Bind(property, baseType, fieldInfo);
 
             // Optional: keep your stylesheet hookup
             AttachJungleEditorStyles(selector);
@@ -260,12 +260,12 @@ namespace Jungle.Editor
         /// <returns>The created component</returns>
         public static Component CreateEditorComponentFieldValue(Type componentType, SerializedProperty property,
             GameObject targetGameObject = null,
-            string undoName = "Add Component")
+            string undoName = "Add Ref")
         {
             if (!componentType.IsSubclassOf(typeof(Component)))
             {
                 Debug.LogError(
-                    $"Type {componentType.Name} is not a Component type and cannot be added to a GameObject.");
+                    $"Type {componentType.Name} is not a Ref type and cannot be added to a GameObject.");
                 return null;
             }
 

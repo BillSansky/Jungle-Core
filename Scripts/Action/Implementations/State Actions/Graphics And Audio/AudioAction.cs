@@ -1,10 +1,13 @@
+using System;
 using Jungle.Actions;
+using Jungle.Attributes;
 using Jungle.Values.GameDev;
 using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [System.Serializable]
+    [Serializable]
+    [JungleClassInfo("Audio State Action", "Plays configured audio clips when entering and exiting the state.", null, "Actions/State")]
     public class AudioAction : IStateAction
     {
         [SerializeReference] private IAudioSourceValue audioSource;
