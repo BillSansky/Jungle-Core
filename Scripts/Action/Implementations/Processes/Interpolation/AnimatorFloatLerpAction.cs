@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Tweens an animator float parameter to a target value and optionally reverts it on stop.
+    /// </summary>
     [JungleClassInfo("Animator Float Lerp Process", "Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip", "Actions/Process")]
     [Serializable]
     public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
@@ -17,11 +20,17 @@ namespace Jungle.Actions
         private Animator cachedAnimator;
         private float cachedInitialValue;
         private string cachedParameterName;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
             Start();
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

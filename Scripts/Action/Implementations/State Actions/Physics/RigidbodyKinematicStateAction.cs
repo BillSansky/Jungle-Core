@@ -6,10 +6,16 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Adjusts the kinematic state of rigidbodies at state start and stop.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Rigidbody Kinematic Action", "Adjusts the kinematic state of rigidbodies at state start and stop.", null, "Actions/State")]
     public class RigidbodyKinematicStateAction : IStateAction
     {
+        /// <summary>
+        /// Implements the kinematic option action.
+        /// </summary>
         public enum KinematicOption
         {
             None,
@@ -25,6 +31,9 @@ namespace Jungle.Actions
         [SerializeField] private KinematicOption beginAction = KinematicOption.Kinematic;
         [SerializeField] private KinematicOption endAction = KinematicOption.None;
         private List<bool> wasKinematic = new();
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
 
         public void OnStateEnter()
@@ -51,6 +60,9 @@ namespace Jungle.Actions
                 }
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates a float value against a comparison.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Float Value Condition", "Evaluates a float value against a comparison.", null, "Values")]
     public class FloatValueCondition : Condition
     {
+        /// <summary>
+        /// Defines the comparison operators supported by the condition.
+        /// </summary>
         public enum ComparisonOperator
         {
             Equals,

@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Smoothly moves a transform toward a target position with optional return on stop.
+    /// </summary>
     [JungleClassInfo("Position Lerp Process", "Smoothly moves a transform toward a target position with optional return on stop.", "d_MoveTool", "Actions/Process")]
     [Serializable]
     public class PositionLerpProcessAction : LerpProcessAction<Vector3>

@@ -14,7 +14,7 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject where T : 
     private static T instance;
 
     /// <summary>
-    /// Gets the singleton instance. Creates one if it doesn't exist.
+    /// Gets the lazily created singleton instance.
     /// </summary>
     public static T Instance
     {

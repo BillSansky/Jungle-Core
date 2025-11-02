@@ -13,6 +13,10 @@ using UnityEngine.UIElements;
 namespace Jungle.Values.Editor
 {
     [CustomPropertyDrawer(typeof(ClassMembersValue<>),true)]
+    /// <summary>
+    /// Property drawer that lets users pick component members matching the value
+    /// type of <see cref="ClassMembersValue{T}"/> wrappers.
+    /// </summary>
     public class MethodInvokerValueDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)

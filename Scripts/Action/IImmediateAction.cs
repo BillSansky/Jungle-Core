@@ -5,6 +5,9 @@
     /// </summary>
     public interface IImmediateAction
     {
+        /// <summary>
+        /// Performs the action once using the current configuration without waiting for a later update.
+        /// </summary>
         void Execute();
     }
 }

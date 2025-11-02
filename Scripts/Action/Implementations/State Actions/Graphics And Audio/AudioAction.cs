@@ -6,10 +6,16 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Plays configured audio clips when entering and exiting the state.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Audio State Action", "Plays configured audio clips when entering and exiting the state.", null, "Actions/State")]
     public class AudioAction : IStateAction
     {
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
         [SerializeReference] private IAudioSourceValue audioSource;
         [SerializeField] private AudioClip dragStartSound;
         [SerializeField] private AudioClip dragEndSound;
@@ -25,6 +31,9 @@ namespace Jungle.Actions
                     source.PlayOneShot(dragStartSound);
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

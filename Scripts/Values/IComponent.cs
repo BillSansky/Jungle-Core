@@ -5,11 +5,17 @@ using UnityEngine;
 
 namespace Jungle.Values
 {
+    /// <summary>
+    /// Defines the component reference interface.
+    /// </summary>
     public interface IComponentReference
     {
         Component C => Component;
         Component Component { get; }
     }
+    /// <summary>
+    /// Represents a value provider that returns a TComponent.
+    /// </summary>
     
     public interface IComponent<out TComponent> : IValue<TComponent>,IComponentReference, IGameObjectReference
         where TComponent : Component

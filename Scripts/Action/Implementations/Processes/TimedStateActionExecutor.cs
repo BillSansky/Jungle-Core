@@ -6,23 +6,41 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Specifies how the executor determines when to finish.
+    /// </summary>
     public enum EndLogic
     {
         Timed,
         OneFrame,
     }
+    /// <summary>
+    /// Runs state actions for a timed or single-frame duration.
+    /// </summary>
     
     [Serializable]
     [JungleClassInfo("Timed State Action Executor", "Runs state actions for a timed or single-frame duration.", null, "Actions/Process")]
     public class TimedStateActionExecutor : IProcessAction
     {
+        /// <summary>
+        /// Defines the state actions executed during the process.
+        /// </summary>
         
         [SerializeReference][JungleClassSelection]
         public List<IStateAction> Actions  = new List<IStateAction>();
-        
+        /// <summary>
+        /// Controls how the executor determines when to finish.
+        /// </summary>
+
         public EndLogic endLogic = EndLogic.Timed;
-        
+        /// <summary>
+        /// Duration used when <see cref="EndLogic.Timed"/> is selected.
+        /// </summary>
+
         public float duration = 1.0f;
+        /// <summary>
+        /// MonoBehaviour instance used to run timing coroutines.
+        /// </summary>
 
         [NonSerialized]
         public MonoBehaviour coroutineRunner;
@@ -30,10 +48,19 @@ namespace Jungle.Actions
         private Coroutine autoEndCoroutine;
         private bool isInProgress;
         private bool hasCompleted;
+        /// <summary>
+        /// Invoked when the process action finishes.
+        /// </summary>
 
         public event Action OnProcessCompleted;
+        /// <summary>
+        /// Indicates whether the action can report a finite duration.
+        /// </summary>
 
         public bool HasDefinedDuration => true;
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
 
         public float Duration
         {
@@ -50,15 +77,27 @@ namespace Jungle.Actions
                 }
             }
         }
+        /// <summary>
+        /// Gets whether the action is currently running.
+        /// </summary>
 
         public bool IsInProgress => isInProgress;
+        /// <summary>
+        /// Gets whether the action has finished executing.
+        /// </summary>
 
         public bool HasCompleted => hasCompleted;
+        /// <summary>
+        /// Executes the process immediately by delegating to <see cref="Start"/>.
+        /// </summary>
 
         public void Execute()
         {
             Start();
         }
+        /// <summary>
+        /// Starts the timed state action executor.
+        /// </summary>
 
         public void Start()
         {
@@ -83,6 +122,9 @@ namespace Jungle.Actions
                 autoEndCoroutine = coroutineRunner.StartCoroutine(AutoEndCoroutine());
             }
         }
+        /// <summary>
+        /// Interrupts the timed state action executor before completion.
+        /// </summary>
 
         public void Interrupt()
         {

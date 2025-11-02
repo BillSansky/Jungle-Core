@@ -4,12 +4,18 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Specifies when the immediate action should execute.
+    /// </summary>
     public enum ImmediateActionExecute
     {
         OnBegin,
         OnEnd,
         OnBeginAndEnd
     }
+    /// <summary>
+    /// Executes an immediate action when the state is entered or exited.
+    /// </summary>
 
 
     [JungleClassInfo("Immediate State Action", "Executes an immediate action when the state is entered or exited.", null, "Actions/State")]
@@ -18,8 +24,14 @@ namespace Jungle.Actions
     {
         [SerializeReference] [JungleClassSelection]
         private IImmediateAction action;
+        /// <summary>
+        /// Controls whether the action runs on enter, exit, or both.
+        /// </summary>
 
         public ImmediateActionExecute executionMode = ImmediateActionExecute.OnBeginAndEnd;
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public virtual void OnStateEnter()
         {
@@ -36,6 +48,9 @@ namespace Jungle.Actions
                     throw new ArgumentOutOfRangeException();
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public virtual void OnStateExit()
         {

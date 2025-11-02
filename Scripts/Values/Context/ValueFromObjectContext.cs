@@ -2,22 +2,34 @@
 using System.Collections.Generic;
 using Jungle.Attributes;
 using UnityEngine;
+/// <summary>
+/// Specifies how components are located on the source object.
+/// </summary>
 
 public enum ComponentRetrievalStrategy
 {
     First,
     InObjectAndChildren,
 }
+/// <summary>
+/// Extracts values from GameObject-based contexts.
+/// </summary>
 
 [JungleClassInfo("Value From Object Context", "Extracts values from GameObject-based contexts.", null, "Values/Context")]
 public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
 {
+    /// <summary>
+    /// Gets how components are located from the context object.
+    /// </summary>
     public abstract ComponentRetrievalStrategy Strategy { get; }
 
     private object cachedContext;
     private T cachedComponent;
     private List<T> cachedComponents;
     private bool hasValidCache;
+    /// <summary>
+    /// Retrieves the value from context.
+    /// </summary>
 
     public override T GetValueFromContext(object context)
     {
@@ -148,6 +160,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
         cachedComponents?.Clear();
         return default(T);
     }
+    /// <summary>
+    /// Enumerates all available values from the provider.
+    /// </summary>
 
 
     public IEnumerable<T> Values
@@ -167,6 +182,9 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
             }
         }
     }
+    /// <summary>
+    /// Indicates whether multiple values are available.
+    /// </summary>
 
     public override bool HasMultipleValues =>
         Strategy == ComponentRetrievalStrategy.InObjectAndChildren && cachedComponents.Count > 1;
