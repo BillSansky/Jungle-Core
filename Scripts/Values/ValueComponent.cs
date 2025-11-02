@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+using System.Collections.Generic;
+using Jungle.Attributes;
+using UnityEngine;
 
 namespace Jungle.Values
 {
@@ -6,13 +8,90 @@ namespace Jungle.Values
     /// Base class for <see cref="MonoBehaviour"/> components that expose a value of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
-    public abstract class ValueComponent<T> : MonoBehaviour, IValue<T>
+    [JungleClassInfo("Value Component Base", "Base MonoBehaviour for exposing runtime values.", null, "Values/Core")]
+    public abstract class ValueComponentBase<T> : MonoBehaviour, ISettableValue<T>
     {
         /// <inheritdoc />
         public abstract T Value();
-        
-        public bool HasMultipleValues => false;
-        
-        
+
+        public abstract void SetValue(T value);
+
+        public abstract bool HasMultipleValues { get; }
+    }
+
+    /// <summary>
+    /// Ref base class for values represented by a single element.
+    /// </summary>
+    /// <typeparam name="T">Type of the value provided by the component.</typeparam>
+    [JungleClassInfo("Value Component", "MonoBehaviour storing a single runtime value.", null, "Values/Core")]
+    public abstract class ValueComponent<T> : ValueComponentBase<T>
+    {
+        public override bool HasMultipleValues => false;
+    }
+
+    /// <summary>
+    /// Ref base class for values represented by a list of elements.
+    /// </summary>
+    /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
+    [JungleClassInfo("Value List Component", "MonoBehaviour exposing a list of values.", null, "Values/Core")]
+    public abstract class ValueListComponent<TElement> : ValueComponentBase<IReadOnlyList<TElement>>
+    {
+        /// <summary>
+        /// Provides access to the list of values exposed by the component.
+        /// </summary>
+        protected abstract IReadOnlyList<TElement> Items { get; }
+
+        /// <summary>
+        /// Replaces the list used by the component.
+        /// </summary>
+        /// <param name="value">New list reference.</param>
+        protected abstract void SetItems(IReadOnlyList<TElement> value);
+
+        public override IReadOnlyList<TElement> Value()
+        {
+            return Items;
+        }
+
+        public override void SetValue(IReadOnlyList<TElement> value)
+        {
+            SetItems(value);
+        }
+
+        public override bool HasMultipleValues => Items.Count > 1;
+
+        /// <summary>
+        /// Gets the number of elements exposed by the component.
+        /// </summary>
+        public int Count => Items.Count;
+
+        /// <summary>
+        /// Accesses an element at the specified <paramref name="index"/>.
+        /// </summary>
+        /// <param name="index">Index of the element to access.</param>
+        public TElement this[int index] => Items[index];
+    }
+
+    /// <summary>
+    /// Ref base class for list values stored as a serialized <see cref="List{T}"/>.
+    /// </summary>
+    /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
+    [JungleClassInfo("Serialized Value List Component", "Value list component backed by a serialized List.", null, "Values/Core")]
+    public abstract class SerializedValueListComponent<TElement> : ValueListComponent<TElement>
+    {
+        [SerializeField]
+        private List<TElement> values = new();
+
+        protected override IReadOnlyList<TElement> Items => values;
+
+        protected override void SetItems(IReadOnlyList<TElement> value)
+        {
+            if (value is List<TElement> list)
+            {
+                values = list;
+                return;
+            }
+
+            values = value == null ? new List<TElement>() : new List<TElement>(value);
+        }
     }
 }

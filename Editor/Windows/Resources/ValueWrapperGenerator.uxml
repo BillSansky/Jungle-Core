@@ -28,7 +28,7 @@
         <VisualElement class="jungle-section" name="generation-section">
             <Label class="jungle-subsection-header" text="Generate" />
             <Toggle name="interface-toggle" label="Interface and Local Value" />
-            <Toggle name="component-toggle" label="Component and Component Wrapper" />
+            <Toggle name="component-toggle" label="Ref and Ref Wrapper" />
             <Toggle name="asset-toggle" label="Asset and Asset Wrapper" />
             <Toggle name="array-toggle" label="Local Array Wrapper" />
         </VisualElement>

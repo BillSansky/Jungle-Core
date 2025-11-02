@@ -21,7 +21,7 @@
 
 .tsf-row--clickable:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    cursor: link;
+    cursor: pointer;
 }
 
 /* Toggle (foldout arrow) */
@@ -89,7 +89,8 @@
     color: rgb(210, 210, 210);
     font-size: 12px;
     background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.5);
     border-radius: 3px;
     -unity-text-align: middle-left;
 }
@@ -102,7 +103,8 @@
     color: rgb(155, 155, 155);
     font-size: 12px;
     background-color: var(--unity-colors-input_field-background);
-    border: 1px solid var(--unity-colors-input_field-border);
+    border-width: 1px;
+    border-color: var(--unity-colors-input_field-border);
     border-radius: 3px;
     -unity-text-align: middle-left;
 }
@@ -115,7 +117,8 @@
     color: rgb(127, 127, 127);
     font-size: 12px;
     background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.5);
     border-radius: 3px;
     -unity-text-align: middle-left;
 }
@@ -132,7 +135,8 @@
     width: 20px;
     height: 18px;
     margin: 0 1px;
-    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     background-color: rgba(255, 255, 255, 0.12);
     color: rgb(210, 210, 210);
@@ -155,7 +159,8 @@
 .tsf__details {
     flex-direction: column;
     margin: 2px 0 2px 15px;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-left-width: 1px;
+    border-left-color: rgba(255, 255, 255, 0.05);
 }
 
 .tsf__child-field {

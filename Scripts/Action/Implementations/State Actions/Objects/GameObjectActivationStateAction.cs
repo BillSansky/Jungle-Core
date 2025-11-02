@@ -8,8 +8,10 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "GameObject Activation Action",
         "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
-        "d_GameObject Icon")]
+        "d_GameObject Icon",
+        "Actions/State")]
     [Serializable]
     public class GameObjectActivationStateAction : IStateAction
     {
@@ -44,15 +46,15 @@ namespace Jungle.Actions
         {
             originalStates.Clear();
             
-            foreach (var obj in targetObjects.Values)
+            foreach (var obj in targetObjects.Gs)
             {
-                originalStates.Add(obj,obj.activeSelf);
+                originalStates.Add(obj, obj.activeSelf);
             }
         }
 
         private void SetObjectStates()
         {
-            foreach (var obj in targetObjects.Values)
+            foreach (var obj in targetObjects.Gs)
             {
                 ApplyAction(obj, beginAction, false);
             }
@@ -60,7 +62,7 @@ namespace Jungle.Actions
 
         private void RestoreOriginalStates()
         {
-            foreach (var obj in targetObjects.Values)
+            foreach (var obj in targetObjects.Gs)
             {
                 ApplyAction(obj, endAction, true);
             }

@@ -1,16 +1,18 @@
 using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values
 {
     /// <summary>
-    /// Provides a value sourced from a <see cref="ValueAsset{T}"/>.
+    /// Provides a value sourced from a <see cref="ValueAssetBase{T}"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
     /// <typeparam name="TAsset">Concrete asset type used to fetch the value.</typeparam>
     [Serializable]
-    public class ValueFromAsset<T, TAsset> : IValue<T>
-        where TAsset : ValueAsset<T>
+    [JungleClassInfo("Value From Asset", "Reads a value provided by a ScriptableObject asset.", null, "Values/Core")]
+    public class ValueFromAsset<T, TAsset> : ISettableValue<T>
+        where TAsset : ValueAssetBase<T>
     {
         [SerializeField]
         private TAsset valueAsset;
@@ -28,6 +30,31 @@ namespace Jungle.Values
             return valueAsset.Value();
         }
 
-        public bool HasMultipleValues => valueAsset.HasMultipleValues;
+        public void SetValue(T value)
+        {
+            if (valueAsset == null)
+            {
+                Debug.LogError(
+                    $"value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
+                return;
+            }
+
+            valueAsset.SetValue(value);
+        }
+
+        public bool HasMultipleValues
+        {
+            get
+            {
+                if (valueAsset == null)
+                {
+                    Debug.LogError(
+                        $"value asset is not assigned for {GetType().Name}. Please assign a {typeof(TAsset).Name} instance.");
+                    return false;
+                }
+
+                return valueAsset.HasMultipleValues;
+            }
+        }
     }
 }

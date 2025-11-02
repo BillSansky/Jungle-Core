@@ -118,7 +118,7 @@ namespace Jungle.Editor
                 rootVisualElement.styleSheets.Add(styleSheet);
             }
 
-            // Get references to UI elements
+            // GetContext references to UI elements
             scrollView = rootVisualElement.Q<ScrollView>("scrollView");
             contentContainer = scrollView?.contentContainer ?? rootVisualElement.Q<VisualElement>("contentContainer");
 
@@ -193,7 +193,7 @@ namespace Jungle.Editor
             // Clone the template
             var itemElement = template.CloneTree();
 
-            // Get references to elements
+            // GetContext references to elements
             var itemContainer = itemElement.Q<VisualElement>("itemContainer");
             var iconContainer = itemElement.Q<VisualElement>("iconContainer");
             var titleLabel = itemElement.Q<Label>("titleLabel");

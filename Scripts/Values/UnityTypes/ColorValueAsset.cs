@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Values.UnityTypes
 {
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color value", fileName = "ColorValue")]
+    [JungleClassInfo("Color Value Asset", "ScriptableObject storing a Color value.", null, "Values/Unity Types")]
     public class ColorValueAsset : ValueAsset<Color>
     {
         [SerializeField]
@@ -13,10 +16,29 @@ namespace Jungle.Values.UnityTypes
         {
             return value;
         }
+
+        public override void SetValue(Color value)
+        {
+            this.value = value;
+        }
+    }
+
+    [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color list value", fileName = "ColorListValue")]
+    [JungleClassInfo("Color List Asset", "ScriptableObject storing a list of colors.", null, "Values/Unity Types")]
+    public class ColorListValueAsset : SerializedValueListAsset<Color>
+    {
     }
 
     [Serializable]
+    [JungleClassInfo("Color Value From Asset", "Reads a Color value from a ColorValueAsset.", null, "Values/Unity Types")]
     public class ColorValueFromAsset : ValueFromAsset<Color, ColorValueAsset>, IColorValue
+    {
+    }
+
+    [Serializable]
+    [JungleClassInfo("Color List From Asset", "Reads colors from a ColorListValueAsset.", null, "Values/Unity Types")]
+    public class ColorListValueFromAsset :
+        ValueFromAsset<IReadOnlyList<Color>, ColorListValueAsset>
     {
     }
 }

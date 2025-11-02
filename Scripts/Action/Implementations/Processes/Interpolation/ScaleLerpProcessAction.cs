@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool")]
+    [JungleClassInfo("Scale Lerp Process", "Smoothly scales a transform to a target size over time using an animation curve.", "d_ScaleTool", "Actions/Process")]
     [Serializable]
     public class ScaleLerpProcessAction : LerpProcessAction<Vector3>
     {
@@ -42,7 +42,7 @@ namespace Jungle.Actions
 
         protected override void ApplyValue(Vector3 value)
         {
-            var transform = targetTransform?.V;
+            var transform = targetTransform.V;
             Debug.Assert(transform != null, "Target transform is null.");
             transform.localScale = value;
         }

@@ -13,6 +13,7 @@ namespace Jungle.Actions
     }
     
     [Serializable]
+    [JungleClassInfo("Timed State Action Executor", "Runs state actions for a timed or single-frame duration.", null, "Actions/Process")]
     public class TimedStateActionExecutor : IProcessAction
     {
         

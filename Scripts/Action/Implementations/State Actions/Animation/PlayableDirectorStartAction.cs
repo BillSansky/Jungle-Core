@@ -7,8 +7,10 @@ using UnityEngine.Playables;
 namespace Jungle.Actions
 {
     [JungleClassInfo(
+        "Playable Director Start Action",
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
-        "d_AnimationClip")]
+        "d_AnimationClip",
+        "Actions/State")]
     [Serializable]
     public class PlayableDirectorStartAction : IStateAction
     {
@@ -41,7 +43,7 @@ namespace Jungle.Actions
         {
             Debug.Assert(targetDirectorObject != null, "PlayableDirector GameObject provider has not been assigned.");
 
-            var gameObject = targetDirectorObject.V;
+            var gameObject = targetDirectorObject.G;
             Debug.Assert(gameObject != null, "The PlayableDirector GameObject provider returned a null instance.");
 
             cachedDirector = gameObject.GetComponent<PlayableDirector>();

@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Jungle.Timing
 {
-    public class Timer : MonoBehaviour
+    public class Timer : MonoBehaviour, Jungle.Actions.IProcessAction
     {
         [SerializeField]
         [Min(0f)]
@@ -25,6 +26,9 @@ namespace Jungle.Timing
         private bool isRunning;
         private bool isPaused;
         private bool isWaitingForFrame;
+        private bool hasCompleted;
+
+        public event Action OnProcessCompleted;
 
         public float Duration
         {
@@ -61,6 +65,23 @@ namespace Jungle.Timing
 
         public UnityEvent Completed => onCompleted;
 
+        // IProcessAction implementation
+        public bool HasDefinedDuration => !float.IsInfinity(duration);
+
+        public bool IsInProgress => isRunning;
+
+        public bool HasCompleted => hasCompleted;
+
+        public void Start()
+        {
+            StartTimer();
+        }
+
+        public void Interrupt()
+        {
+            StopTimer();
+        }
+
         public void StartTimer()
         {
             StartTimer(duration);
@@ -73,6 +94,7 @@ namespace Jungle.Timing
             isRunning = true;
             isPaused = false;
             isWaitingForFrame = waitForOneFrame;
+            hasCompleted = false;
             onStarted.Invoke();
         }
 
@@ -137,7 +159,9 @@ namespace Jungle.Timing
             isRunning = false;
             isPaused = false;
             isWaitingForFrame = false;
+            hasCompleted = true;
             onCompleted.Invoke();
+            OnProcessCompleted?.Invoke();
         }
     }
 }

@@ -1,13 +1,13 @@
+using System;
 using Jungle.Actions;
 using Jungle.Attributes;
-
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Jungle.Actions
 {
-    [JungleClassInfo("Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon")]
-    [System.Serializable]
+    [JungleClassInfo("Unity Event Action", "Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon", "Actions/State")]
+    [Serializable]
     public class UnityEventAction : IStateAction
     {
         [SerializeField] private UnityEvent onStart = new();
