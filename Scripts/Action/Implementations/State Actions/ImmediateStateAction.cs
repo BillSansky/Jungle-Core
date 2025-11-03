@@ -22,7 +22,8 @@ namespace Jungle.Actions
     [Serializable]
     public class ImmediateStateAction : IStateAction
     {
-        [SerializeReference] [JungleClassSelection]
+        [SerializeReference]
+        [JungleClassSelection(typeof(IImmediateAction))]
         private IImmediateAction action;
         /// <summary>
         /// Controls whether the action runs on enter, exit, or both.
