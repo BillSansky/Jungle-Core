@@ -13,8 +13,14 @@ namespace Jungle.Values
     {
         /// <inheritdoc />
         public abstract T Value();
+        /// <summary>
+        /// Assigns a new value to the provider.
+        /// </summary>
 
         public abstract void SetValue(T value);
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public abstract bool HasMultipleValues { get; }
     }
@@ -26,6 +32,9 @@ namespace Jungle.Values
     [JungleClassInfo("Value Asset", "ScriptableObject storing a single value instance.", null, "Values/Core")]
     public abstract class ValueAsset<T> : ValueAssetBase<T>
     {
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
         public override bool HasMultipleValues => false;
     }
 
@@ -46,21 +55,30 @@ namespace Jungle.Values
         /// </summary>
         /// <param name="value">New list reference.</param>
         protected abstract void SetItems(IReadOnlyList<TElement> value);
+        /// <summary>
+        /// Gets the value produced by this provider.
+        /// </summary>
 
         public override IReadOnlyList<TElement> Value()
         {
             return Items;
         }
+        /// <summary>
+        /// Assigns a new value to the provider.
+        /// </summary>
 
         public override void SetValue(IReadOnlyList<TElement> value)
         {
             SetItems(value);
         }
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public override bool HasMultipleValues => Items.Count > 1;
 
         /// <summary>
-        /// Gets the number of elements stored in the asset.
+        /// Gets the count.
         /// </summary>
         public int Count => Items.Count;
 

@@ -24,10 +24,16 @@ namespace Jungle.Conditions
         }
         
         protected internal abstract bool IsValidImpl();
+        /// <summary>
+        /// Evaluates the condition and returns the result.
+        /// </summary>
         public bool Value()
         {
             return IsValid();
         }
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public bool HasMultipleValues => false;
     }

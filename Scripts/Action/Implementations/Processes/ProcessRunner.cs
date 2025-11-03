@@ -4,8 +4,14 @@ using UnityEngine.Events;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// MonoBehaviour helper that starts and interrupts an <see cref="IProcessAction"/> based on Unity callbacks.
+    /// </summary>
     public class ProcessRunner : MonoBehaviour
     {
+        /// <summary>
+        /// Unity callback moments that can start or interrupt the process.
+        /// </summary>
         public enum ProcessTiming
         {
             Awake,
@@ -15,6 +21,9 @@ namespace Jungle.Actions
             OnDestroy,
             Manual
         }
+        /// <summary>
+        /// Gets or sets the process action to run.
+        /// </summary>
 
         [JungleClassSelection(typeof(IProcessAction))] [SerializeReference]
         public IProcessAction Process;
@@ -26,9 +35,18 @@ namespace Jungle.Actions
         [SerializeField]
         private UnityEvent onProcessCompleted;
 
+        /// <summary>
+        /// True while the configured process is running.
+        /// </summary>
         public bool IsRunning { get; private set; }
+        /// <summary>
+        /// True once the configured process reports completion.
+        /// </summary>
         public bool IsComplete { get; private set; }
 
+        /// <summary>
+        /// UnityEvent invoked when the process completes.
+        /// </summary>
         public UnityEvent OnProcessCompleted => onProcessCompleted;
 
         private void Awake()
@@ -104,6 +122,9 @@ namespace Jungle.Actions
             Process.OnProcessCompleted -= NotifyProcessCompleted;
         }
 
+        /// <summary>
+        /// Starts the configured process and wires completion callbacks.
+        /// </summary>
         public void StartProcess()
         {
             IsRunning = true;
@@ -112,6 +133,9 @@ namespace Jungle.Actions
             Process.OnProcessCompleted += NotifyProcessCompleted;
         }
 
+        /// <summary>
+        /// Interrupts the configured process.
+        /// </summary>
         public void InterruptProcess()
         {
             IsRunning = false;

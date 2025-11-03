@@ -4,6 +4,9 @@ using UnityEngine.Events;
 
 namespace Jungle.Timing
 {
+    /// <summary>
+    /// Runs a countdown and raises UnityEvents when it starts and completes.
+    /// </summary>
     public class Timer : MonoBehaviour, Jungle.Actions.IProcessAction
     {
         [SerializeField]
@@ -28,8 +31,12 @@ namespace Jungle.Timing
         private bool isWaitingForFrame;
         private bool hasCompleted;
 
+        /// <inheritdoc />
         public event Action OnProcessCompleted;
 
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
         public float Duration
         {
             get => duration;
@@ -43,50 +50,86 @@ namespace Jungle.Timing
             }
         }
 
+        /// <summary>
+        /// When true the timer waits one frame before counting down.
+        /// </summary>
         public bool WaitForOneFrame
         {
             get => waitForOneFrame;
             set => waitForOneFrame = value;
         }
 
+        /// <summary>
+        /// When true the timer advances using unscaled time.
+        /// </summary>
         public bool UseUnscaledTime
         {
             get => useUnscaledTime;
             set => useUnscaledTime = value;
         }
 
+        /// <summary>
+        /// Indicates whether the timer is currently running.
+        /// </summary>
         public bool IsRunning => isRunning;
 
+        /// <summary>
+        /// Indicates whether the timer is paused.
+        /// </summary>
         public bool IsPaused => isPaused;
 
+        /// <summary>
+        /// Gets the remaining time.
+        /// </summary>
         public float RemainingTime => remainingTime;
 
+        /// <summary>
+        /// UnityEvent invoked when the timer starts.
+        /// </summary>
         public UnityEvent Started => onStarted;
 
+        /// <summary>
+        /// UnityEvent invoked when the timer completes.
+        /// </summary>
         public UnityEvent Completed => onCompleted;
 
         // IProcessAction implementation
+        /// <inheritdoc />
         public bool HasDefinedDuration => !float.IsInfinity(duration);
 
+        /// <inheritdoc />
         public bool IsInProgress => isRunning;
 
+        /// <inheritdoc />
         public bool HasCompleted => hasCompleted;
 
+        /// <summary>
+        /// Starts counting down using the configured duration.
+        /// </summary>
         public void Start()
         {
             StartTimer();
         }
 
+        /// <summary>
+        /// Stops the timer without firing the completion event.
+        /// </summary>
         public void Interrupt()
         {
             StopTimer();
         }
 
+        /// <summary>
+        /// Starts the timer using the current duration.
+        /// </summary>
         public void StartTimer()
         {
             StartTimer(duration);
         }
 
+        /// <summary>
+        /// Starts the timer with a custom duration in seconds.
+        /// </summary>
         public void StartTimer(float customDuration)
         {
             duration = Mathf.Max(0f, customDuration);
@@ -98,6 +141,9 @@ namespace Jungle.Timing
             onStarted.Invoke();
         }
 
+        /// <summary>
+        /// Stops the timer immediately.
+        /// </summary>
         public void StopTimer()
         {
             if (!isRunning)
@@ -110,6 +156,9 @@ namespace Jungle.Timing
             isWaitingForFrame = false;
         }
 
+        /// <summary>
+        /// Pauses the timer while preserving the remaining time.
+        /// </summary>
         public void Pause()
         {
             if (isRunning)
@@ -118,6 +167,9 @@ namespace Jungle.Timing
             }
         }
 
+        /// <summary>
+        /// Resumes the timer after it was paused.
+        /// </summary>
         public void Resume()
         {
             if (isRunning)

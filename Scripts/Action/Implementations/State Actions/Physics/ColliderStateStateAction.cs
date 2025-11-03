@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Implements the collider state modification action.
+    /// </summary>
     
     public enum ColliderStateModification
     {
@@ -14,6 +17,9 @@ namespace Jungle.Actions
         Original,
         Toggle
     }
+    /// <summary>
+    /// Enables, disables, or toggles colliders during the state lifecycle.
+    /// </summary>
     
     [Serializable]
     [JungleClassInfo("Collider State Action", "Enables, disables, or toggles colliders during the state lifecycle.", null, "Actions/State")]
@@ -24,6 +30,9 @@ namespace Jungle.Actions
         [SerializeField] private ColliderStateModification onCompleteModification;
 
         private readonly Dictionary<Collider, bool> originalStates = new();
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
       
        
         public void OnStateEnter()
@@ -40,6 +49,9 @@ namespace Jungle.Actions
                 originalStates[collider] = collider.enabled;
             }
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

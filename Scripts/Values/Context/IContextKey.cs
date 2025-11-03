@@ -1,4 +1,7 @@
 ﻿using System;
+/// <summary>
+/// Defines the context key interface.
+/// </summary>
 
 public interface IContextKey
 {

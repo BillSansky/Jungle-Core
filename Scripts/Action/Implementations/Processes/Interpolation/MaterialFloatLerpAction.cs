@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Tweens a material float property and restores it on exit.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Material Float Lerp Process", "Tweens a material float property and restores it on exit.", null, "Actions/Process")]
     public class MaterialFloatLerpAction : LerpProcessAction<float>, IStateAction
@@ -121,11 +124,17 @@ namespace Jungle.Actions
                 }
             }
         }
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
         public void OnStateEnter()
         {
             Start();
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

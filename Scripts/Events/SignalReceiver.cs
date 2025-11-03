@@ -27,11 +27,17 @@ namespace Jungle.Events
 
             [SerializeField]
             private UnityEvent onSignal = new UnityEvent();
+            /// <summary>
+            /// Determines whether the receiver handles the provided signal type.
+            /// </summary>
 
             public bool Handles(SignalType incomingSignal)
             {
                 return signalType == incomingSignal;
             }
+            /// <summary>
+            /// Invokes all registered actions for the received signal.
+            /// </summary>
 
             public void InvokeActions(SignalReceiver receiver, SignalType incomingSignal)
             {

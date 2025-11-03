@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jungle.Attributes;
@@ -10,33 +9,40 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Event-driven sequence of child ProcessActions that runs once through all steps.
-    /// - Progression listens to child ProcessCompleted/ProcessCancelled (no polling).
-    /// - Coroutine only services time limits (sequence & per-step).
-    /// - Optional sequence time limit can be set to constrain the entire sequence duration.
-    /// - For per-step timeout with finishExecutionOnEndTime=true: do NOT force-complete; instead suppress exactly one loop on next natural completion.
-     /// </summary>
+    /// Runs a configurable list of <see cref="IProcessAction"/> steps and handles delays, looping, and time limits.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Sequence Action", "Runs a configurable sequence of process steps with delays and time limits.", null, "Actions/Process")]
     public class SequenceAction : IProcessAction
     {
+        /// <summary>
+        /// Defines the ordered steps executed by the sequence.
+        /// </summary>
         [SerializeField] public List<Step> Steps = new List<Step>();
 
         [Header("Sequence Settings")] [Tooltip("Enable to set a time limit for the entire sequence.")]
         public bool hasSequenceTimeLimit = false;
+        /// <summary>
+        /// Maximum allowed duration for the entire sequence in seconds.
+        /// </summary>
 
         [Tooltip("Time limit for the entire sequence in seconds.")]
         public float SequenceTimeLimit = 0f;
 
 
+        /// <inheritdoc />
         public event Action OnProcessCompleted;
 
+        /// <summary>
+        /// Indicates whether all sequence steps have finished.
+        /// </summary>
         public bool HasCompleted { get; private set; }
 
         /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
         public bool HasDefinedDuration =>
             (hasSequenceTimeLimit) || Steps.All(s => s.Action.HasDefinedDuration || s.timeLimited);
 
+        /// <inheritdoc />
         public float Duration
         {
             get
@@ -65,7 +71,11 @@ namespace Jungle.Actions
             }
         }
 
+        /// <inheritdoc />
         public bool IsInProgress { get; private set; }
+        /// <summary>
+        /// Describes how a step repeats when executed.
+        /// </summary>
 
         public enum StepLoopMode
         {
@@ -73,24 +83,42 @@ namespace Jungle.Actions
             Infinite, // Infinite indefinitely
             Limited // Infinite a specific number of times
         }
+        /// <summary>
+        /// Represents a single step in the sequence.
+        /// </summary>
 
         [Serializable]
         public class Step
         {
+            /// <summary>
+            /// Process action executed for this step.
+            /// </summary>
             [JungleClassSelection] [SerializeReference]
             public IProcessAction Action;
 
             [Header("Infinite Settings")]
             [Tooltip(
                 "Controls how this step loops: Once (no loop), Infinite (infinite), or Limited (specific number of loops).")]
+            /// <summary>
+            /// Determines how this step repeats when executed.
+            /// </summary>
             public StepLoopMode loopMode = StepLoopMode.Once;
+            /// <summary>
+            /// Number of loops to execute when <see cref="loopMode"/> is <see cref="StepLoopMode.Limited"/>.
+            /// </summary>
 
             [Tooltip("Number of times to execute this step when loopMode is Limited.")] [Min(1)]
             public int loopCount = 1;
 
             [Tooltip(
                 "If true, the next step waits for this one to finish (blocking). If false, the next step starts immediately (parallel).")]
+            /// <summary>
+            /// When true, the next step waits until this one completes.
+            /// </summary>
             public bool blocking = true;
+            /// <summary>
+            /// Delay applied before this step begins once eligible.
+            /// </summary>
 
             [Header("Step Start Delay")]
             [Tooltip("Delay in seconds before this step begins after it becomes eligible.")]
@@ -100,7 +128,13 @@ namespace Jungle.Actions
 
             [Tooltip(
                 "If true, when the time limit elapses we do NOT force-complete; we let it finish naturally and skip exactly one loop on completion. If false, we cancel on timeout.")]
+            /// <summary>
+            /// When true, allows the action to finish naturally after the time limit elapses.
+            /// </summary>
             public bool finishExecutionOnEndTime;
+            /// <summary>
+            /// Seconds permitted for this step when <see cref="timeLimited"/> is true.
+            /// </summary>
 
             [Tooltip("Seconds allowed for this step if timeLimited is true.")]
             public float timeLimit = 0f;
@@ -163,6 +197,7 @@ namespace Jungle.Actions
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
 
+        /// <inheritdoc />
         public void Start()
         {
             IsInProgress = true;
@@ -189,6 +224,7 @@ namespace Jungle.Actions
             tickRoutine = CoroutineRunner.StartManagedCoroutine(TickRoutine());
         }
 
+        /// <inheritdoc />
         public void Interrupt()
         {
             if (!IsInProgress) return;
@@ -197,6 +233,9 @@ namespace Jungle.Actions
             InterruptOrCompleteCleanup();
         }
 
+        /// <summary>
+        /// Interrupts the sequence when its owning state is exited.
+        /// </summary>
         public void OnStateExit()
         {
             if (IsInProgress)

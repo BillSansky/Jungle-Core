@@ -5,33 +5,64 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Runs another process while invoking state actions on start and stop.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Process With State Callbacks", "Runs another process while invoking state actions on start and stop.", null, "Actions/Process")]
     public class ProcessActionWithStateCallbacks : IProcessAction
     {
+        /// <summary>
+        /// <summary>
+        /// Gets or sets the wrapped process action.
+        /// </summary>
         [SerializeReference][JungleClassSelection]
         public IProcessAction ProcessAction;
+        /// <summary>
+        /// Defines the state actions invoked on start and completion.
+        /// </summary>
 
         [SerializeReference][JungleClassSelection]
         public List<IStateAction> StateActions = new List<IStateAction>();
 
         private bool isInProgress;
         private bool hasCompleted;
+        /// <summary>
+        /// Invoked when the process action finishes.
+        /// </summary>
 
         public event Action OnProcessCompleted;
+        /// <summary>
+        /// Indicates whether the action can report a finite duration.
+        /// </summary>
 
         public bool HasDefinedDuration => ProcessAction?.HasDefinedDuration ?? false;
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
 
         public float Duration => ProcessAction?.Duration ?? 0.0f;
+        /// <summary>
+        /// Gets whether the action is currently running.
+        /// </summary>
 
         public bool IsInProgress => isInProgress;
+        /// <summary>
+        /// Gets whether the action has finished executing.
+        /// </summary>
 
         public bool HasCompleted => hasCompleted;
+        /// <summary>
+        /// Executes the process immediately by delegating to <see cref="Start"/>.
+        /// </summary>
 
         public void Execute()
         {
             Start();
         }
+        /// <summary>
+        /// Starts the process action with state callbacks.
+        /// </summary>
 
         public void Start()
         {
@@ -63,6 +94,9 @@ namespace Jungle.Actions
                 Complete();
             }
         }
+        /// <summary>
+        /// Interrupts the process action with state callbacks before completion.
+        /// </summary>
 
         public void Interrupt()
         {
