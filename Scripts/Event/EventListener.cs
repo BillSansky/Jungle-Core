@@ -15,15 +15,15 @@ namespace Jungle.Events
         [SerializeField] private EventAsset eventAsset;
         [SerializeField] private UnityEvent response = new();
 
-        [SerializeReference]
-        [JungleClassSelection(typeof(IImmediateAction))]
+        [SerializeReference] [JungleClassSelection(typeof(IImmediateAction))]
         private List<IImmediateAction> eventActions = new();
 
         private bool isRegistered;
 
         private void OnEnable()
         {
-            EnsureEventAssetAssigned();
+            Debug.Assert(eventAsset != null, $"Event asset on {name} is null. Assign an event in the inspector.", this);
+
             eventAsset.Register(OnEventRaised);
             isRegistered = true;
         }
@@ -67,14 +67,6 @@ namespace Jungle.Events
                 }
 
                 action.Execute();
-            }
-        }
-
-        private void EnsureEventAssetAssigned()
-        {
-            if (eventAsset == null)
-            {
-                throw new InvalidOperationException($"Event asset reference is not set on {nameof(EventListener)} attached to {name}.");
             }
         }
     }
