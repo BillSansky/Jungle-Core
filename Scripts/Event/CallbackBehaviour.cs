@@ -7,6 +7,13 @@ using UnityEngine.Events;
 
 namespace Jungle.Events
 {
+    public enum RegistrationTiming
+    {
+        Awake,
+        Start,
+        OnEnable
+    }
+
     /// <summary>
     /// Base component capable of executing a configurable <see cref="ICallback"/> and relaying the
     /// notification to serialized <see cref="IImmediateAction"/> instances and a <see cref="UnityEvent"/>.
@@ -14,12 +21,14 @@ namespace Jungle.Events
     [AddComponentMenu("Jungle/Events/Callback Behaviour")]
     public class CallbackBehaviour : MonoBehaviour
     {
+        [SerializeField]
+        private RegistrationTiming registrationTiming = RegistrationTiming.OnEnable;
+
         [SerializeReference]
         [JungleClassSelection(typeof(ICallback))]
         private ICallback callback;
 
-        [SerializeField]
-        private bool invokeOnEnable;
+      
 
         [SerializeReference]
         [JungleClassSelection(typeof(IImmediateAction))]
@@ -33,17 +42,25 @@ namespace Jungle.Events
 
         private void Awake()
         {
-            EnsureCallbackAssigned();
+            if (registrationTiming == RegistrationTiming.Awake)
+            {
+                Subscribe();
+            }
+        }
+
+        private void Start()
+        {
+            if (registrationTiming == RegistrationTiming.Start)
+            {
+                Subscribe();
+            }
         }
 
         private void OnEnable()
         {
-            EnsureCallbackAssigned();
-            Subscribe();
-
-            if (invokeOnEnable)
+            if (registrationTiming == RegistrationTiming.OnEnable)
             {
-                InvokeCallback();
+                Subscribe();
             }
         }
 
@@ -56,24 +73,6 @@ namespace Jungle.Events
 
             callback.Detach(callbackRelayAction);
             isSubscribed = false;
-        }
-
-        /// <summary>
-        /// Manually invokes the configured callback.
-        /// This can be triggered from other scripts or via UnityEvents.
-        /// </summary>
-        public void InvokeCallback()
-        {
-            EnsureCallbackAssigned();
-            callback.Invoke();
-        }
-
-        private void EnsureCallbackAssigned()
-        {
-            if (callback == null)
-            {
-                throw new InvalidOperationException($"Callback reference is not configured on {name}.");
-            }
         }
 
         private void Subscribe()
@@ -100,35 +99,15 @@ namespace Jungle.Events
 
         private void ExecuteCallbackActions()
         {
-            if (callbackActions == null)
-            {
-                Debug.LogError(
-                    $"Callback actions list on {name} resolved to null. Reassign the field on {nameof(CallbackBehaviour)}.",
-                    this);
-                return;
-            }
 
             for (var index = 0; index < callbackActions.Count; index++)
             {
                 var action = callbackActions[index];
-                if (action == null)
-                {
-                    Debug.LogError(
-                        $"CallbackBehaviour on {name} contains a null callback action at index {index}.",
-                        this);
-                    continue;
-                }
 
                 action.Execute();
             }
         }
-
-#if UNITY_EDITOR
-        private void Reset()
-        {
-            invokeOnEnable = false;
-        }
-#endif
+        
 
     }
 }
