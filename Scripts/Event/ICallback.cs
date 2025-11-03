@@ -21,11 +21,6 @@ namespace Jungle.Events
         /// </summary>
         /// <param name="callbackAction">Callback action to remove.</param>
         void Detach(Action callbackAction);
-
-        /// <summary>
-        /// Begins waiting for the underlying condition.
-        /// When the condition is satisfied all attached callback actions are invoked.
-        /// </summary>
-        void Invoke();
+        
     }
 }
