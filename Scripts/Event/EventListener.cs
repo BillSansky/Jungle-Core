@@ -1,4 +1,6 @@
-using System;
+using System.Collections.Generic;
+using Jungle.Actions;
+using Jungle.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,6 +14,10 @@ namespace Jungle.Events
     {
         [SerializeField] private EventAsset eventAsset;
         [SerializeField] private UnityEvent response = new();
+
+        [SerializeReference]
+        [JungleClassSelection(typeof(IImmediateAction))]
+        private List<IImmediateAction> eventActions = new();
 
         private bool isRegistered;
 
@@ -35,7 +41,33 @@ namespace Jungle.Events
 
         private void OnEventRaised()
         {
+            ExecuteEventActions();
             response.Invoke();
+        }
+
+        private void ExecuteEventActions()
+        {
+            if (eventActions == null)
+            {
+                Debug.LogError(
+                    $"Event actions list on {name} resolved to null. Reassign the field on {nameof(EventListener)}.",
+                    this);
+                return;
+            }
+
+            for (var index = 0; index < eventActions.Count; index++)
+            {
+                var action = eventActions[index];
+                if (action == null)
+                {
+                    Debug.LogError(
+                        $"EventListener on {name} contains a null event action at index {index}.",
+                        this);
+                    continue;
+                }
+
+                action.Execute();
+            }
         }
 
         private void EnsureEventAssetAssigned()

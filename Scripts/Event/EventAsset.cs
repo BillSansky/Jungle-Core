@@ -47,5 +47,14 @@ namespace Jungle.Events
         {
             listeners.Invoke();
         }
+
+        /// <summary>
+        /// Creates an <see cref="ICallback"/> that completes when this event asset is raised.
+        /// </summary>
+        /// <returns>A callback instance that can wait for the event.</returns>
+        public ICallback CreateCallback()
+        {
+            return new EventAssetCallback(this);
+        }
     }
 }

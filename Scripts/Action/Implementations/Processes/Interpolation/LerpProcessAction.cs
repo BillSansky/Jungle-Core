@@ -8,12 +8,18 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Implements the interrupt behavior action.
+    /// </summary>
     public enum InterruptBehavior
     {
         StayAtCurrent,
         GoToStart,
         GoToEnd
     }
+    /// <summary>
+    /// Implements the lerp process action action.
+    /// </summary>
 
     [Serializable]
     public abstract class LerpProcessAction<T> : IProcessAction
@@ -28,18 +34,39 @@ namespace Jungle.Actions
         private bool isInProgress;
         private bool hasCompleted;
         private int currentIteration;
+        /// <summary>
+        /// Invoked when the process action finishes.
+        /// </summary>
 
         public event Action OnProcessCompleted;
+        /// <summary>
+        /// Indicates whether the action can report a finite duration.
+        /// </summary>
 
         public bool HasDefinedDuration => duration?.V > 0f;
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
         public float Duration => duration?.V ?? 0f;
+        /// <summary>
+        /// Gets whether the action is currently running.
+        /// </summary>
         public bool IsInProgress => isInProgress;
+        /// <summary>
+        /// Gets whether the action has finished executing.
+        /// </summary>
         public bool HasCompleted => hasCompleted;
+        /// <summary>
+        /// Executes the lerp immediately by delegating to <see cref="Start"/>.
+        /// </summary>
 
         public void Execute()
         {
             Start();
         }
+        /// <summary>
+        /// Starts the lerp process action.
+        /// </summary>
 
         public void Start()
         {
@@ -71,6 +98,9 @@ namespace Jungle.Actions
 
             activeRoutine = CoroutineRunner.StartManagedCoroutine(LerpCoroutine(totalDuration, curve));
         }
+        /// <summary>
+        /// Interrupts the lerp process action before completion.
+        /// </summary>
 
         public void Interrupt()
         {

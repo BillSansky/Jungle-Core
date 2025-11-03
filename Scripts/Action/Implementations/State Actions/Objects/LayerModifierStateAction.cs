@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Changes the layer of target GameObjects while the state is active.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects while the state is active.", null, "Actions/State")]
     public class LayerModifierStateAction : IStateAction
@@ -17,6 +20,9 @@ namespace Jungle.Actions
         [SerializeField] private bool revertOnStop = true;
 
         private readonly Dictionary<GameObject, int> storedLayers = new();
+        /// <summary>
+        /// Invoked when the state becomes active.
+        /// </summary>
 
 
         public void OnStateEnter()
@@ -36,6 +42,9 @@ namespace Jungle.Actions
             }
            
         }
+        /// <summary>
+        /// Invoked when the state finishes running.
+        /// </summary>
 
         public void OnStateExit()
         {

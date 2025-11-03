@@ -10,6 +10,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Editor hub window that surfaces Jungle packages from a configuration file
+/// and lets developers install or inspect them directly inside Unity.
+/// </summary>
 public class JunglePackageHubWindow : EditorWindow
 {
     [Serializable] private class PackageEntry

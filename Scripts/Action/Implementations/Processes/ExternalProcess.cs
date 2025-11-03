@@ -15,16 +15,34 @@ namespace Jungle.Actions
         [Tooltip("Reference to the ProcessRunner component that will execute the process.")]
         [SerializeField] 
         private ProcessRunner processRunner;
+        /// <summary>
+        /// Invoked when the process action finishes.
+        /// </summary>
 
         public event Action OnProcessCompleted;
+        /// <summary>
+        /// Indicates whether the action can report a finite duration.
+        /// </summary>
 
         public bool HasDefinedDuration => false;
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
 
         public float Duration => -1f;
+        /// <summary>
+        /// Gets whether the action is currently running.
+        /// </summary>
 
         public bool IsInProgress => processRunner != null && processRunner.IsRunning;
+        /// <summary>
+        /// Gets whether the action has finished executing.
+        /// </summary>
 
         public bool HasCompleted => processRunner != null && processRunner.IsComplete;
+        /// <summary>
+        /// Starts the external process.
+        /// </summary>
 
         public void Start()
         {
@@ -41,6 +59,9 @@ namespace Jungle.Actions
             // Start the process runner manually
             processRunner.StartProcess();
         }
+        /// <summary>
+        /// Interrupts the external process before completion.
+        /// </summary>
 
         public void Interrupt()
         {

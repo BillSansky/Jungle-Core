@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Evaluates an int value against a comparison.
+    /// </summary>
     [Serializable]
     [JungleClassInfo("Int Value Condition", "Evaluates an int value against a comparison.", null, "Values")]
     public class IntValueCondition : Condition
     {
+        /// <summary>
+        /// Defines the comparison operators supported by the condition.
+        /// </summary>
         public enum ComparisonOperator
         {
             Equals,

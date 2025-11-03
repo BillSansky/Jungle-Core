@@ -14,6 +14,10 @@ using UnityEngine.UIElements;
 namespace Jungle.Editor
 {
    
+    /// <summary>
+    /// Editor utility window that scaffolds value wrapper classes and assets for
+    /// custom data types using configurable generation options.
+    /// </summary>
     public class ValueWrapperGeneratorWindow : EditorWindow
     {
         private static readonly Dictionary<string, Type> TypeAliases = new(StringComparer.OrdinalIgnoreCase)

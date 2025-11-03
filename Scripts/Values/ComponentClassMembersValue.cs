@@ -4,10 +4,16 @@ using UnityEngine;
 
 namespace Jungle.Values
 {
+    /// <summary>
+    /// Reads a TComponent from a configured component member.
+    /// </summary>
     [Serializable]
     public class ComponentClassMembersValue<TComponent> : ClassMembersValue<TComponent>
         where TComponent : Component
     {
+        /// <summary>
+        /// Specifies how component references are searched when resolving the value.
+        /// </summary>
         public enum LookupMode
         {
             Direct,

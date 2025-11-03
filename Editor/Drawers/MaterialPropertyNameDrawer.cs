@@ -10,6 +10,10 @@ using Jungle.Values;
 namespace Jungle.Editor
 {
     [CustomPropertyDrawer(typeof(MaterialPropertyNameAttribute))]
+    /// <summary>
+    /// Property drawer that lists shader property names for a renderer referenced by
+    /// <see cref="MaterialPropertyNameAttribute"/> so users can pick a valid slot.
+    /// </summary>
     public class MaterialPropertyNameDrawer : PropertyDrawer
     {
         private const string NoPropertiesFound = "<No Properties Found>";

@@ -9,6 +9,10 @@ using UnityEngine.UIElements;
 namespace Jungle.Editor
 {
     [CustomPropertyDrawer(typeof(JungleClassSelectionAttribute))]
+    /// <summary>
+    /// Property drawer that augments fields decorated with
+    /// <see cref="JungleClassSelectionAttribute"/> by adding a class picker button.
+    /// </summary>
     public class JungleClassSelectionAttributeDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)

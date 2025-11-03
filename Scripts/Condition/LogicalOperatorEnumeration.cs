@@ -1,5 +1,8 @@
 ﻿namespace Jungle.Conditions
 {
+    /// <summary>
+    /// Defines logical operators for combining condition results.
+    /// </summary>
     public enum LogicalOperator
     {
         And,        // All conditions must be true

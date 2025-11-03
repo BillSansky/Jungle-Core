@@ -13,6 +13,9 @@ namespace Jungle.Actions
     [JungleClassInfo("List Process Action", "Runs multiple process actions in parallel or sequence.", null, "Actions/Process")]
     public class ListProcessAction : IProcessAction
     {
+        /// <summary>
+        /// Selects how the list executes its child processes.
+        /// </summary>
         public enum ExecutionMode
         {
             Parallel,   // Execute all processes at once
@@ -21,10 +24,16 @@ namespace Jungle.Actions
 
         [SerializeField] 
         private ExecutionMode mode = ExecutionMode.Parallel;
+        /// <summary>
+        /// Defines the child process actions to execute.
+        /// </summary>
 
         [SerializeReference] 
         [JungleClassSelection]
         public List<IProcessAction> Processes = new List<IProcessAction>();
+        /// <summary>
+        /// Invoked when the process action finishes.
+        /// </summary>
 
         public event Action OnProcessCompleted;
 
@@ -32,6 +41,9 @@ namespace Jungle.Actions
         private bool hasCompleted;
         private int currentProcessIndex;
         private readonly HashSet<IProcessAction> runningProcesses = new HashSet<IProcessAction>();
+        /// <summary>
+        /// Indicates whether the action can report a finite duration.
+        /// </summary>
 
         public bool HasDefinedDuration
         {
@@ -53,6 +65,9 @@ namespace Jungle.Actions
                 return allHaveDefinedDuration;
             }
         }
+        /// <summary>
+        /// Gets the total duration of the action in seconds.
+        /// </summary>
 
         public float Duration
         {
@@ -88,10 +103,19 @@ namespace Jungle.Actions
                 return totalDuration;
             }
         }
+        /// <summary>
+        /// Gets whether the action is currently running.
+        /// </summary>
 
         public bool IsInProgress => isInProgress;
+        /// <summary>
+        /// Gets whether the action has finished executing.
+        /// </summary>
 
         public bool HasCompleted => hasCompleted;
+        /// <summary>
+        /// Starts the list process action.
+        /// </summary>
 
         public void Start()
         {
@@ -118,6 +142,9 @@ namespace Jungle.Actions
                 StartSequentialExecution();
             }
         }
+        /// <summary>
+        /// Interrupts the list process action before completion.
+        /// </summary>
 
         public void Interrupt()
         {

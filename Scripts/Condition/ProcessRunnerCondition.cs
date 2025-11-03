@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace Jungle.Actions
 {
+    /// <summary>
+    /// Checks the current state reported by a ProcessRunner.
+    /// </summary>
     [System.Serializable]
     public class ProcessRunnerCondition : Condition
     {
+        /// <summary>
+        /// Enumerates the process states that can satisfy the condition.
+        /// </summary>
         public enum ProcessState
         {
             NotStarted,

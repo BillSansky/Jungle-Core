@@ -29,6 +29,9 @@ namespace Jungle.Values
 
             return component.Value();
         }
+        /// <summary>
+        /// Assigns a new value to the provider.
+        /// </summary>
 
         public void SetValue(T value)
         {
@@ -41,6 +44,9 @@ namespace Jungle.Values
 
             component.SetValue(value);
         }
+        /// <summary>
+        /// Indicates whether multiple values are available.
+        /// </summary>
 
         public bool HasMultipleValues
         {

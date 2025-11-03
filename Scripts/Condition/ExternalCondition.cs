@@ -24,6 +24,9 @@ namespace Jungle.Conditions
             return ((IBooleanCondition)conditionProvider).Condition;
         }
     }
+    /// <summary>
+    /// Defines the boolean condition interface.
+    /// </summary>
     
     public interface IBooleanCondition
     {
