@@ -5,7 +5,7 @@ namespace Jungle.Actions
     /// <summary>
     /// Describes an action that can run over time and be monitored for completion.
     /// </summary>
-    public interface IProcessAction : IImmediateAction
+    public interface IProcessAction : IImmediateAction,IStateAction
     {
         /// <summary>
         /// Begins running the process using the current configuration.
@@ -51,6 +51,12 @@ namespace Jungle.Actions
         /// Indicates whether the process has finished executing.
         /// </summary>
         bool HasCompleted { get; }
+
+        void IStateAction.OnStateEnter() => Start();
+
+
+        void IStateAction.OnStateExit() => Interrupt();
+
     }
 
 
