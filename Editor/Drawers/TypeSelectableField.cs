@@ -66,6 +66,9 @@ namespace Jungle.Editor
             expandToggle = new Toggle { value = false, text = "", focusable = false, tooltip = "Show details" };
             expandToggle.AddToClassList("tsf__toggle");
             expandToggle.AddToClassList("unity-foldout__toggle");
+            expandToggle.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
+            expandToggle.RegisterCallback<MouseDownEvent>(evt => evt.StopPropagation());
+            expandToggle.RegisterCallback<MouseUpEvent>(evt => evt.StopPropagation());
             row.Add(expandToggle);
 
             // Property label
