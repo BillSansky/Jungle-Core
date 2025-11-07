@@ -95,13 +95,21 @@ public class JunglePackageHubWindow : EditorWindow
         LoadConfig();
         RefreshInstalled();
 
+        JunglePluginDependencyRegistry.RegistryChanged += HandleDependencyRegistryChanged;
+
         EditorApplication.update += Pump;
     }
 
     private void OnDisable()
     {
+        JunglePluginDependencyRegistry.RegistryChanged -= HandleDependencyRegistryChanged;
         EditorApplication.update -= Pump;
         foreach (var rec in images.Values) rec.Req?.Dispose();
+    }
+
+    private void HandleDependencyRegistryChanged()
+    {
+        LoadConfig();
     }
 
     // -------- UI Refresh --------
@@ -178,26 +186,30 @@ public class JunglePackageHubWindow : EditorWindow
     private void LoadConfig()
     {
         config = new PackageConfig();
-        if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
+
+        if (!string.IsNullOrEmpty(configPath) && File.Exists(configPath))
         {
-            RebuildList();
-            return;
+            try
+            {
+                var json = File.ReadAllText(configPath);
+                config = JsonUtility.FromJson<PackageConfig>(json) ?? new PackageConfig();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[Jungle Hub] Failed to read '{configPath}': {e.Message}");
+                config = new PackageConfig();
+            }
         }
 
-        try
-        {
-            var json = File.ReadAllText(configPath);
-            config = JsonUtility.FromJson<PackageConfig>(json) ?? new PackageConfig();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"[Jungle Hub] Failed to read '{configPath}': {e.Message}");
-            config = new PackageConfig();
-        }
+        InjectPluginDependencies();
 
         // Pre-warm images
+        foreach (var record in images.Values)
+        {
+            record.Req?.Dispose();
+        }
         images.Clear();
-        if (config?.packages != null)
+        if (config.packages != null)
         {
             foreach (var p in config.packages)
             {
@@ -207,6 +219,67 @@ public class JunglePackageHubWindow : EditorWindow
         }
 
         RebuildList();
+    }
+
+    private void InjectPluginDependencies()
+    {
+        if (config == null)
+        {
+            config = new PackageConfig();
+        }
+
+        if (config.packages == null)
+        {
+            config.packages = new List<PackageEntry>();
+        }
+
+        var dependencies = JunglePluginDependencyRegistry.Dependencies;
+        if (dependencies == null || dependencies.Count == 0)
+        {
+            return;
+        }
+
+        var knownPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in config.packages)
+        {
+            if (!string.IsNullOrEmpty(entry.packageName))
+            {
+                knownPackages.Add(entry.packageName);
+            }
+        }
+
+        foreach (var dependency in dependencies)
+        {
+            if (knownPackages.Contains(dependency.PackageName))
+            {
+                continue;
+            }
+
+            var entry = new PackageEntry
+            {
+                packageName = dependency.PackageName,
+                gitUrl = string.IsNullOrEmpty(dependency.InstallIdentifier) ? dependency.PackageName : dependency.InstallIdentifier,
+                displayName = string.IsNullOrEmpty(dependency.DisplayName) ? dependency.PackageName : dependency.DisplayName,
+                description = BuildDependencyDescription(dependency),
+            };
+
+            config.packages.Add(entry);
+            knownPackages.Add(dependency.PackageName);
+        }
+    }
+
+    private static string BuildDependencyDescription(JunglePluginDependencyRegistry.ResolvedDependency dependency)
+    {
+        var summary = dependency.HasCatalogEntry && !string.IsNullOrEmpty(dependency.CatalogDescription)
+            ? dependency.CatalogDescription
+            : "Required plugin dependency";
+
+        if (dependency.Sources != null && dependency.Sources.Count > 0)
+        {
+            summary += $"\nDeclared in: {string.Join(", ", dependency.Sources)}";
+        }
+
+        return summary;
     }
 
     // -------- UPM ops --------
@@ -219,14 +292,15 @@ public class JunglePackageHubWindow : EditorWindow
 
     private void StartInstall(PackageEntry p)
     {
+        var identifier = string.IsNullOrEmpty(p.gitUrl) ? p.packageName : p.gitUrl;
         try
         {
-            addRequest = Client.Add(p.gitUrl);
+            addRequest = Client.Add(identifier);
             footerMsg.text = $"Installing {p.displayName ?? p.packageName}…";
         }
         catch (Exception e)
         {
-            Debug.LogError($"[Jungle Hub] Add failed for {p.gitUrl}: {e.Message}");
+            Debug.LogError($"[Jungle Hub] Add failed for {identifier}: {e.Message}");
             addRequest = null;
             footerMsg.text = $"Install error: {e.Message}";
         }
