@@ -10,8 +10,8 @@ namespace Jungle.Actions
         /// <summary>
         /// Begins running the process using the current configuration.
         /// </summary>
-        /// <param name="callback"></param>
-        void Start(Action callback=null);
+        /// <param name="callback">Optional action invoked when the process completes.</param>
+        void Start(Action callback = null);
 
         /// <summary>
         /// Stops the process before it completes naturally.
@@ -39,9 +39,12 @@ namespace Jungle.Actions
         /// <summary>
         /// Indicates whether the process has finished executing.
         /// </summary>
-        bool HasCompleted { get;  }
-        
+        bool HasCompleted { get; }
 
+        /// <summary>
+        /// Raised when the process finishes executing.
+        /// </summary>
+        event Action OnProcessCompleted;
     }
 
 

@@ -1,4 +1,5 @@
-﻿using Jungle.Attributes;
+﻿using System;
+using Jungle.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -48,6 +49,8 @@ namespace Jungle.Actions
         /// UnityEvent invoked when the process completes.
         /// </summary>
         public UnityEvent OnProcessCompleted => onProcessCompleted;
+
+        private Action processCompletionCallback;
 
         private void Awake()
         {
@@ -121,14 +124,28 @@ namespace Jungle.Actions
             OnProcessCompleted?.Invoke();
         }
 
+        private void HandleProcessActionCompleted()
+        {
+            processCompletionCallback = null;
+            NotifyProcessCompleted();
+        }
+
         /// <summary>
         /// Starts the configured process and wires completion callbacks.
         /// </summary>
         public void StartProcess()
         {
+            if (Process == null)
+            {
+                IsRunning = false;
+                IsComplete = false;
+                return;
+            }
+
             IsRunning = true;
             IsComplete = false;
-            Process.Start(null);
+            processCompletionCallback = HandleProcessActionCompleted;
+            Process.Start(processCompletionCallback);
         }
 
         /// <summary>
@@ -137,7 +154,9 @@ namespace Jungle.Actions
         public void InterruptProcess()
         {
             IsRunning = false;
-            Process.Interrupt();
+            IsComplete = false;
+            processCompletionCallback = null;
+            Process?.Interrupt();
         }
     }
 }

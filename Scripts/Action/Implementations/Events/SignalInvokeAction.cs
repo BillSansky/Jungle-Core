@@ -29,6 +29,32 @@ namespace Jungle.Actions
 
         [SerializeField]
         private bool includeInactiveChildren;
+
+        private bool hasCompleted;
+
+        public event Action OnProcessCompleted;
+
+        public bool HasDefinedDuration => true;
+
+        public float Duration => 0f;
+
+        public bool IsInProgress => false;
+
+        public bool HasCompleted => hasCompleted;
+
+        public void Start(Action callback = null)
+        {
+            hasCompleted = false;
+            Execute();
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
+            callback?.Invoke();
+        }
+
+        public void Interrupt()
+        {
+            hasCompleted = false;
+        }
         /// <summary>
         /// Sends the configured signal to the resolved receiver immediately.
         /// </summary>

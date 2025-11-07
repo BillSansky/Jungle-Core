@@ -27,6 +27,9 @@ namespace Jungle.Actions
 
         private bool isInProgress;
         private bool hasCompleted;
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
 
         /// <summary>
         /// Indicates whether the action can report a finite duration.
@@ -61,7 +64,7 @@ namespace Jungle.Actions
         /// Starts the process action with state callbacks.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
             Debug.Assert(ProcessAction != null, "ProcessAction must be set before starting");
 
@@ -72,6 +75,7 @@ namespace Jungle.Actions
 
             isInProgress = true;
             hasCompleted = false;
+            completionCallback = callback;
 
             // Execute state actions enter
             foreach (var action in StateActions)
@@ -82,7 +86,7 @@ namespace Jungle.Actions
             // Subscribe to nested process completion
             if (ProcessAction != null)
             {
-                ProcessAction.Start(null);
+                ProcessAction.Start(OnNestedProcessCompleted);
             }
             else
             {
@@ -115,6 +119,7 @@ namespace Jungle.Actions
 
             isInProgress = false;
             hasCompleted = false;
+            completionCallback = null;
         }
 
         private void OnNestedProcessCompleted()
@@ -143,6 +148,8 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = true;
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
     }
 }

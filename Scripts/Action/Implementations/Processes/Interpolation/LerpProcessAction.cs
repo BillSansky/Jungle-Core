@@ -34,6 +34,9 @@ namespace Jungle.Actions
         private bool isInProgress;
         private bool hasCompleted;
         private int currentIteration;
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
 
         /// <summary>
         /// Indicates whether the action can report a finite duration.
@@ -65,7 +68,7 @@ namespace Jungle.Actions
         /// Starts the lerp process action.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
             if (isInProgress)
             {
@@ -75,6 +78,7 @@ namespace Jungle.Actions
             isInProgress = true;
             hasCompleted = false;
             currentIteration = 0;
+            completionCallback = callback;
 
             loopStrategy?.Reset();
 
@@ -125,6 +129,7 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = false;
             currentIteration = 0;
+            completionCallback = null;
 
             OnInterrupted();
         }
@@ -148,6 +153,8 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = true;
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
 
         private IEnumerator LerpCoroutine(float totalDuration, AnimationCurve curve)
