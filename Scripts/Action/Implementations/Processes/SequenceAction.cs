@@ -35,6 +35,8 @@ namespace Jungle.Actions
         /// </summary>
         public bool HasCompleted { get; private set; }
 
+        public event Action OnProcessCompleted;
+
         /// <summary>True if the sequence itself is time-limited or any step has a time limit.</summary>
         public bool HasDefinedDuration =>
             (hasSequenceTimeLimit) || Steps.All(s => s.Action.HasDefinedDuration || s.timeLimited);
@@ -194,10 +196,13 @@ namespace Jungle.Actions
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
 
+        [NonSerialized] private Action completionCallback;
+
         /// <param name="callback"></param>
         /// <inheritdoc />
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
+            completionCallback = callback;
             IsInProgress = true;
             HasCompleted = false;
 
@@ -228,6 +233,8 @@ namespace Jungle.Actions
             if (!IsInProgress) return;
 
             IsInProgress = false;
+            HasCompleted = false;
+            completionCallback = null;
             InterruptOrCompleteCleanup();
         }
 
@@ -253,6 +260,8 @@ namespace Jungle.Actions
             HasCompleted = true;
             InterruptOrCompleteCleanup();
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
 
         protected void InterruptOrCompleteCleanup()
@@ -442,10 +451,11 @@ namespace Jungle.Actions
             s.startDelayRemaining = 0f;
 
             AttachStepListeners(s); // attach before Start to catch instant-complete
-            s.Action.Start(null);
 
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
+
+            s.Action.Start(s.completedHandler);
         }
 
         private void RestartStep(Step s)
@@ -517,12 +527,9 @@ namespace Jungle.Actions
 
         private void DetachStepListeners(Step s)
         {
-            if (s?.Action == null) return;
+            if (s == null) return;
 
-            if (s.completedHandler != null)
-            {
-                s.completedHandler = null;
-            }
+            s.completedHandler = null;
         }
 
         private void ResetAllForRepeat()

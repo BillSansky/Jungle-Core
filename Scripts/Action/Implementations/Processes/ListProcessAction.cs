@@ -36,6 +36,9 @@ namespace Jungle.Actions
         private bool hasCompleted;
         private int currentProcessIndex;
         private readonly HashSet<IProcessAction> runningProcesses = new HashSet<IProcessAction>();
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
         /// <summary>
         /// Indicates whether the action can report a finite duration.
         /// </summary>
@@ -113,7 +116,7 @@ namespace Jungle.Actions
         /// Starts the list process action.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
             if (isInProgress)
                 return;
@@ -122,6 +125,7 @@ namespace Jungle.Actions
             hasCompleted = false;
             currentProcessIndex = 0;
             runningProcesses.Clear();
+            completionCallback = callback;
 
             if (Processes == null || Processes.Count == 0)
             {
@@ -148,6 +152,8 @@ namespace Jungle.Actions
                 return;
 
             isInProgress = false;
+            hasCompleted = false;
+            completionCallback = null;
 
             // Interrupt all running processes
             foreach (var process in runningProcesses)
@@ -168,8 +174,7 @@ namespace Jungle.Actions
             {
                 if (process != null)
                 {
-                    runningProcesses.Add(process);
-                    process.Start(null);
+                    StartChildProcess(process, HandleParallelCompletion);
                 }
             }
 
@@ -194,8 +199,7 @@ namespace Jungle.Actions
                 var process = Processes[currentProcessIndex];
                 if (process != null)
                 {
-                    runningProcesses.Add(process);
-                    process.Start(null);
+                    StartChildProcess(process, HandleSequentialCompletion);
                     return;
                 }
                 currentProcessIndex++;
@@ -208,65 +212,31 @@ namespace Jungle.Actions
             }
         }
 
-        private void OnChildProcessCompleted()
+        private void StartChildProcess(IProcessAction process, Action<IProcessAction> onCompleted)
+        {
+            runningProcesses.Add(process);
+            process.Start(() => onCompleted?.Invoke(process));
+        }
+
+        private void HandleParallelCompletion(IProcessAction process)
         {
             if (!isInProgress)
                 return;
 
-            if (mode == ExecutionMode.Parallel)
-            {
-                HandleParallelCompletion();
-            }
-            else
-            {
-                HandleSequentialCompletion();
-            }
-        }
+            runningProcesses.Remove(process);
 
-        private void HandleParallelCompletion()
-        {
-            // Find which process completed
-            IProcessAction completedProcess = null;
-            foreach (var process in runningProcesses)
-            {
-                if (process != null && process.HasCompleted)
-                {
-                    completedProcess = process;
-                    break;
-                }
-            }
-
-            if (completedProcess != null)
-            {
-                runningProcesses.Remove(completedProcess);
-            }
-
-            // Check if all processes are complete
             if (runningProcesses.Count == 0)
             {
                 Complete();
             }
         }
 
-        private void HandleSequentialCompletion()
+        private void HandleSequentialCompletion(IProcessAction process)
         {
-            // Remove completed process
-            IProcessAction completedProcess = null;
-            foreach (var process in runningProcesses)
-            {
-                if (process != null && process.HasCompleted)
-                {
-                    completedProcess = process;
-                    break;
-                }
-            }
+            if (!isInProgress)
+                return;
 
-            if (completedProcess != null)
-            {
-                runningProcesses.Remove(completedProcess);
-            }
-
-            // Move to next process
+            runningProcesses.Remove(process);
             currentProcessIndex++;
             StartNextSequentialProcess();
         }
@@ -290,6 +260,8 @@ namespace Jungle.Actions
             runningProcesses.Clear();
 
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
     }
 }

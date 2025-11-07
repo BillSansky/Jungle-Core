@@ -5,17 +5,5 @@
     /// </summary>
     public interface IImmediateAction : IProcessAction
     {
-        void IProcessAction.Interrupt()
-        {
-            //do nothing
-            HasCompleted = false;
-        }
-
-        bool IProcessAction.HasDefinedDuration => false;
-
-        float IProcessAction.Duration => -1;
-
-        bool IProcessAction.IsInProgress => false;
-        
     }
 }

@@ -48,6 +48,9 @@ namespace Jungle.Actions
         private Coroutine autoEndCoroutine;
         private bool isInProgress;
         private bool hasCompleted;
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
 
         /// <summary>
         /// Indicates whether the action can report a finite duration.
@@ -96,7 +99,7 @@ namespace Jungle.Actions
         /// Starts the timed state action executor.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
             Debug.Assert(coroutineRunner != null, "coroutineRunner must be set before starting the action");
 
@@ -107,6 +110,7 @@ namespace Jungle.Actions
 
             isInProgress = true;
             hasCompleted = false;
+            completionCallback = callback;
 
             foreach (var action in Actions)
             {
@@ -133,6 +137,7 @@ namespace Jungle.Actions
             Cleanup();
             isInProgress = false;
             hasCompleted = false;
+            completionCallback = null;
         }
 
         private void Cleanup()
@@ -161,6 +166,8 @@ namespace Jungle.Actions
             isInProgress = false;
             hasCompleted = true;
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
 
         private IEnumerator AutoEndCoroutine()

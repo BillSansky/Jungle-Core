@@ -16,6 +16,10 @@ namespace Jungle.Actions
         [SerializeField] 
         private ProcessRunner processRunner;
 
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
+
         /// <summary>
         /// Indicates whether the action can report a finite duration.
         /// </summary>
@@ -41,14 +45,17 @@ namespace Jungle.Actions
         /// Starts the external process.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
             Debug.Assert(processRunner != null, "ProcessRunner reference is null");
 
             if (processRunner == null)
             {
+                completionCallback = null;
                 return;
             }
+
+            completionCallback = callback;
 
             // Subscribe to completion event before starting
             processRunner.OnProcessCompleted.AddListener(HandleProcessCompleted);
@@ -65,6 +72,7 @@ namespace Jungle.Actions
             if (processRunner != null && processRunner.IsRunning)
             {
                 processRunner.InterruptProcess();
+                completionCallback = null;
                 Cleanup();
             }
         }
@@ -72,6 +80,8 @@ namespace Jungle.Actions
         private void HandleProcessCompleted()
         {
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
             Cleanup();
         }
 

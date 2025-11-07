@@ -30,6 +30,9 @@ namespace Jungle.Timing
         private bool isPaused;
         private bool isWaitingForFrame;
         private bool hasCompleted;
+        private Action completionCallback;
+
+        public event Action OnProcessCompleted;
 
         /// <summary>
         /// Gets the total duration of the action in seconds.
@@ -104,8 +107,9 @@ namespace Jungle.Timing
         /// Starts counting down using the configured duration.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback)
+        public void Start(Action callback = null)
         {
+            completionCallback = callback;
             StartTimer();
         }
 
@@ -152,6 +156,7 @@ namespace Jungle.Timing
             isRunning = false;
             isPaused = false;
             isWaitingForFrame = false;
+            completionCallback = null;
         }
 
         /// <summary>
@@ -212,6 +217,8 @@ namespace Jungle.Timing
             hasCompleted = true;
             onCompleted.Invoke();
             OnProcessCompleted?.Invoke();
+            completionCallback?.Invoke();
+            completionCallback = null;
         }
     }
 }

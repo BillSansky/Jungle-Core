@@ -17,6 +17,32 @@ namespace Jungle.Actions
         /// </summary>
         [SerializeField] private EventAsset eventAsset;
 
+        private bool hasCompleted;
+
+        public event Action OnProcessCompleted;
+
+        public bool HasDefinedDuration => true;
+
+        public float Duration => 0f;
+
+        public bool IsInProgress => false;
+
+        public bool HasCompleted => hasCompleted;
+
+        public void Start(Action callback = null)
+        {
+            hasCompleted = false;
+            Execute();
+            hasCompleted = true;
+            OnProcessCompleted?.Invoke();
+            callback?.Invoke();
+        }
+
+        public void Interrupt()
+        {
+            hasCompleted = false;
+        }
+
         public void Execute()
         {
             EnsureEventAssetAssigned();
