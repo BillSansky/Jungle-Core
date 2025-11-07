@@ -119,7 +119,6 @@ namespace Jungle.Actions
             IsRunning = false;
             IsComplete = true;
             OnProcessCompleted?.Invoke();
-            Process.OnProcessCompleted -= NotifyProcessCompleted;
         }
 
         /// <summary>
@@ -129,8 +128,7 @@ namespace Jungle.Actions
         {
             IsRunning = true;
             IsComplete = false;
-            Process.Start();
-            Process.OnProcessCompleted += NotifyProcessCompleted;
+            Process.Start(null);
         }
 
         /// <summary>

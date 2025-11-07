@@ -34,11 +34,7 @@ namespace Jungle.Actions
         private bool isInProgress;
         private bool hasCompleted;
         private int currentIteration;
-        /// <summary>
-        /// Invoked when the process action finishes.
-        /// </summary>
 
-        public event Action OnProcessCompleted;
         /// <summary>
         /// Indicates whether the action can report a finite duration.
         /// </summary>
@@ -62,13 +58,14 @@ namespace Jungle.Actions
 
         public void Execute()
         {
-            Start();
+            Start(null);
         }
+
         /// <summary>
         /// Starts the lerp process action.
         /// </summary>
-
-        public void Start()
+        /// <param name="callback"></param>
+        public void Start(Action callback)
         {
             if (isInProgress)
             {

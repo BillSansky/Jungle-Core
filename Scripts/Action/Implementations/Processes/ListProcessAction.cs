@@ -31,11 +31,6 @@ namespace Jungle.Actions
         [SerializeReference] 
         [JungleClassSelection]
         public List<IProcessAction> Processes = new List<IProcessAction>();
-        /// <summary>
-        /// Invoked when the process action finishes.
-        /// </summary>
-
-        public event Action OnProcessCompleted;
 
         private bool isInProgress;
         private bool hasCompleted;
@@ -113,11 +108,12 @@ namespace Jungle.Actions
         /// </summary>
 
         public bool HasCompleted => hasCompleted;
+
         /// <summary>
         /// Starts the list process action.
         /// </summary>
-
-        public void Start()
+        /// <param name="callback"></param>
+        public void Start(Action callback)
         {
             if (isInProgress)
                 return;
@@ -158,7 +154,6 @@ namespace Jungle.Actions
             {
                 if (process != null)
                 {
-                    process.OnProcessCompleted -= OnChildProcessCompleted;
                     process.Interrupt();
                 }
             }
@@ -174,8 +169,7 @@ namespace Jungle.Actions
                 if (process != null)
                 {
                     runningProcesses.Add(process);
-                    process.OnProcessCompleted += OnChildProcessCompleted;
-                    process.Start();
+                    process.Start(null);
                 }
             }
 
@@ -201,8 +195,7 @@ namespace Jungle.Actions
                 if (process != null)
                 {
                     runningProcesses.Add(process);
-                    process.OnProcessCompleted += OnChildProcessCompleted;
-                    process.Start();
+                    process.Start(null);
                     return;
                 }
                 currentProcessIndex++;
@@ -245,7 +238,6 @@ namespace Jungle.Actions
 
             if (completedProcess != null)
             {
-                completedProcess.OnProcessCompleted -= OnChildProcessCompleted;
                 runningProcesses.Remove(completedProcess);
             }
 
@@ -271,7 +263,6 @@ namespace Jungle.Actions
 
             if (completedProcess != null)
             {
-                completedProcess.OnProcessCompleted -= OnChildProcessCompleted;
                 runningProcesses.Remove(completedProcess);
             }
 
@@ -293,7 +284,6 @@ namespace Jungle.Actions
             {
                 if (process != null)
                 {
-                    process.OnProcessCompleted -= OnChildProcessCompleted;
                 }
             }
 

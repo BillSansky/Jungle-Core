@@ -30,9 +30,6 @@ namespace Jungle.Actions
         public float SequenceTimeLimit = 0f;
 
 
-        /// <inheritdoc />
-        public event Action OnProcessCompleted;
-
         /// <summary>
         /// Indicates whether all sequence steps have finished.
         /// </summary>
@@ -197,8 +194,9 @@ namespace Jungle.Actions
         // Coroutine handle
         [NonSerialized] private Coroutine tickRoutine;
 
+        /// <param name="callback"></param>
         /// <inheritdoc />
-        public void Start()
+        public void Start(Action callback)
         {
             IsInProgress = true;
             HasCompleted = false;
@@ -444,7 +442,7 @@ namespace Jungle.Actions
             s.startDelayRemaining = 0f;
 
             AttachStepListeners(s); // attach before Start to catch instant-complete
-            s.Action.Start();
+            s.Action.Start(null);
 
             if (!parallelRunning.Contains(s))
                 parallelRunning.Add(s);
@@ -515,8 +513,6 @@ namespace Jungle.Actions
                     HandleStepTerminal(s);
                 }
             };
-
-            s.Action.OnProcessCompleted += s.completedHandler;
         }
 
         private void DetachStepListeners(Step s)
@@ -525,7 +521,6 @@ namespace Jungle.Actions
 
             if (s.completedHandler != null)
             {
-                s.Action.OnProcessCompleted -= s.completedHandler;
                 s.completedHandler = null;
             }
         }

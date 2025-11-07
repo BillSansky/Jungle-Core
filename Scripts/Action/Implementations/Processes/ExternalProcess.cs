@@ -15,11 +15,7 @@ namespace Jungle.Actions
         [Tooltip("Reference to the ProcessRunner component that will execute the process.")]
         [SerializeField] 
         private ProcessRunner processRunner;
-        /// <summary>
-        /// Invoked when the process action finishes.
-        /// </summary>
 
-        public event Action OnProcessCompleted;
         /// <summary>
         /// Indicates whether the action can report a finite duration.
         /// </summary>
@@ -40,11 +36,12 @@ namespace Jungle.Actions
         /// </summary>
 
         public bool HasCompleted => processRunner != null && processRunner.IsComplete;
+
         /// <summary>
         /// Starts the external process.
         /// </summary>
-
-        public void Start()
+        /// <param name="callback"></param>
+        public void Start(Action callback)
         {
             Debug.Assert(processRunner != null, "ProcessRunner reference is null");
 

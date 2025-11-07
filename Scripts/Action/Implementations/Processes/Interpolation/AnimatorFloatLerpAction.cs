@@ -11,7 +11,7 @@ namespace Jungle.Actions
     /// </summary>
     [JungleClassInfo("Animator Float Lerp Process", "Tweens an animator float parameter to a target value and optionally reverts it on stop.", "d_AnimationClip", "Actions/Process")]
     [Serializable]
-    public class AnimatorFloatLerpAction : LerpProcessAction<float>, IStateAction
+    public class AnimatorFloatLerpAction : LerpProcessAction<float>
     {
         [SerializeReference][JungleClassSelection] private IGameObjectValue targetAnimatorObject = new GameObjectValue();
         [SerializeReference][JungleClassSelection] private IStringValue parameterName = new StringValue("Blend");
@@ -26,7 +26,7 @@ namespace Jungle.Actions
 
         public void OnStateEnter()
         {
-            Start();
+            Start(null);
         }
         /// <summary>
         /// Invoked when the state finishes running.

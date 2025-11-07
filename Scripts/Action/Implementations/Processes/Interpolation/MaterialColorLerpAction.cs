@@ -119,7 +119,7 @@ namespace Jungle.Actions
 
         public void OnStateEnter()
         {
-            Start();
+            Start(null);
         }
         /// <summary>
         /// Invoked when the state finishes running.

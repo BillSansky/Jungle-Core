@@ -48,11 +48,7 @@ namespace Jungle.Actions
         private Coroutine autoEndCoroutine;
         private bool isInProgress;
         private bool hasCompleted;
-        /// <summary>
-        /// Invoked when the process action finishes.
-        /// </summary>
 
-        public event Action OnProcessCompleted;
         /// <summary>
         /// Indicates whether the action can report a finite duration.
         /// </summary>
@@ -93,13 +89,14 @@ namespace Jungle.Actions
 
         public void Execute()
         {
-            Start();
+            Start(null);
         }
+
         /// <summary>
         /// Starts the timed state action executor.
         /// </summary>
-
-        public void Start()
+        /// <param name="callback"></param>
+        public void Start(Action callback)
         {
             Debug.Assert(coroutineRunner != null, "coroutineRunner must be set before starting the action");
 
