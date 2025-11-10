@@ -8,7 +8,7 @@ namespace Jungle.Values
     /// Reads a TComponent from a configured component member.
     /// </summary>
     [Serializable]
-    public class ComponentClassMembersValue<TComponent> : ClassMembersValue<TComponent>
+    public class ComponentClassMembersValue<TComponent> : ClassMembersValue<TComponent>, IGameObjectContext
         where TComponent : Component
     {
         /// <summary>
@@ -155,6 +155,24 @@ namespace Jungle.Values
                 default:
                     return gameObject.GetComponent<TComponent>();
             }
+        }
+
+        /// <summary>
+        /// Provides access to the <see cref="GameObject"/> associated with the resolved component value.
+        /// </summary>
+        /// <returns>The <see cref="GameObject"/> derived from the resolved component or the referenced component.</returns>
+        public GameObject GetGameObject()
+        {
+            TComponent resolvedComponent = Value();
+
+            if (resolvedComponent != null)
+            {
+                return resolvedComponent.gameObject;
+            }
+
+            Component referenceComponent = component?.Component;
+
+            return referenceComponent != null ? referenceComponent.gameObject : null;
         }
     }
 }
