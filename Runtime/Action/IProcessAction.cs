@@ -29,12 +29,12 @@ namespace Jungle.Actions
         /// Gets the expected duration in seconds when available.
         /// </summary>
         float Duration { get; }
-        
+
+
         /// <summary>
         /// Indicates whether the process is currently active.
         /// </summary>
         bool IsInProgress { get; }
-        
 
     }
 

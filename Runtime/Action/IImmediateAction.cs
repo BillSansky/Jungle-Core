@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace Jungle.Actions
 {
     /// <summary>
@@ -9,20 +7,16 @@ namespace Jungle.Actions
     {
         void Execute() => Start();
 
-       
-
         void IProcessAction.Stop()
         {
-            //do nothing
         }
 
         bool IProcessAction.IsInstant => true;
 
-        bool IProcessAction.HasDefinedDuration =>true;
+        bool IProcessAction.HasDefinedDuration => true;
 
-        float IProcessAction.Duration =>0;
+        float IProcessAction.Duration => 0f;
 
         bool IProcessAction.IsInProgress => false;
-
     }
 }
