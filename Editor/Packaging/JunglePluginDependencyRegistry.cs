@@ -172,7 +172,7 @@ public static class JunglePluginDependencyRegistry
     private static class PackageCatalog
     {
         [Serializable]
-        private class PackageEntry
+        internal class PackageEntry
         {
             public string displayName;
             public string packageName;
