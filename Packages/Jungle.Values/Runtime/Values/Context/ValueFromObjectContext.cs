@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
+using Jungle.Values;
 using UnityEngine;
 /// <summary>
 /// Specifies how components are located on the source object.
@@ -35,30 +36,23 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
     {
         Debug.Assert(context != null, "Context object cannot be null");
 
-        UnityEngine.Object unityObject = context as UnityEngine.Object;
-        Debug.Assert(unityObject != null, "Context must be a Unity Object");
-
-        // Check if we can use cached component
         if (hasValidCache && ReferenceEquals(cachedContext, context))
         {
             return cachedComponent;
         }
 
-        GameObject targetGameObject = GetGameObjectFromContext(unityObject);
+        GameObject targetGameObject = GetGameObjectFromContext(context);
 
         if (targetGameObject == null)
         {
-            Debug.LogWarning($"Could not extract GameObject from context of type {context.GetType()}");
-            cachedContext = null;
-            cachedComponent = default(T);
-            cachedComponents?.Clear();
-            hasValidCache = false;
+            string contextDescription = context != null ? context.GetType().FullName : "null";
+            Debug.LogWarning($"Could not extract GameObject from context of type {contextDescription}");
+            ResetCache();
             return default(T);
         }
 
         T component = GetValueBasedOnStrategy(targetGameObject);
 
-        // Cache the results
         cachedContext = context;
         cachedComponent = component;
         hasValidCache = true;
@@ -66,7 +60,50 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
         return component;
     }
 
-    private GameObject GetGameObjectFromContext(UnityEngine.Object unityObject)
+    private void ResetCache()
+    {
+        cachedContext = null;
+        cachedComponent = default(T);
+
+        if (cachedComponents != null)
+        {
+            cachedComponents.Clear();
+        }
+
+        hasValidCache = false;
+    }
+
+    private GameObject GetGameObjectFromContext(object context)
+    {
+        if (context is GameObject directGameObject)
+        {
+            return directGameObject;
+        }
+
+        if (context is Component componentContext)
+        {
+            return componentContext.gameObject;
+        }
+
+        if (context is IGameObjectContext gameObjectContext)
+        {
+            return gameObjectContext.GetGameObject();
+        }
+
+        if (context is IGameObjectReference gameObjectReference)
+        {
+            return gameObjectReference.GameObject;
+        }
+
+        if (context is UnityEngine.Object unityObject)
+        {
+            return GetGameObjectFromUnityObject(unityObject);
+        }
+
+        return null;
+    }
+
+    private GameObject GetGameObjectFromUnityObject(UnityEngine.Object unityObject)
     {
         if (unityObject is GameObject gameObject)
         {
@@ -78,7 +115,6 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
             return component.gameObject;
         }
 
-        // For other UnityEngine.Object types, we cannot extract a GameObject
         return null;
     }
 
@@ -187,5 +223,5 @@ public abstract class ValueFromObjectContext<T> : ValueFromContext<T>
     /// </summary>
 
     public override bool HasMultipleValues =>
-        Strategy == ComponentRetrievalStrategy.InObjectAndChildren && cachedComponents.Count > 1;
+        Strategy == ComponentRetrievalStrategy.InObjectAndChildren && cachedComponents != null && cachedComponents.Count > 1;
 }
