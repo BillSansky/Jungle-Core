@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace Jungle.Values
         protected ComponentLookupStrategy lookupStrategy = ComponentLookupStrategy.OnObject;
 
         protected TComponent cachedComponent;
+        protected readonly List<TComponent> cachedComponents = new();
         protected bool isInitialized;
 
         /// <summary>
@@ -73,7 +75,34 @@ namespace Jungle.Values
         /// <summary>
         /// Indicates whether multiple values are available.
         /// </summary>
-        public virtual bool HasMultipleValues => false;
+        public virtual bool HasMultipleValues
+        {
+            get
+            {
+                if (!isInitialized)
+                {
+                    InitializeComponent();
+                }
+
+                return cachedComponents.Count > 1;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all component values.
+        /// </summary>
+        public virtual IEnumerable<TComponent> Values
+        {
+            get
+            {
+                if (!isInitialized)
+                {
+                    InitializeComponent();
+                }
+
+                return cachedComponents;
+            }
+        }
 
         /// <summary>
         /// Retrieves the component value.
@@ -95,6 +124,7 @@ namespace Jungle.Values
         {
             isInitialized = true;
             cachedComponent = null;
+            cachedComponents.Clear();
 
             if (targetObject == null)
             {
@@ -102,25 +132,56 @@ namespace Jungle.Values
                 return;
             }
 
-            GameObject gameObject = targetObject.Value();
-            if (gameObject == null)
+            int providedObjects = 0;
+            int nullReferences = 0;
+
+            foreach (GameObject gameObject in targetObject.Values)
             {
-                Debug.LogWarning($"{GetType().Name}: Target GameObject is null");
+                providedObjects++;
+
+                if (gameObject == null)
+                {
+                    nullReferences++;
+                    continue;
+                }
+
+                TComponent component = lookupStrategy switch
+                {
+                    ComponentLookupStrategy.OnObject => gameObject.GetComponent<TComponent>(),
+                    ComponentLookupStrategy.InChildren => gameObject.GetComponentInChildren<TComponent>(),
+                    ComponentLookupStrategy.InParent => gameObject.GetComponentInParent<TComponent>(),
+                    _ => null
+                };
+
+                if (component != null)
+                {
+                    cachedComponents.Add(component);
+
+                    if (cachedComponent == null)
+                    {
+                        cachedComponent = component;
+                    }
+                }
+            }
+
+            if (cachedComponent != null)
+            {
                 return;
             }
 
-            cachedComponent = lookupStrategy switch
+            if (providedObjects == 0)
             {
-                ComponentLookupStrategy.OnObject => gameObject.GetComponent<TComponent>(),
-                ComponentLookupStrategy.InChildren => gameObject.GetComponentInChildren<TComponent>(),
-                ComponentLookupStrategy.InParent => gameObject.GetComponentInParent<TComponent>(),
-                _ => null
-            };
-
-            if (cachedComponent == null)
-            {
-                Debug.LogWarning($"{GetType().Name}: Component of type {typeof(TComponent).Name} not found using strategy {lookupStrategy} on GameObject '{gameObject.name}'");
+                Debug.LogWarning($"{GetType().Name}: Target object provider returned no GameObjects");
+                return;
             }
+
+            if (nullReferences == providedObjects)
+            {
+                Debug.LogWarning($"{GetType().Name}: Target object provider returned only null GameObject references");
+                return;
+            }
+
+            Debug.LogWarning($"{GetType().Name}: Component of type {typeof(TComponent).Name} not found using strategy {lookupStrategy} across {providedObjects - nullReferences} GameObjects");
         }
 
         /// <summary>
@@ -130,6 +191,7 @@ namespace Jungle.Values
         {
             isInitialized = false;
             cachedComponent = null;
+            cachedComponents.Clear();
         }
     }
 }
