@@ -15,7 +15,7 @@ namespace Jungle.Values.UnityTypes
         "Casts a ray and returns the hit position or a fallback point along the ray for drag interactions.",
         null,
         "Values/Unity Types")]
-    public class RayDragTarget : IVector3Value
+    public class RayHitPosition : IVector3Value
     {
         /// <summary>
         /// Provides the ray used for the drag computation.
@@ -74,7 +74,7 @@ namespace Jungle.Values.UnityTypes
             Vector3 direction = rayValue.direction;
             if (direction.sqrMagnitude == 0f)
             {
-                Debug.LogWarning($"{nameof(RayDragTarget)}: Ray direction has zero magnitude.");
+                Debug.LogWarning($"{nameof(RayHitPosition)}: Ray direction has zero magnitude.");
                 return rayValue.origin;
             }
 

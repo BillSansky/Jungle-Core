@@ -28,6 +28,21 @@ namespace Jungle.Values.GameDev
         public override bool HasMultipleValues => false;
     }
 
+    [Serializable]
+    public class MainCamera : ICameraValue
+    {
+        private Camera cachedCamera;
+        
+        public Camera Value()
+        {
+            if(!cachedCamera)
+                cachedCamera=Camera.main;
+            return Camera.main;
+        }
+
+        public bool HasMultipleValues => false;
+    }
+    
     /// <summary>
     /// Returns a camera component from a component field, property, or method.
     /// </summary>
