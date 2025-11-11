@@ -147,8 +147,47 @@ namespace Jungle.Utility
             if (obj == null) return false;
 
             int instanceId = obj.GetInstanceID();
-            return RecordedStates.ContainsKey(instanceId) && 
+            return RecordedStates.ContainsKey(instanceId) &&
                    RecordedStates[instanceId].GetType() == typeof(TState);
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the recorded state for the given object.
+        /// </summary>
+        /// <param name="obj">The object whose state was recorded.</param>
+        /// <param name="state">The recorded state instance when available.</param>
+        /// <returns>True when a state has been recorded for the object; otherwise false.</returns>
+        public static bool TryGetState(UnityEngine.Object obj, out ISaveState state)
+        {
+            state = null;
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            int instanceId = obj.GetInstanceID();
+            return RecordedStates.TryGetValue(instanceId, out state);
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the recorded state for the given object and cast it to the requested type.
+        /// </summary>
+        /// <typeparam name="TState">Expected state type.</typeparam>
+        /// <param name="obj">The object whose state was recorded.</param>
+        /// <param name="state">The recorded state instance when available.</param>
+        /// <returns>True when the state exists and matches the requested type; otherwise false.</returns>
+        public static bool TryGetState<TState>(UnityEngine.Object obj, out TState state) where TState : class, ISaveState
+        {
+            state = null;
+
+            if (!TryGetState(obj, out ISaveState rawState))
+            {
+                return false;
+            }
+
+            state = rawState as TState;
+            return state != null;
         }
 
         /// <summary>
