@@ -1,13 +1,12 @@
 {
-    "name": "Jungle.Core.Editor",
+    "name": "Jungle.Values",
     "rootNamespace": "",
     "references": [
-        "GUID:3fc4c5fd027b0aa4c9e3b815de31f8cc"
+        "Jungle.Core"
     ],
-    "includePlatforms": [
-        "Editor"
+    "includePlatforms": [],
+    "excludePlatforms": [
     ],
-    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

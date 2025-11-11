@@ -11,7 +11,7 @@ namespace Jungle.Actions
         /// Begins running the process using the current configuration.
         /// </summary>
         /// <param name="callback">Optional action invoked when the process completes.</param>
-        void Start(Action callback = null);
+        void StartProcess(Action callback = null);
 
         /// <summary>
         /// Stops the process before it completes naturally.

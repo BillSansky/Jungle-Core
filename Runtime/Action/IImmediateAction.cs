@@ -5,7 +5,7 @@ namespace Jungle.Actions
     /// </summary>
     public interface IImmediateAction : IProcessAction
     {
-        void Execute() => Start();
+        void Execute() => StartProcess();
 
         void IProcessAction.Stop()
         {

@@ -1,4 +1,5 @@
 using System;
+using Jungle.Actions;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,7 +8,7 @@ namespace Jungle.Timing
     /// <summary>
     /// Runs a countdown and raises UnityEvents when it starts and completes.
     /// </summary>
-    public class Timer : MonoBehaviour, Jungle.Actions.IProcessAction
+    public class Timer : MonoBehaviour, IProcessAction
     {
         [SerializeField]
         [Min(0f)]
@@ -107,7 +108,7 @@ namespace Jungle.Timing
         /// Starts counting down using the configured duration.
         /// </summary>
         /// <param name="callback"></param>
-        public void Start(Action callback = null)
+        void IProcessAction.StartProcess(Action callback)
         {
             completionCallback = callback;
             StartTimer();
