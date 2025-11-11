@@ -1,0 +1,19 @@
+{
+  "name": "Jungle.Actions",
+  "rootNamespace": "",
+  "references": [
+    "Jungle.Core",
+    "Jungle.Utils",
+    "Jungle.Values"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [
+  ],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
