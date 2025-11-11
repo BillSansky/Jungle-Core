@@ -255,10 +255,11 @@ public class JunglePackageHubWindow : EditorWindow
                 continue;
             }
 
+            var installIdentifier = ComposeInstallIdentifier(dependency);
             var entry = new PackageEntry
             {
                 packageName = dependency.PackageName,
-                gitUrl = string.IsNullOrEmpty(dependency.InstallIdentifier) ? dependency.PackageName : dependency.InstallIdentifier,
+                gitUrl = string.IsNullOrEmpty(installIdentifier) ? dependency.PackageName : installIdentifier,
                 displayName = string.IsNullOrEmpty(dependency.DisplayName) ? dependency.PackageName : dependency.DisplayName,
                 description = BuildDependencyDescription(dependency),
             };
@@ -274,12 +275,37 @@ public class JunglePackageHubWindow : EditorWindow
             ? dependency.CatalogDescription
             : "Required plugin dependency";
 
+        if (!string.IsNullOrEmpty(dependency.VersionRequirement))
+        {
+            summary += $"\nRequires version {dependency.VersionRequirement} or newer.";
+        }
+
         if (dependency.Sources != null && dependency.Sources.Count > 0)
         {
             summary += $"\nDeclared in: {string.Join(", ", dependency.Sources)}";
         }
 
         return summary;
+    }
+
+    private static string ComposeInstallIdentifier(JunglePluginDependencyRegistry.ResolvedDependency dependency)
+    {
+        var identifier = dependency.InstallIdentifier;
+
+        if (!string.IsNullOrEmpty(dependency.VersionRequirement) && !string.IsNullOrEmpty(dependency.PackageName))
+        {
+            if (string.IsNullOrEmpty(identifier) || string.Equals(identifier, dependency.PackageName, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{dependency.PackageName}@{dependency.VersionRequirement}";
+            }
+        }
+
+        if (string.IsNullOrEmpty(identifier))
+        {
+            return dependency.PackageName;
+        }
+
+        return identifier;
     }
 
     // -------- UPM ops --------

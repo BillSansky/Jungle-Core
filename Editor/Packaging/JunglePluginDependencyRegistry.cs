@@ -17,7 +17,7 @@ public static class JunglePluginDependencyRegistry
 {
     public sealed class ResolvedDependency
     {
-        public ResolvedDependency(string packageName, string displayName, string installIdentifier, string catalogDescription, IReadOnlyList<string> sources, bool hasCatalogEntry)
+        public ResolvedDependency(string packageName, string displayName, string installIdentifier, string catalogDescription, IReadOnlyList<string> sources, bool hasCatalogEntry, string versionRequirement)
         {
             PackageName = packageName;
             DisplayName = displayName;
@@ -25,6 +25,7 @@ public static class JunglePluginDependencyRegistry
             CatalogDescription = catalogDescription;
             Sources = sources;
             HasCatalogEntry = hasCatalogEntry;
+            VersionRequirement = versionRequirement;
         }
 
         public string PackageName { get; }
@@ -33,6 +34,7 @@ public static class JunglePluginDependencyRegistry
         public string CatalogDescription { get; }
         public IReadOnlyList<string> Sources { get; }
         public bool HasCatalogEntry { get; }
+        public string VersionRequirement { get; }
     }
 
     private static readonly List<ResolvedDependency> cachedDependencies = new();
@@ -64,6 +66,7 @@ public static class JunglePluginDependencyRegistry
     {
         var manifestGuids = AssetDatabase.FindAssets("t:JunglePluginManifest");
         var dependencySources = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        var versionRequirements = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var discoveredPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var guid in manifestGuids)
@@ -91,10 +94,8 @@ public static class JunglePluginDependencyRegistry
 
             foreach (var rawName in names)
             {
-                var packageName = rawName?.Trim();
-                if (string.IsNullOrEmpty(packageName))
+                if (!TryParseManifestEntry(rawName, path, out var packageName, out var versionRequirement))
                 {
-                    Debug.LogWarning($"A JunglePluginManifest at '{path}' declares an empty package entry. It will be ignored.");
                     continue;
                 }
 
@@ -107,6 +108,16 @@ public static class JunglePluginDependencyRegistry
                 if (!sources.Any(existing => string.Equals(existing, path, StringComparison.OrdinalIgnoreCase)))
                 {
                     sources.Add(path);
+                }
+
+                if (string.IsNullOrEmpty(versionRequirement))
+                {
+                    continue;
+                }
+
+                if (!versionRequirements.TryGetValue(packageName, out var existingRequirement) || JunglePackageVersionUtility.CompareVersions(versionRequirement, existingRequirement) > 0)
+                {
+                    versionRequirements[packageName] = versionRequirement;
                 }
             }
         }
@@ -133,13 +144,16 @@ public static class JunglePluginDependencyRegistry
                 ? catalogEntry.displayName
                 : packageName;
             var catalogDescription = hasCatalogEntry ? catalogEntry.description : string.Empty;
+            var versionRequirement = versionRequirements.TryGetValue(packageName, out var requiredVersion)
+                ? requiredVersion
+                : null;
 
             if (!hasCatalogEntry)
             {
                 Debug.LogWarning($"Jungle plugin dependency '{packageName}' is not defined in upm-sources.json. Declared in: {string.Join(", ", sources)}");
             }
 
-            resolved.Add(new ResolvedDependency(packageName, displayName, installIdentifier, catalogDescription, sources.ToArray(), hasCatalogEntry));
+            resolved.Add(new ResolvedDependency(packageName, displayName, installIdentifier, catalogDescription, sources.ToArray(), hasCatalogEntry, versionRequirement));
         }
 
         resolved = resolved
@@ -154,6 +168,8 @@ public static class JunglePluginDependencyRegistry
             signatureBuilder.Append(dependency.InstallIdentifier);
             signatureBuilder.Append('|');
             signatureBuilder.Append(dependency.DisplayName);
+            signatureBuilder.Append('|');
+            signatureBuilder.Append(dependency.VersionRequirement);
             signatureBuilder.Append(';');
         }
         var signature = signatureBuilder.ToString();
@@ -293,6 +309,43 @@ public static class JunglePluginDependencyRegistry
                 return DateTime.MinValue;
             }
         }
+
+    }
+
+    private static bool TryParseManifestEntry(string rawEntry, string sourcePath, out string packageName, out string versionRequirement)
+    {
+        packageName = null;
+        versionRequirement = null;
+
+        var trimmed = rawEntry?.Trim();
+        if (string.IsNullOrEmpty(trimmed))
+        {
+            Debug.LogWarning($"A JunglePluginManifest at '{sourcePath}' declares an empty package entry. It will be ignored.");
+            return false;
+        }
+
+        if (trimmed.Contains("://", StringComparison.Ordinal) || trimmed.StartsWith("git@", StringComparison.OrdinalIgnoreCase))
+        {
+            packageName = trimmed;
+            return true;
+        }
+
+        var atIndex = trimmed.LastIndexOf('@');
+        if (atIndex > 0 && atIndex < trimmed.Length - 1)
+        {
+            var candidateName = trimmed[..atIndex].Trim();
+            var candidateVersion = trimmed[(atIndex + 1)..].Trim();
+
+            if (!string.IsNullOrEmpty(candidateName))
+            {
+                packageName = candidateName;
+                versionRequirement = string.IsNullOrEmpty(candidateVersion) ? null : candidateVersion;
+                return true;
+            }
+        }
+
+        packageName = trimmed;
+        return true;
     }
 }
 #endif

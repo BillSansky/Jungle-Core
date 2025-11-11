@@ -15,7 +15,7 @@ public static class JunglePluginDependencyResolver
     private const string CacheKey = "Jungle.DependencyResolver.RegistrySignature";
 
     private static readonly Queue<JunglePluginDependencyRegistry.ResolvedDependency> installQueue = new();
-    private static readonly HashSet<string> installedPackages = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, PackageInfo> installedPackages = new(StringComparer.OrdinalIgnoreCase);
 
     private static ListRequest listRequest;
     private static AddRequest addRequest;
@@ -71,7 +71,7 @@ public static class JunglePluginDependencyResolver
                 {
                     if (!string.IsNullOrEmpty(info.name))
                     {
-                        installedPackages.Add(info.name);
+                        installedPackages[info.name] = info;
                     }
                 }
 
@@ -107,14 +107,15 @@ public static class JunglePluginDependencyResolver
         if (addRequest == null && installQueue.Count > 0)
         {
             var dependency = installQueue.Dequeue();
-            if (string.IsNullOrEmpty(dependency.InstallIdentifier))
+            var identifier = BuildInstallIdentifier(dependency);
+            if (string.IsNullOrEmpty(identifier))
             {
                 Debug.LogError($"Unable to install Jungle dependency '{dependency.PackageName}' because no install source was resolved.");
             }
             else
             {
-                Debug.Log($"Installing Jungle dependency '{dependency.PackageName}' from '{dependency.InstallIdentifier}'");
-                addRequest = Client.Add(dependency.InstallIdentifier);
+                Debug.Log($"Installing Jungle dependency '{dependency.PackageName}' from '{identifier}'");
+                addRequest = Client.Add(identifier);
                 return;
             }
         }
@@ -136,11 +137,24 @@ public static class JunglePluginDependencyResolver
         var dependencies = JunglePluginDependencyRegistry.Dependencies;
         foreach (var dependency in dependencies)
         {
-            if (installedPackages.Contains(dependency.PackageName))
+            if (!installedPackages.TryGetValue(dependency.PackageName, out var installedInfo))
+            {
+                installQueue.Enqueue(dependency);
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(dependency.VersionRequirement))
             {
                 continue;
             }
 
+            var installedVersion = installedInfo?.version;
+            if (JunglePackageVersionUtility.IsAtLeast(installedVersion, dependency.VersionRequirement))
+            {
+                continue;
+            }
+
+            Debug.Log($"Queued Jungle dependency '{dependency.PackageName}' for update. Installed version: {installedVersion ?? "<unknown>"}, required: {dependency.VersionRequirement}.");
             installQueue.Enqueue(dependency);
         }
 
@@ -148,6 +162,21 @@ public static class JunglePluginDependencyResolver
         {
             EditorPrefs.SetString(CacheKey, pendingSignature ?? string.Empty);
         }
+    }
+
+    private static string BuildInstallIdentifier(JunglePluginDependencyRegistry.ResolvedDependency dependency)
+    {
+        var identifier = dependency.InstallIdentifier;
+
+        if (!string.IsNullOrEmpty(dependency.VersionRequirement) && !string.IsNullOrEmpty(dependency.PackageName))
+        {
+            if (string.IsNullOrEmpty(identifier) || string.Equals(identifier, dependency.PackageName, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{dependency.PackageName}@{dependency.VersionRequirement}";
+            }
+        }
+
+        return identifier;
     }
 }
 #endif
