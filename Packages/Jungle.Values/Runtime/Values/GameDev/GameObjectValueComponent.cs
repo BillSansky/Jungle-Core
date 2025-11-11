@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("GameObject Value From Component", "Reads a GameObject reference from a GameObjectValueComponent.", null, "Values/Game Dev")]
     public class GameObjectValueFromComponent :
-        ValueFromComponent<GameObject, GameObjectValueComponent>, IGameObjectValue
+        ValueFromComponent<GameObject, GameObjectValueComponent>, ISettableGameObjectValue
     {
     }
     /// <summary>

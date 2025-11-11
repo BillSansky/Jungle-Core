@@ -47,7 +47,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Animation Clip Value From Asset", "Reads an animation clip from an AnimationClipValueAsset.", null, "Values/Game Dev")]
     public class AnimationClipValueFromAsset :
-        ValueFromAsset<AnimationClip, AnimationClipValueAsset>, IAnimationClipValue
+        ValueFromAsset<AnimationClip, AnimationClipValueAsset>, ISettableAnimationClipValue
     {
     }
     /// <summary>

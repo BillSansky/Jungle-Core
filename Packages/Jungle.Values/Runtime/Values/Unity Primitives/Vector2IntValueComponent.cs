@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     [JungleClassInfo("Vector2Int Value From Component", "Reads a 2D integer vector from a Vector2IntValueComponent.", null, "Values/Unity Types")]
     public class Vector2IntValueFromComponent :
-        ValueFromComponent<Vector2Int, Vector2IntValueComponent>, IVector2IntValue
+        ValueFromComponent<Vector2Int, Vector2IntValueComponent>, ISettableVector2IntValue
     {
     }
     /// <summary>

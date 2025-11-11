@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface IColliderValue : IValue<Collider>
     {
     }
+    public interface ISettableColliderValue : IColliderValue, IValueSableValue<Collider>
+    {
+    }
     /// <summary>
     /// Stores a collider component directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Collider Value", "Stores a collider component directly on the owner.", null, "Values/Game Dev", true)]
-    public class ColliderLocalValue : LocalValue<Collider>, IColliderValue
+    public class ColliderLocalValue : LocalValue<Collider>, ISettableColliderValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface ISpriteValue : IValue<Sprite>
     {
     }
+    public interface ISettableSpriteValue : ISpriteValue, IValueSableValue<Sprite>
+    {
+    }
     /// <summary>
     /// Stores a sprite asset directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Sprite Value", "Stores a sprite asset directly on the owner.", null, "Values/Game Dev", true)]
-    public class SpriteValue : LocalValue<Sprite>, ISpriteValue
+    public class SpriteValue : LocalValue<Sprite>, ISettableSpriteValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

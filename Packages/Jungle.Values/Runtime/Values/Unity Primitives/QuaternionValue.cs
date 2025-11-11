@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IQuaternionValue : IValue<Quaternion>
     {
     }
+    public interface ISettableQuaternionValue : IQuaternionValue, IValueSableValue<Quaternion>
+    {
+    }
     /// <summary>
     /// Stores a rotation quaternion locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Quaternion Value", "Stores a rotation quaternion locally on the owner.", null, "Values/Unity Types", true)]
-    public class QuaternionValue : LocalValue<Quaternion>, IQuaternionValue
+    public class QuaternionValue : LocalValue<Quaternion>, ISettableQuaternionValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

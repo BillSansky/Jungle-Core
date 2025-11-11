@@ -10,7 +10,10 @@ namespace Jungle.Values.GameDev
     /// </summary>
     public interface IGameObjectValue : IValue<GameObject>
     {
-       
+
+    }
+    public interface ISettableGameObjectValue : IGameObjectValue, IValueSableValue<GameObject>
+    {
     }
     /// <summary>
     /// Stores a GameObject reference directly on the owner.
@@ -18,7 +21,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("GameObject Value", "Stores a GameObject reference directly on the owner.", null, "Values/Game Dev", true)]
-    public class GameObjectValue : LocalValue<GameObject>, IGameObjectValue
+    public class GameObjectValue : LocalValue<GameObject>, ISettableGameObjectValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

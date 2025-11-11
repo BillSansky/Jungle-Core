@@ -44,7 +44,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Float Value From Component", "Reads a floating-point number from a FloatValueComponent.", null, "Values/Primitives")]
-    public class FloatValueFromComponent : ValueFromComponent<float, FloatValueComponent>, IFloatValue
+    public class FloatValueFromComponent : ValueFromComponent<float, FloatValueComponent>, ISettableFloatValue
     {
     }
     /// <summary>

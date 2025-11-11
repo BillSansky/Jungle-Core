@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IBoundsValue : IValue<Bounds>
     {
     }
+    public interface ISettableBoundsValue : IBoundsValue, IValueSableValue<Bounds>
+    {
+    }
     /// <summary>
     /// Stores a Bounds value locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Bounds Value", "Stores a Bounds value locally on the owner.", null, "Values/Unity Types", true)]
-    public class BoundsValue : LocalValue<Bounds>, IBoundsValue
+    public class BoundsValue : LocalValue<Bounds>, ISettableBoundsValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IVector2IntValue : IValue<Vector2Int>
     {
     }
+    public interface ISettableVector2IntValue : IVector2IntValue, IValueSableValue<Vector2Int>
+    {
+    }
     /// <summary>
     /// Stores a 2D integer vector locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Vector2Int Value", "Stores a 2D integer vector locally on the owner.", null, "Values/Unity Types", true)]
-    public class Vector2IntValue : LocalValue<Vector2Int>, IVector2IntValue
+    public class Vector2IntValue : LocalValue<Vector2Int>, ISettableVector2IntValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface IAudioClipValue : IValue<AudioClip>
     {
     }
+    public interface ISettableAudioClipValue : IAudioClipValue, IValueSableValue<AudioClip>
+    {
+    }
     /// <summary>
     /// Stores an audio clip directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Audio Clip Value", "Stores an audio clip directly on the owner.", null, "Values/Game Dev", true)]
-    public class AudioClipValue : LocalValue<AudioClip>, IAudioClipValue
+    public class AudioClipValue : LocalValue<AudioClip>, ISettableAudioClipValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

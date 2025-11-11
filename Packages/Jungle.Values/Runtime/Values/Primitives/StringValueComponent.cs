@@ -44,7 +44,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("String Value From Component", "Reads a text string from a StringValueComponent.", null, "Values/Primitives")]
-    public class StringValueFromComponent : ValueFromComponent<string, StringValueComponent>, IStringValue
+    public class StringValueFromComponent : ValueFromComponent<string, StringValueComponent>, ISettableStringValue
     {
     }
     /// <summary>

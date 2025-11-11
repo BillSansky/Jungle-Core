@@ -46,7 +46,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Color32 Value From Asset", "Reads a Color32 value from a Color32ValueAsset.", null, "Values/Unity Types")]
-    public class Color32ValueFromAsset : ValueFromAsset<Color32, Color32ValueAsset>, IColor32Value
+    public class Color32ValueFromAsset : ValueFromAsset<Color32, Color32ValueAsset>, ISettableColor32Value
     {
     }
     /// <summary>

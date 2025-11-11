@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface IStringValue : IValue<string>
     {
     }
+    public interface ISettableStringValue : IStringValue, IValueSableValue<string>
+    {
+    }
     /// <summary>
     /// Stores a text string directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("String Value", "Stores a text string directly on the owner.", null, "Values/Primitives", true)]
-    public class StringValue : LocalValue<string>, IStringValue
+    public class StringValue : LocalValue<string>, ISettableStringValue
     {
         /// <summary>
         /// Initializes a new instance of the StringValue.

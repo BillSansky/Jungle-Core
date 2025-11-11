@@ -11,13 +11,16 @@ namespace Jungle.Values
     public interface IRendererValue : IValue<Renderer>
     {
     }
+    public interface ISettableRendererValue : IRendererValue, IValueSableValue<Renderer>
+    {
+    }
     /// <summary>
     /// Stores a renderer component directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Renderer Value", "Stores a renderer component directly on the owner.", null, "Values/Game Dev", true)]
-    public class RendererValue : LocalValue<Renderer>, IRendererValue
+    public class RendererValue : LocalValue<Renderer>, ISettableRendererValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

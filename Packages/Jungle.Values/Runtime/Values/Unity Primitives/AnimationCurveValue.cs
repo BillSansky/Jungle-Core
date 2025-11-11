@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IAnimationCurveValue : IValue<AnimationCurve>
     {
     }
+    public interface ISettableAnimationCurveValue : IAnimationCurveValue, IValueSableValue<AnimationCurve>
+    {
+    }
     /// <summary>
     /// Stores a animation curve locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("AnimationCurve Value", "Stores a animation curve locally on the owner.", null, "Values/Unity Types", true)]
-    public class AnimationCurveValue : LocalValue<AnimationCurve>, IAnimationCurveValue
+    public class AnimationCurveValue : LocalValue<AnimationCurve>, ISettableAnimationCurveValue
     {
         /// <summary>
         /// Initializes a new instance of the AnimationCurveValue.

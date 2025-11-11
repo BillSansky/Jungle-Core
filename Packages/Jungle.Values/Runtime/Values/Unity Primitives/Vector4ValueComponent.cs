@@ -44,7 +44,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Vector4 Value From Component", "Reads a 4D vector from a Vector4ValueComponent.", null, "Values/Unity Types")]
-    public class Vector4ValueFromComponent : ValueFromComponent<Vector4, Vector4ValueComponent>, IVector4Value
+    public class Vector4ValueFromComponent : ValueFromComponent<Vector4, Vector4ValueComponent>, ISettableVector4Value
     {
     }
     /// <summary>

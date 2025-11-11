@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Audio Clip Value From Component", "Reads an audio clip from an AudioClipValueComponent.", null, "Values/Game Dev")]
     public class AudioClipValueFromComponent :
-        ValueFromComponent<AudioClip, AudioClipValueComponent>, IAudioClipValue
+        ValueFromComponent<AudioClip, AudioClipValueComponent>, ISettableAudioClipValue
     {
     }
     /// <summary>

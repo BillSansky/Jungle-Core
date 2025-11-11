@@ -46,7 +46,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Bounds Value From Asset", "Reads a Bounds value from a BoundsValueAsset.", null, "Values/Unity Types")]
-    public class BoundsValueFromAsset : ValueFromAsset<Bounds, BoundsValueAsset>, IBoundsValue
+    public class BoundsValueFromAsset : ValueFromAsset<Bounds, BoundsValueAsset>, ISettableBoundsValue
     {
     }
     /// <summary>

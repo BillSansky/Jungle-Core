@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// </summary>
     [Serializable]
     [JungleClassInfo("Local Array Value", "Exposes items from a serialized array on the owner.", null, "Values/Core", true)]
-    public class LocalArrayValue<T> : IValue<T>
+    public class LocalArrayValue<T> : IValueSableValue<T>
     {
         private T[] values;
         /// <summary>
@@ -18,6 +18,16 @@ namespace Jungle.Values
         public T Value()
         {
             return values[0];
+        }
+        public void SetValue(T value)
+        {
+            if (values == null || values.Length == 0)
+            {
+                values = new[] { value };
+                return;
+            }
+
+            values[0] = value;
         }
         /// <summary>
         /// Indicates whether multiple values are available.

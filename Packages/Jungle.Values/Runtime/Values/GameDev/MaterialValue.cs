@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface IMaterialValue : IValue<Material>
     {
     }
+    public interface ISettableMaterialValue : IMaterialValue, IValueSableValue<Material>
+    {
+    }
     /// <summary>
     /// Stores a material reference directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Material Value", "Stores a material reference directly on the owner.", null, "Values/Game Dev", true)]
-    public class MaterialValue : LocalValue<Material>, IMaterialValue
+    public class MaterialValue : LocalValue<Material>, ISettableMaterialValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

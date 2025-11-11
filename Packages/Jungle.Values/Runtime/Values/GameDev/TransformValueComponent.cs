@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Transform Value From Component", "Reads a transform component from a TransformValueComponent.", null, "Values/Game Dev")]
     public class TransformValueFromComponent :
-        ValueFromComponent<Transform, TransformValueComponent>, ITransformValue
+        ValueFromComponent<Transform, TransformValueComponent>, ISettableTransformValue
     {
     }
     /// <summary>

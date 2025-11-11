@@ -45,7 +45,7 @@ namespace Jungle.Values
 
     [Serializable]
     [JungleClassInfo("Renderer Value From Component", "Reads a renderer component from a RendererValueComponent.", null, "Values/Game Dev")]
-    public class RendererValueFromComponent : ValueFromComponent<Renderer, RendererValueComponent>, IRendererValue
+    public class RendererValueFromComponent : ValueFromComponent<Renderer, RendererValueComponent>, ISettableRendererValue
     {
     }
     /// <summary>

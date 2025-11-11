@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Sprite Value From Component", "Reads a sprite asset from a SpriteValueComponent.", null, "Values/Game Dev")]
     public class SpriteValueFromComponent :
-        ValueFromComponent<Sprite, SpriteValueComponent>, ISpriteValue
+        ValueFromComponent<Sprite, SpriteValueComponent>, ISettableSpriteValue
     {
     }
     /// <summary>

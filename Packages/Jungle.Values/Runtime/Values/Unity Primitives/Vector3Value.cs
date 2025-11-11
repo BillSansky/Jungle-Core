@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IVector3Value : IValue<Vector3>
     {
     }
+    public interface ISettableVector3Value : IVector3Value, IValueSableValue<Vector3>
+    {
+    }
     /// <summary>
     /// Stores a 3D vector locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Vector3 Value", "Stores a 3D vector locally on the owner.", null, "Values/Unity Types", true)]
-    public class Vector3Value : LocalValue<Vector3>, IVector3Value
+    public class Vector3Value : LocalValue<Vector3>, ISettableVector3Value
     {
         /// <summary>
         /// Initializes a new instance of the Vector3Value.

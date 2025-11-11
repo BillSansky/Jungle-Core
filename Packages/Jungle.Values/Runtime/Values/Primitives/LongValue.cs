@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface ILongValue : IValue<long>
     {
     }
+    public interface ISettableLongValue : ILongValue, IValueSableValue<long>
+    {
+    }
     /// <summary>
     /// Stores a 64-bit integer directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Long Value", "Stores a 64-bit integer directly on the owner.", null, "Values/Primitives", true)]
-    public class LongValue : LocalValue<long>, ILongValue
+    public class LongValue : LocalValue<long>, ISettableLongValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

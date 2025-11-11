@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface ILayerMaskValue : IValue<LayerMask>
     {
     }
+    public interface ISettableLayerMaskValue : ILayerMaskValue, IValueSableValue<LayerMask>
+    {
+    }
     /// <summary>
     /// Stores a LayerMask value directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Layer Mask Value", "Stores a LayerMask value directly on the owner.", null, "Values/Game Dev", true)]
-    public class LayerMaskValue : LocalValue<LayerMask>, ILayerMaskValue
+    public class LayerMaskValue : LocalValue<LayerMask>, ISettableLayerMaskValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

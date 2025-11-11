@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface IIntValue : IValue<int>
     {
     }
+    public interface ISettableIntValue : IIntValue, IValueSableValue<int>
+    {
+    }
     /// <summary>
     /// Stores an integer value directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Int Value", "Stores an integer number directly on the owner.", null, "Values/Primitives", true)]
-    public class IntValue : LocalValue<int>, IIntValue
+    public class IntValue : LocalValue<int>, ISettableIntValue
     {
         /// <summary>
         /// Initializes a new instance of the IntValue.
