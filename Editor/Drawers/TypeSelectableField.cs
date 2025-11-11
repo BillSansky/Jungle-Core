@@ -24,7 +24,6 @@ namespace Jungle.Editor
             content; 
 
         private readonly Button btnPickOrSwap; // "+" (pick) or "↺" (swap)
-        private readonly Button btnClear; // "✕"
 
         // Under-row details host (the "folded" section)
         private readonly VisualElement underRowHost;
@@ -82,7 +81,7 @@ namespace Jungle.Editor
             content.AddToClassList("tsf__content");
             row.Add(content);
 
-            // Button group (pick/swap and clear)
+            // Button group (pick/swap)
             var buttonGroup = new VisualElement();
             buttonGroup.AddToClassList("tsf__button-group");
             row.Add(buttonGroup);
@@ -92,12 +91,6 @@ namespace Jungle.Editor
             btnPickOrSwap.AddToClassList("tsf__button");
             btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             buttonGroup.Add(btnPickOrSwap);
-
-            btnClear = new Button(OnClearClicked) { text = "✕" };
-            btnClear.tooltip = "Clear";
-            btnClear.AddToClassList("tsf__button");
-            btnClear.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
-            buttonGroup.Add(btnClear);
 
             rootContainer.Add(row);
 
@@ -329,24 +322,6 @@ namespace Jungle.Editor
             return Selection.activeGameObject; // fallback
         }
 
-        private void OnClearClicked()
-        {
-            if (prop == null) return;
-
-            var so = prop.serializedObject;
-            so.Update();
-
-            if (isManagedRef)
-                prop.managedReferenceValue = null;
-            else
-                prop.objectReferenceValue = null;
-
-            so.ApplyModifiedProperties();
-
-            RepaintContentOnly();
-            RefreshButtons();
-        }
-
         private void RefreshButtons()
         {
             if (prop == null) return;
@@ -368,7 +343,6 @@ namespace Jungle.Editor
             }
             
           
-            btnClear.style.display = hasValue ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void CaptureReferenceState()
