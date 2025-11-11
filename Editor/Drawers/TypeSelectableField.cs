@@ -23,7 +23,8 @@ namespace Jungle.Editor
         private readonly VisualElement
             content; 
 
-        private readonly Button btnPickOrSwap; // "+" (pick) or "↺" (swap)
+        private readonly Button btnPickOrSwap; // "+" (pick) or swap target icon
+        private readonly VisualElement targetIcon;
 
         // Under-row details host (the "folded" section)
         private readonly VisualElement underRowHost;
@@ -90,6 +91,13 @@ namespace Jungle.Editor
             btnPickOrSwap.tooltip = "Pick or change the type";
             btnPickOrSwap.AddToClassList("tsf__button");
             btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
+            targetIcon = new VisualElement();
+            targetIcon.AddToClassList("tsf__button-target-icon");
+            var targetIconDot = new VisualElement();
+            targetIconDot.AddToClassList("tsf__button-target-icon-dot");
+            targetIcon.Add(targetIconDot);
+            targetIcon.style.display = DisplayStyle.None;
+            btnPickOrSwap.Add(targetIcon);
             buttonGroup.Add(btnPickOrSwap);
 
             rootContainer.Add(row);
@@ -333,16 +341,18 @@ namespace Jungle.Editor
 
             if (isManagedRef && hasValue)
             {
-                btnPickOrSwap.text =  "↺";
-                btnPickOrSwap.style.fontSize = 11;
+                btnPickOrSwap.text = string.Empty;
+                btnPickOrSwap.style.fontSize = StyleKeyword.Null;
+                targetIcon.style.display = DisplayStyle.Flex;
             }
             else
             {
-                btnPickOrSwap.text =  "+";
+                btnPickOrSwap.text = "+";
+                targetIcon.style.display = DisplayStyle.None;
                 btnPickOrSwap.style.fontSize = 14;
             }
-            
-          
+
+
         }
 
         private void CaptureReferenceState()
