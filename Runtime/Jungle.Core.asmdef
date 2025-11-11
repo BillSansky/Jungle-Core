@@ -1,7 +1,9 @@
 {
     "name": "Jungle.Core",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "Jungle.Utils"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
