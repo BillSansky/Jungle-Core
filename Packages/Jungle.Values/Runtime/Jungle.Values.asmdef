@@ -2,7 +2,8 @@
     "name": "Jungle.Values",
     "rootNamespace": "",
     "references": [
-        "Jungle.Core"
+        "Jungle.Core",
+        "Jungle.State"
     ],
     "includePlatforms": [],
     "excludePlatforms": [
