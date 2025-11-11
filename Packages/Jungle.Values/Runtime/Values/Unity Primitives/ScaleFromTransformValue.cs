@@ -18,7 +18,7 @@ namespace Jungle.Values.UnityTypes
         /// </summary>
 
         [SerializeReference] [JungleClassSelection]
-        public ITransformValue transform;
+        public ITransformValue transform = new TransformLocalValue();
         /// <summary>
         /// Gets the value produced by this provider.
         /// </summary>
