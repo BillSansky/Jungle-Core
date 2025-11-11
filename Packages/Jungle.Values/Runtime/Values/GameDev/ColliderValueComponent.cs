@@ -46,7 +46,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Collider Value From Component", "Reads a collider component from a ColliderValueComponent.", null, "Values/Game Dev")]
     public class ColliderValueFromComponent :
-        ValueFromComponent<Collider, ColliderValueComponent>, IColliderValue
+        ValueFromComponent<Collider, ColliderValueComponent>, ISettableColliderValue
     {
     }
     /// <summary>

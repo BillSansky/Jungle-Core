@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Animation Clip Value From Component", "Reads an animation clip from an AnimationClipValueComponent.", null, "Values/Game Dev")]
     public class AnimationClipValueFromComponent :
-        ValueFromComponent<AnimationClip, AnimationClipValueComponent>, IAnimationClipValue
+        ValueFromComponent<AnimationClip, AnimationClipValueComponent>, ISettableAnimationClipValue
     {
     }
     /// <summary>

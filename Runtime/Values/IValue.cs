@@ -31,8 +31,12 @@ namespace Jungle.Values
     /// Represents a value provider that returns a value.
     /// </summary>
 
-    public interface ISettableValue<T> : IValue<T>
+    public interface IValueSableValue<T> : IValue<T>
     {
         void SetValue(T value);
+    }
+
+    public interface ISettableValue<T> : IValueSableValue<T>
+    {
     }
 }

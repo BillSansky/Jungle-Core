@@ -46,7 +46,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Bool Value From Asset", "Reads a boolean flag from a BoolValueAsset.", null, "Values/Primitives")]
-    public class BoolValueFromAsset : ValueFromAsset<bool, BoolValueAsset>, IBoolValue
+    public class BoolValueFromAsset : ValueFromAsset<bool, BoolValueAsset>, ISettableBoolValue
     {
     }
     /// <summary>

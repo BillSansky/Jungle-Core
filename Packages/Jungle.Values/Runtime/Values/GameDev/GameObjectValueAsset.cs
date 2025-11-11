@@ -47,7 +47,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("GameObject Value From Asset", "Reads a GameObject reference from a GameObjectValueAsset.", null, "Values/Game Dev")]
     public class GameObjectValueFromAsset :
-        ValueFromAsset<GameObject, GameObjectValueAsset>, IGameObjectValue
+        ValueFromAsset<GameObject, GameObjectValueAsset>, ISettableGameObjectValue
     {
     }
     /// <summary>

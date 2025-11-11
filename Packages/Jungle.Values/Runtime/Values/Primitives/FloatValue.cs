@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface IFloatValue : IValue<float>
     {
     }
+    public interface ISettableFloatValue : IFloatValue, IValueSableValue<float>
+    {
+    }
     /// <summary>
     /// Stores a floating-point number directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Float Value", "Stores a floating-point number directly on the owner.", null, "Values/Primitives", true)]
-    public class FloatValue : LocalValue<float>, IFloatValue
+    public class FloatValue : LocalValue<float>, ISettableFloatValue
     {
         /// <summary>
         /// Initializes a new instance of the FloatValue.

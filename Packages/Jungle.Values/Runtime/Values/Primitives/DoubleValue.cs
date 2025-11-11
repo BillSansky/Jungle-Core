@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface IDoubleValue : IValue<double>
     {
     }
+    public interface ISettableDoubleValue : IDoubleValue, IValueSableValue<double>
+    {
+    }
     /// <summary>
     /// Stores a double-precision number directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Double Value", "Stores a double-precision number directly on the owner.", null, "Values/Primitives", true)]
-    public class DoubleValue : LocalValue<double>, IDoubleValue
+    public class DoubleValue : LocalValue<double>, ISettableDoubleValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

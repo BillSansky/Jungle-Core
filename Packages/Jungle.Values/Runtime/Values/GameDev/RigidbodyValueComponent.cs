@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Rigidbody Value From Component", "Reads a rigidbody component from a RigidbodyValueComponent.", null, "Values/Game Dev")]
     public class RigidbodyValueFromComponent :
-        ValueFromComponent<Rigidbody, RigidbodyValueComponent>, IRigidbodyValue
+        ValueFromComponent<Rigidbody, RigidbodyValueComponent>, ISettableRigidbodyValue
     {
     }
     /// <summary>

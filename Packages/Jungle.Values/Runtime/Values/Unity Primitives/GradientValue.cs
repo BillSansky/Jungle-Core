@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IGradientValue : IValue<Gradient>
     {
     }
+    public interface ISettableGradientValue : IGradientValue, IValueSableValue<Gradient>
+    {
+    }
     /// <summary>
     /// Stores a gradient locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Gradient Value", "Stores a gradient locally on the owner.", null, "Values/Unity Types", true)]
-    public class GradientValue : LocalValue<Gradient>, IGradientValue
+    public class GradientValue : LocalValue<Gradient>, ISettableGradientValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

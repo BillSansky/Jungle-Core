@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface IRigidbodyValue : IValue<Rigidbody>
     {
     }
+    public interface ISettableRigidbodyValue : IRigidbodyValue, IValueSableValue<Rigidbody>
+    {
+    }
     /// <summary>
     /// Stores a rigidbody component directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Rigidbody Value", "Stores a rigidbody component directly on the owner.", null, "Values/Game Dev", true)]
-    public class RigidbodyValue : LocalValue<Rigidbody>, IRigidbodyValue
+    public class RigidbodyValue : LocalValue<Rigidbody>, ISettableRigidbodyValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

@@ -46,7 +46,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Vector2 Value From Asset", "Reads a 2D vector from a Vector2ValueAsset.", null, "Values/Unity Types")]
-    public class Vector2ValueFromAsset : ValueFromAsset<Vector2, Vector2ValueAsset>, IVector2Value
+    public class Vector2ValueFromAsset : ValueFromAsset<Vector2, Vector2ValueAsset>, ISettableVector2Value
     {
     }
     /// <summary>

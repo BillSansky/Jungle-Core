@@ -11,13 +11,16 @@ namespace Jungle.Values.GameDev
     public interface ICameraValue : IValue<Camera>
     {
     }
+    public interface ISettableCameraValue : ICameraValue, IValueSableValue<Camera>
+    {
+    }
 
     /// <summary>
     /// Stores a camera component directly on the owner.
     /// </summary>
     [Serializable]
     [JungleClassInfo("Camera Value", "Stores a camera component directly on the owner.", null, "Values/Game Dev", true)]
-    public class CameraValue : LocalValue<Camera>, ICameraValue
+    public class CameraValue : LocalValue<Camera>, ISettableCameraValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

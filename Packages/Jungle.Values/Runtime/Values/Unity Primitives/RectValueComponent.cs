@@ -44,7 +44,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Rect Value From Component", "Reads a Rect area from a RectValueComponent.", null, "Values/Unity Types")]
-    public class RectValueFromComponent : ValueFromComponent<Rect, RectValueComponent>, IRectValue
+    public class RectValueFromComponent : ValueFromComponent<Rect, RectValueComponent>, ISettableRectValue
     {
     }
     /// <summary>

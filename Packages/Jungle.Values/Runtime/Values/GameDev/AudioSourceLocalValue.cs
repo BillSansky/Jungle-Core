@@ -10,7 +10,10 @@ namespace Jungle.Values.GameDev
     /// </summary>
     public interface IAudioSourceValue : IValue<AudioSource>
     {
-        
+
+    }
+    public interface ISettableAudioSourceValue : IAudioSourceValue, IValueSableValue<AudioSource>
+    {
     }
     /// <summary>
     /// Stores an audio source component directly on the owner.
@@ -18,7 +21,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Audio Source Value", "Stores an audio source component directly on the owner.", null, "Values/Game Dev", true)]
-    public class AudioSourceLocalValue : LocalValue<AudioSource>, IAudioSourceValue
+    public class AudioSourceLocalValue : LocalValue<AudioSource>, ISettableAudioSourceValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

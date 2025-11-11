@@ -46,7 +46,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("String Value From Asset", "Reads a text string from a StringValueAsset.", null, "Values/Primitives")]
-    public class StringValueFromAsset : ValueFromAsset<string, StringValueAsset>, IStringValue
+    public class StringValueFromAsset : ValueFromAsset<string, StringValueAsset>, ISettableStringValue
     {
     }
     /// <summary>

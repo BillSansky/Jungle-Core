@@ -47,7 +47,7 @@ namespace Jungle.Values.UnityTypes
     [Serializable]
     [JungleClassInfo("AnimationCurve Value From Asset", "Reads a animation curve from a AnimationCurveValueAsset.", null, "Values/Unity Types")]
     public class AnimationCurveValueFromAsset :
-        ValueFromAsset<AnimationCurve, AnimationCurveValueAsset>, IAnimationCurveValue
+        ValueFromAsset<AnimationCurve, AnimationCurveValueAsset>, ISettableAnimationCurveValue
     {
     }
     /// <summary>

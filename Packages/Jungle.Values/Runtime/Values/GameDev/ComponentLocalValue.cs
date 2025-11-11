@@ -10,13 +10,16 @@ namespace Jungle.Values.GameDev
     public interface IComponentValue : IValue<Component>
     {
     }
+    public interface ISettableComponentValue : IComponentValue, IValueSableValue<Component>
+    {
+    }
     /// <summary>
     /// Stores a component reference directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Component Value", "Stores a component reference directly on the owner.", null, "Values/Game Dev", true)]
-    public class ComponentLocalValue : LocalValue<Component>, IComponentValue
+    public class ComponentLocalValue : LocalValue<Component>, ISettableComponentValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

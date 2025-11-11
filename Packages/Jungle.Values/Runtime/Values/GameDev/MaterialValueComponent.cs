@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Material Value From Component", "Reads a material reference from a MaterialValueComponent.", null, "Values/Game Dev")]
     public class MaterialValueFromComponent :
-        ValueFromComponent<Material, MaterialValueComponent>, IMaterialValue
+        ValueFromComponent<Material, MaterialValueComponent>, ISettableMaterialValue
     {
     }
     /// <summary>

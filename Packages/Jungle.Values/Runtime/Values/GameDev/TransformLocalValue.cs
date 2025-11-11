@@ -24,7 +24,10 @@ namespace Jungle.Values.GameDev
         /// Gets the world rotation of the referenced transform.
         /// </summary>
         public Quaternion Rotation => ((IValue<Transform>)this).Value().rotation;
-        
+
+    }
+    public interface ISettableTransformValue : ITransformValue, IValueSableValue<Transform>
+    {
     }
     /// <summary>
     /// Stores a transform component directly on the owner.
@@ -32,7 +35,7 @@ namespace Jungle.Values.GameDev
 
     [Serializable]
     [JungleClassInfo("Transform Value", "Stores a transform component directly on the owner.", null, "Values/Game Dev", true)]
-    public class TransformLocalValue : LocalValue<Transform>, ITransformValue
+    public class TransformLocalValue : LocalValue<Transform>, ISettableTransformValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

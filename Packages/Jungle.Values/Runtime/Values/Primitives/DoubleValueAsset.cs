@@ -46,7 +46,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Double Value From Asset", "Reads a double-precision number from a DoubleValueAsset.", null, "Values/Primitives")]
-    public class DoubleValueFromAsset : ValueFromAsset<double, DoubleValueAsset>, IDoubleValue
+    public class DoubleValueFromAsset : ValueFromAsset<double, DoubleValueAsset>, ISettableDoubleValue
     {
     }
     /// <summary>

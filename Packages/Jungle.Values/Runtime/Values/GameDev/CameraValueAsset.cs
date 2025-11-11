@@ -46,7 +46,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
     [Serializable]
     [JungleClassInfo("Camera Value From Asset", "Reads a camera component from a CameraValueAsset.", null, "Values/Game Dev")]
-    public class CameraValueFromAsset : ValueFromAsset<Camera, CameraValueAsset>, ICameraValue
+    public class CameraValueFromAsset : ValueFromAsset<Camera, CameraValueAsset>, ISettableCameraValue
     {
     }
 

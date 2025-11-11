@@ -10,13 +10,16 @@ namespace Jungle.Values.Primitives
     public interface IBoolValue : IValue<bool>
     {
     }
+    public interface ISettableBoolValue : IBoolValue, IValueSableValue<bool>
+    {
+    }
     /// <summary>
     /// Stores a boolean value directly on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Bool Value", "Stores a boolean value directly on the owner.", null, "Values/Primitives", true)]
-    public class BoolValue : LocalValue<bool>, IBoolValue
+    public class BoolValue : LocalValue<bool>, ISettableBoolValue
     {
         /// <summary>
         /// Initializes a new instance of the BoolValue.

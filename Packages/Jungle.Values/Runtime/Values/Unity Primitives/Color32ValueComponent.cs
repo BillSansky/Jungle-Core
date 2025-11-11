@@ -44,7 +44,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Color32 Value From Component", "Reads a Color32 value from a Color32ValueComponent.", null, "Values/Unity Types")]
-    public class Color32ValueFromComponent : ValueFromComponent<Color32, Color32ValueComponent>, IColor32Value
+    public class Color32ValueFromComponent : ValueFromComponent<Color32, Color32ValueComponent>, ISettableColor32Value
     {
     }
     /// <summary>

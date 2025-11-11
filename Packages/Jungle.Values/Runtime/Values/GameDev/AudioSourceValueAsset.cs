@@ -47,7 +47,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Audio Source Value From Asset", "Reads an audio source component from an AudioSourceValueAsset.", null, "Values/Game Dev")]
     public class AudioSourceValueFromAsset :
-        ValueFromAsset<AudioSource, AudioSourceValueAsset>, IAudioSourceValue
+        ValueFromAsset<AudioSource, AudioSourceValueAsset>, ISettableAudioSourceValue
     {
     }
     /// <summary>

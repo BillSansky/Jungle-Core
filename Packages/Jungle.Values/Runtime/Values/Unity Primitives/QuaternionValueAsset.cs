@@ -46,7 +46,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Quaternion Value From Asset", "Reads a rotation quaternion from a QuaternionValueAsset.", null, "Values/Unity Types")]
-    public class QuaternionValueFromAsset : ValueFromAsset<Quaternion, QuaternionValueAsset>, IQuaternionValue
+    public class QuaternionValueFromAsset : ValueFromAsset<Quaternion, QuaternionValueAsset>, ISettableQuaternionValue
     {
     }
     /// <summary>

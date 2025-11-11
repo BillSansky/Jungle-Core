@@ -567,14 +567,20 @@ namespace Jungle.Editor
             AppendUsings(sb, usings);
 
             sb.AppendLine();
+            var settableInterfaceName = $"ISettable{interfaceName.Substring(1)}";
+
             sb.AppendLine($"namespace {wrappersNamespace}");
             sb.AppendLine("{");
             sb.AppendLine($"    public interface {interfaceName} : IValue<{typeName}>");
             sb.AppendLine("    {");
             sb.AppendLine("    }");
             sb.AppendLine();
+            sb.AppendLine($"    public interface {settableInterfaceName} : {interfaceName}, IValueSableValue<{typeName}>");
+            sb.AppendLine("    {");
+            sb.AppendLine("    }");
+            sb.AppendLine();
             sb.AppendLine("    [Serializable]");
-            sb.AppendLine($"    public class {localValueClass} : LocalValue<{typeName}>, {interfaceName}");
+            sb.AppendLine($"    public class {localValueClass} : LocalValue<{typeName}>, {settableInterfaceName}");
             sb.AppendLine("    {");
             sb.AppendLine("        public override bool HasMultipleValues => false;");
             sb.AppendLine("    }");
@@ -587,6 +593,7 @@ namespace Jungle.Editor
         {
             var usings = CollectUsings(type, includeUnity: true, includeJungleValues: true);
             var typeName = GetTypeDisplayName(type);
+            var settableInterfaceName = $"ISettable{interfaceName.Substring(1)}";
 
             var sb = new StringBuilder();
             AppendUsings(sb, usings);
@@ -606,7 +613,7 @@ namespace Jungle.Editor
             sb.AppendLine("    }");
             sb.AppendLine();
             sb.AppendLine("    [Serializable]");
-            sb.AppendLine($"    public class {fromComponentClass} : ValueFromComponent<{typeName}, {componentClass}>, {interfaceName}");
+            sb.AppendLine($"    public class {fromComponentClass} : ValueFromComponent<{typeName}, {componentClass}>, {settableInterfaceName}");
             sb.AppendLine("    {");
             sb.AppendLine("    }");
             sb.AppendLine("}");
@@ -618,6 +625,7 @@ namespace Jungle.Editor
         {
             var usings = CollectUsings(type, includeUnity: true, includeJungleValues: true);
             var typeName = GetTypeDisplayName(type);
+            var settableInterfaceName = $"ISettable{interfaceName.Substring(1)}";
 
             var sb = new StringBuilder();
             AppendUsings(sb, usings);
@@ -638,7 +646,7 @@ namespace Jungle.Editor
             sb.AppendLine("    }");
             sb.AppendLine();
             sb.AppendLine("    [Serializable]");
-            sb.AppendLine($"    public class {fromAssetClass} : ValueFromAsset<{typeName}, {assetClass}>, {interfaceName}");
+            sb.AppendLine($"    public class {fromAssetClass} : ValueFromAsset<{typeName}, {assetClass}>, {settableInterfaceName}");
             sb.AppendLine("    {");
             sb.AppendLine("    }");
             sb.AppendLine("}");
@@ -650,6 +658,7 @@ namespace Jungle.Editor
         {
             var usings = CollectUsings(type, includeUnity: false, includeJungleValues: true);
             var typeName = GetTypeDisplayName(type);
+            var settableInterfaceName = $"ISettable{interfaceName.Substring(1)}";
 
             var sb = new StringBuilder();
             AppendUsings(sb, usings);
@@ -658,7 +667,7 @@ namespace Jungle.Editor
             sb.AppendLine($"namespace {wrappersNamespace}");
             sb.AppendLine("{");
             sb.AppendLine("    [Serializable]");
-            sb.AppendLine($"    public class {arrayClass} : LocalArrayValue<{typeName}>, {interfaceName}");
+            sb.AppendLine($"    public class {arrayClass} : LocalArrayValue<{typeName}>, {settableInterfaceName}");
             sb.AppendLine("    {");
             sb.AppendLine("    }");
             sb.AppendLine("}");

@@ -44,7 +44,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Int Value From Component", "Reads a integer number from a IntValueComponent.", null, "Values/Primitives")]
-    public class IntValueFromComponent : ValueFromComponent<int, IntValueComponent>, IIntValue
+    public class IntValueFromComponent : ValueFromComponent<int, IntValueComponent>, ISettableIntValue
     {
     }
     /// <summary>

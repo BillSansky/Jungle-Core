@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     [Serializable]
     [JungleClassInfo("Layer Mask Value From Component", "Reads a LayerMask value from a LayerMaskValueComponent.", null, "Values/Game Dev")]
     public class LayerMaskValueFromComponent :
-        ValueFromComponent<LayerMask, LayerMaskValueComponent>, ILayerMaskValue
+        ValueFromComponent<LayerMask, LayerMaskValueComponent>, ISettableLayerMaskValue
     {
     }
     /// <summary>

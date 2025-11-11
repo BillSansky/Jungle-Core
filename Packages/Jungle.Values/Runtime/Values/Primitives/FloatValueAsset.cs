@@ -46,7 +46,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Float Value From Asset", "Reads a floating-point number from a FloatValueAsset.", null, "Values/Primitives")]
-    public class FloatValueFromAsset : ValueFromAsset<float, FloatValueAsset>, IFloatValue
+    public class FloatValueFromAsset : ValueFromAsset<float, FloatValueAsset>, ISettableFloatValue
     {
     }
     /// <summary>

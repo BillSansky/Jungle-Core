@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IRectValue : IValue<Rect>
     {
     }
+    public interface ISettableRectValue : IRectValue, IValueSableValue<Rect>
+    {
+    }
     /// <summary>
     /// Stores a Rect area locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Rect Value", "Stores a Rect area locally on the owner.", null, "Values/Unity Types", true)]
-    public class RectValue : LocalValue<Rect>, IRectValue
+    public class RectValue : LocalValue<Rect>, ISettableRectValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

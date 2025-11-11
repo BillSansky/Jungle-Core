@@ -44,7 +44,7 @@ namespace Jungle.Values.UnityTypes
 
     [Serializable]
     [JungleClassInfo("Gradient Value From Component", "Reads a gradient from a GradientValueComponent.", null, "Values/Unity Types")]
-    public class GradientValueFromComponent : ValueFromComponent<Gradient, GradientValueComponent>, IGradientValue
+    public class GradientValueFromComponent : ValueFromComponent<Gradient, GradientValueComponent>, ISettableGradientValue
     {
     }
     /// <summary>

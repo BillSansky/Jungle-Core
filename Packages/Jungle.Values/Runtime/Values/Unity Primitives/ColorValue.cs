@@ -11,13 +11,16 @@ namespace Jungle.Values.UnityTypes
     public interface IColorValue : IValue<Color>
     {
     }
+    public interface ISettableColorValue : IColorValue, IValueSableValue<Color>
+    {
+    }
     /// <summary>
     /// Stores a Color value locally on the owner.
     /// </summary>
 
     [Serializable]
     [JungleClassInfo("Color Value", "Stores a Color value locally on the owner.", null, "Values/Unity Types", true)]
-    public class ColorValue : LocalValue<Color>, IColorValue
+    public class ColorValue : LocalValue<Color>, ISettableColorValue
     {
         /// <summary>
         /// Indicates whether multiple values are available.

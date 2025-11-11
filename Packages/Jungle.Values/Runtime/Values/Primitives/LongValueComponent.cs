@@ -44,7 +44,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Long Value From Component", "Reads a 64-bit integer from a LongValueComponent.", null, "Values/Primitives")]
-    public class LongValueFromComponent : ValueFromComponent<long, LongValueComponent>, ILongValue
+    public class LongValueFromComponent : ValueFromComponent<long, LongValueComponent>, ISettableLongValue
     {
     }
     /// <summary>

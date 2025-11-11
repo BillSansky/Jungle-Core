@@ -46,7 +46,7 @@ namespace Jungle.Values.Primitives
 
     [Serializable]
     [JungleClassInfo("Int Value From Asset", "Reads a integer number from a IntValueAsset.", null, "Values/Primitives")]
-    public class IntValueFromAsset : ValueFromAsset<int, IntValueAsset>, IIntValue
+    public class IntValueFromAsset : ValueFromAsset<int, IntValueAsset>, ISettableIntValue
     {
     }
     /// <summary>
