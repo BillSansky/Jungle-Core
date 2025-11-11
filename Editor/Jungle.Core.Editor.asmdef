@@ -2,7 +2,7 @@
     "name": "Jungle.Core.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:3fc4c5fd027b0aa4c9e3b815de31f8cc"
+        "GUID:738a2e71995cbce458ad5253a8c2a560"
     ],
     "includePlatforms": [
         "Editor"
