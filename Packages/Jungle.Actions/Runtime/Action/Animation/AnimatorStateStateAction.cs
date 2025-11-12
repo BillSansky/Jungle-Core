@@ -8,7 +8,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo(
         "Animator State Action",
-        "Plays a specific animator state when the action starts and optionally restores the previous state on stop.",
+        "Plays a specific animator state when the action executes.",
         "d_AnimationClip",
         "Actions/State")]
     /// <summary>
@@ -25,27 +25,15 @@ namespace Jungle.Actions
 
 
         private Animator cachedAnimator;
-        private int previousStateHash;
-        private float previousNormalizedTime;
-        private bool hasExecuted;
 
         public void StartProcess(Action callback = null)
         {
-            if (hasExecuted)
-            {
-                return;
-            }
-
             var animator = ResolveAnimator();
 
             Debug.Assert(animator != null, "Animator object has not been assigned.");
             Debug.Assert(layerIndex.V >= 0, "Layer index must be greater than or equal to 0.");
             Debug.Assert(layerIndex.V < animator.layerCount, "Layer index must be less than the number of layers.");
             Debug.Assert(!string.IsNullOrEmpty(stateName.V), "State name must be provided.");
-
-            var stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex.V);
-            previousStateHash = stateInfo.fullPathHash;
-            previousNormalizedTime = stateInfo.normalizedTime;
 
             var targetStateHash = Animator.StringToHash(stateName.V);
 
@@ -58,22 +46,7 @@ namespace Jungle.Actions
                 animator.Play(targetStateHash, layerIndex.V);
             }
 
-            hasExecuted = true;
             callback?.Invoke();
-        }
-
-        public void Stop()
-        {
-            if (!hasExecuted)
-            {
-                return;
-            }
-
-            var animator = cachedAnimator ?? ResolveAnimator();
-            var normalizedTime = Mathf.Repeat(previousNormalizedTime, 1f);
-            animator.Play(previousStateHash, layerIndex.V, normalizedTime);
-
-            hasExecuted = false;
         }
 
         private Animator ResolveAnimator()

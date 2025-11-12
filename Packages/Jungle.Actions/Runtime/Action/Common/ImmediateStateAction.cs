@@ -14,11 +14,11 @@ namespace Jungle.Actions
         OnBeginAndEnd
     }
     /// <summary>
-    /// Executes an immediate action when the state is entered or exited.
+    /// Executes an immediate action before and/or after the configured invocation.
     /// </summary>
 
 
-    [JungleClassInfo("Immediate State Action", "Executes an immediate action when the state is entered or exited.", null, "Actions/State")]
+    [JungleClassInfo("Immediate State Action", "Executes an immediate action before and/or after the configured invocation.", null, "Actions/State")]
     [Serializable]
     public class ImmediateStateAction : IImmediateAction
     {
@@ -30,36 +30,19 @@ namespace Jungle.Actions
         /// </summary>
 
         public ImmediateActionExecute executionMode = ImmediateActionExecute.OnBeginAndEnd;
-        /// <summary>
-        /// Invoked when the state becomes active.
-        /// </summary>
-
-        private bool hasStarted;
-
         public void StartProcess(Action callback = null)
         {
-            if (executionMode is ImmediateActionExecute.OnBegin or ImmediateActionExecute.OnBeginAndEnd)
+            if (executionMode != ImmediateActionExecute.OnEnd)
             {
                 action?.StartProcess();
             }
 
-            hasStarted = true;
             callback?.Invoke();
-        }
 
-        public void Stop()
-        {
-            if (!hasStarted)
-            {
-                return;
-            }
-
-            if (executionMode is ImmediateActionExecute.OnEnd or ImmediateActionExecute.OnBeginAndEnd)
+            if (executionMode != ImmediateActionExecute.OnBegin)
             {
                 action?.StartProcess();
             }
-
-            hasStarted = false;
         }
     }
 }

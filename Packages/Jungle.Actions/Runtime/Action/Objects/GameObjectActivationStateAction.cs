@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Jungle.Attributes;
 
 using Jungle.Values.GameDev;
@@ -9,7 +8,7 @@ namespace Jungle.Actions
 {
     [JungleClassInfo(
         "GameObject Activation Action",
-        "Controls the active state of GameObjects. Configure start and stop actions to enable, disable or toggle targets.",
+        "Controls the active state of GameObjects when the action executes.",
         "d_GameObject Icon",
         "Actions/State")]
     /// <summary>
@@ -27,76 +26,27 @@ namespace Jungle.Actions
 
         [SerializeReference] private IGameObjectValue targetObjects = new GameObjectLocalArrayValue();
         [SerializeField] private ActivationState beginAction = ActivationState.Enable;
-        [SerializeField] private ActivationState endAction = ActivationState.Toggle;
-
-        private readonly Dictionary<GameObject, bool> originalStates = new();
-        private bool hasStarted;
 
         public void StartProcess(Action callback = null)
         {
-            if (hasStarted)
-            {
-                return;
-            }
-
-            StoreOriginalStates();
             SetObjectStates();
-
-            hasStarted = true;
             callback?.Invoke();
-        }
-
-        public void Stop()
-        {
-            if (!hasStarted)
-            {
-                return;
-            }
-
-            RestoreOriginalStates();
-
-            hasStarted = false;
-        }
-
-      
-
-        private void StoreOriginalStates()
-        {
-            originalStates.Clear();
-            
-            foreach (var obj in targetObjects.Values)
-            {
-                originalStates.Add(obj, obj.activeSelf);
-            }
         }
 
         private void SetObjectStates()
         {
             foreach (var obj in targetObjects.Values)
             {
-                ApplyAction(obj, beginAction, false);
+                ApplyAction(obj, beginAction);
             }
         }
 
-        private void RestoreOriginalStates()
-        {
-            foreach (var obj in targetObjects.Values)
-            {
-                ApplyAction(obj, endAction, true);
-            }
-
-            originalStates.Clear();
-        }
-
-        private void ApplyAction(GameObject obj, ActivationState state, bool revertToOriginal)
+        private void ApplyAction(GameObject obj, ActivationState state)
         {
             if (obj == null)
             {
                 return;
             }
-
-            var hasOriginalState = originalStates.TryGetValue(obj, out bool originalState);
-            var currentState = obj.activeSelf;
 
             switch (state)
             {
@@ -107,22 +57,7 @@ namespace Jungle.Actions
                     obj.SetActive(false);
                     break;
                 case ActivationState.Toggle:
-                    if (revertToOriginal && hasOriginalState)
-                    {
-                        obj.SetActive(originalState);
-                    }
-                    else if (revertToOriginal)
-                    {
-                        obj.SetActive(currentState);
-                    }
-                    else if (hasOriginalState)
-                    {
-                        obj.SetActive(!originalState);
-                    }
-                    else
-                    {
-                        obj.SetActive(!currentState);
-                    }
+                    obj.SetActive(!obj.activeSelf);
                     break;
             }
         }

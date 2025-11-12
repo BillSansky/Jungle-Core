@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Jungle.Actions;
 using Jungle.Attributes;
 using Jungle.Values.GameDev;
@@ -8,76 +7,29 @@ using UnityEngine;
 namespace Jungle.Actions
 {
     /// <summary>
-    /// Changes the layer of target GameObjects while the state is active.
+    /// Changes the layer of target GameObjects when the action executes.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects while the state is active.", null, "Actions/State")]
+    [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects when the action executes.", null, "Actions/State")]
     public class LayerModifierStateAction : IImmediateAction
     {
         [SerializeReference][JungleClassSelection] private IGameObjectValue targetObjects = new GameObjectValue();
 
         [SerializeField] private LayerMask targetLayer;
-        [SerializeField] private bool revertOnStop = true;
-
-        private readonly Dictionary<GameObject, int> storedLayers = new();
-        private bool hasStarted;
 
         public void StartProcess(Action callback = null)
         {
-            if (hasStarted)
-            {
-                return;
-            }
-
-            if (revertOnStop)
-            {
-                storedLayers.Clear();
-            }
-
             int layer = GetFirstLayerFromMask(targetLayer);
 
             foreach (var obj in targetObjects.Values)
             {
-                if (revertOnStop)
+                if (obj != null)
                 {
-                    storedLayers[obj] = obj.layer;
+                    obj.layer = layer;
                 }
-
-                obj.layer = layer;
             }
 
-            hasStarted = true;
             callback?.Invoke();
-        }
-
-        public void Stop()
-        {
-            if (!hasStarted)
-            {
-                return;
-            }
-
-            if (revertOnStop)
-            {
-                RestoreOriginalLayers();
-            }
-
-            hasStarted = false;
-        }
-
-       
-
-        private void RestoreOriginalLayers()
-        {
-            foreach (var pair in storedLayers)
-            {
-                if (pair.Key != null)
-                {
-                    pair.Key.layer = pair.Value;
-                }
-            }
-
-            storedLayers.Clear();
         }
 
         private int GetFirstLayerFromMask(LayerMask layerMask)
