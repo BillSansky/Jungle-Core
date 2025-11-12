@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "Parent To Context Action",
         "Moves a GameObject under a contextual parent transform when the action executes.",
         "d_UnityEditor.HierarchyWindow",
-        "Actions/State")]
+        "Actions/GameObject")]
     /// <summary>
     /// Implements the parent to context state action action.
     /// </summary>

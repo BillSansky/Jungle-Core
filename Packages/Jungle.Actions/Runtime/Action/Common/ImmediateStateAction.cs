@@ -18,7 +18,7 @@ namespace Jungle.Actions
     /// </summary>
 
 
-    [JungleClassInfo("Immediate State Action", "Executes an immediate action before and/or after the configured invocation.", null, "Actions/State")]
+    [JungleClassInfo("Immediate State Action", "Executes an immediate action before and/or after the configured invocation.", null, "Actions/Logic")]
     [Serializable]
     public class ImmediateStateAction : IImmediateAction
     {

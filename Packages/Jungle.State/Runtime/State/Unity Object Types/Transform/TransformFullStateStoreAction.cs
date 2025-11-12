@@ -12,7 +12,7 @@ namespace Jungle.Actions
         "Transform State Store Action",
         "Captures the position, rotation, and scale of the target transforms so they can be restored later.",
         "d_Transform Icon",
-        "Actions/State")]
+        "Actions/Transform")]
     public class TransformFullStateStoreAction : TransformStateStoreActionBase<TransformFullState>
     {
     }

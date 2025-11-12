@@ -10,7 +10,7 @@ namespace Jungle.Actions
     /// Plays configured audio clips when entering and exiting the state.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Audio State Action", "Plays configured audio clips when entering and exiting the state.", null, "Actions/State")]
+    [JungleClassInfo("Audio State Action", "Plays configured audio clips when entering and exiting the state.", null, "Actions/Audio")]
     public class AudioAction : IImmediateAction
     {
         /// <summary>

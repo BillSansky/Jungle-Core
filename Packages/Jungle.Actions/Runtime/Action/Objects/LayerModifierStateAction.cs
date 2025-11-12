@@ -10,7 +10,7 @@ namespace Jungle.Actions
     /// Changes the layer of target GameObjects when the action executes.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects when the action executes.", null, "Actions/State")]
+    [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects when the action executes.", null, "Actions/GameObject")]
     public class LayerModifierStateAction : IImmediateAction
     {
         [SerializeReference][JungleClassSelection] private IGameObjectValue targetObjects = new GameObjectValue();

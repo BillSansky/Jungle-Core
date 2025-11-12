@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "GameObject Activation Action",
         "Controls the active state of GameObjects when the action executes.",
         "d_GameObject Icon",
-        "Actions/State")]
+        "Actions/GameObject")]
     /// <summary>
     /// Implements the game object activation state action action.
     /// </summary>
