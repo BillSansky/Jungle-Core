@@ -14,7 +14,7 @@ namespace Jungle.Actions
     [JungleClassInfo("Layer Modifier Action", "Changes the layer of target GameObjects while the state is active.", null, "Actions/State")]
     public class LayerModifierStateAction : IImmediateAction
     {
-        [SerializeReference] private IGameObjectValue targetObjects = new GameObjectValue();
+        [SerializeReference][JungleClassSelection] private IGameObjectValue targetObjects = new GameObjectValue();
 
         [SerializeField] private LayerMask targetLayer;
         [SerializeField] private bool revertOnStop = true;
