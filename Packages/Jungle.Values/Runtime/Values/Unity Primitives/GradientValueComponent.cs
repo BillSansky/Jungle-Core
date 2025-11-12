@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a gradient.
     /// </summary>
-    [JungleClassInfo("Gradient Value Component", "Component exposing a gradient.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient Value Component", "Component exposing a gradient.", null, "Unity Types")]
     public class GradientValueComponent : ValueComponent<Gradient>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of gradients.
     /// </summary>
 
-    [JungleClassInfo("Gradient List Component", "Component exposing a list of gradients.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient List Component", "Component exposing a list of gradients.", null, "Unity Types")]
     public class GradientListValueComponent : SerializedValueListComponent<Gradient>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient Value From Component", "Reads a gradient from a GradientValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient Value From Component", "Reads a gradient from a GradientValueComponent.", null, "Unity Types")]
     public class GradientValueFromComponent : ValueFromComponent<Gradient, GradientValueComponent>, ISettableGradientValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient List From Component", "Reads gradients from a GradientListValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient List From Component", "Reads gradients from a GradientListValueComponent.", null, "Unity Types")]
     public class GradientListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Gradient>, GradientListValueComponent>
     {

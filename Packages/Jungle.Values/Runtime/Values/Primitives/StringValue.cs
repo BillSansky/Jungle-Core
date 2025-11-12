@@ -18,7 +18,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("String Value", "Stores a text string directly on the owner.", null, "Values/Primitives", true)]
+    [JungleClassInfo("String Value", "Stores a text string directly on the owner.", null, "Primitives", true)]
     public class StringValue : LocalValue<string>, ISettableStringValue
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("String Member Value", "Returns a text string from a component field, property, or method.", null, "Values/Primitives")]
+    [JungleClassInfo("String Member Value", "Returns a text string from a component field, property, or method.", null, "Primitives")]
     public class StringClassMembersValue : ClassMembersValue<string>, IStringValue
     {
     }

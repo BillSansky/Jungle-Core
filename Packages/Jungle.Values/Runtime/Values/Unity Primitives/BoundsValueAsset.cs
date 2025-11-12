@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a Bounds value.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Bounds value", fileName = "BoundsValue")]
-    [JungleClassInfo("Bounds Value Asset", "ScriptableObject storing a Bounds value.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds Value Asset", "ScriptableObject storing a Bounds value.", null, "Unity Types")]
     public class BoundsValueAsset : ValueAsset<Bounds>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Bounds list value", fileName = "BoundsListValue")]
-    [JungleClassInfo("Bounds List Asset", "ScriptableObject storing a list of Bounds values.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds List Asset", "ScriptableObject storing a list of Bounds values.", null, "Unity Types")]
     public class BoundsListValueAsset : SerializedValueListAsset<Bounds>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds Value From Asset", "Reads a Bounds value from a BoundsValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds Value From Asset", "Reads a Bounds value from a BoundsValueAsset.", null, "Unity Types")]
     public class BoundsValueFromAsset : ValueFromAsset<Bounds, BoundsValueAsset>, ISettableBoundsValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds List From Asset", "Reads Bounds values from a BoundsListValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds List From Asset", "Reads Bounds values from a BoundsListValueAsset.", null, "Unity Types")]
     public class BoundsListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Bounds>, BoundsListValueAsset>
     {

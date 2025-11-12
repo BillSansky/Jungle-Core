@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a Color value.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color value", fileName = "ColorValue")]
-    [JungleClassInfo("Color Value Asset", "ScriptableObject storing a Color value.", null, "Values/Unity Types")]
+    [JungleClassInfo("Color Value Asset", "ScriptableObject storing a Color value.", null, "Unity Types")]
     public class ColorValueAsset : ValueAsset<Color>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Color list value", fileName = "ColorListValue")]
-    [JungleClassInfo("Color List Asset", "ScriptableObject storing a list of colors.", null, "Values/Unity Types")]
+    [JungleClassInfo("Color List Asset", "ScriptableObject storing a list of colors.", null, "Unity Types")]
     public class ColorListValueAsset : SerializedValueListAsset<Color>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color Value From Asset", "Reads a Color value from a ColorValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Color Value From Asset", "Reads a Color value from a ColorValueAsset.", null, "Unity Types")]
     public class ColorValueFromAsset : ValueFromAsset<Color, ColorValueAsset>, ISettableColorValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color List From Asset", "Reads colors from a ColorListValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Color List From Asset", "Reads colors from a ColorListValueAsset.", null, "Unity Types")]
     public class ColorListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Color>, ColorListValueAsset>
     {

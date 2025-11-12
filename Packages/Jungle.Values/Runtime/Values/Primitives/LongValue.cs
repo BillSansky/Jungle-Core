@@ -18,7 +18,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long Value", "Stores a 64-bit integer directly on the owner.", null, "Values/Primitives", true)]
+    [JungleClassInfo("Long Value", "Stores a 64-bit integer directly on the owner.", null, "Primitives", true)]
     public class LongValue : LocalValue<long>, ISettableLongValue
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long Member Value", "Returns a 64-bit integer from a component field, property, or method.", null, "Values/Primitives")]
+    [JungleClassInfo("Long Member Value", "Returns a 64-bit integer from a component field, property, or method.", null, "Primitives")]
     public class LongClassMembersValue : ClassMembersValue<long>, ILongValue
     {
     }

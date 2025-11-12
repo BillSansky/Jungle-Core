@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// </summary>
     /// <typeparam name="T">Type of value being stored.</typeparam>
     [Serializable]
-    [JungleClassInfo("Local Value", "Stores a value directly on the referencing object.", null, "Values/Core", true)]
+    [JungleClassInfo("Local Value", "Stores a value directly on the referencing object.", null, "Core", true)]
     public abstract class LocalValue<T> : ISettableValue<T>
     {
         /// <summary>

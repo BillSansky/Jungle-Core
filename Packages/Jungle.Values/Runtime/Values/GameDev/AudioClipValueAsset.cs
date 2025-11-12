@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing an audio clip.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AudioClip value", fileName = "AudioClipValue")]
-    [JungleClassInfo("Audio Clip Value Asset", "ScriptableObject storing an audio clip.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Clip Value Asset", "ScriptableObject storing an audio clip.", null, "Game Dev")]
     public class AudioClipValueAsset : ValueAsset<AudioClip>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AudioClip list value", fileName = "AudioClipListValue")]
-    [JungleClassInfo("Audio Clip List Asset", "ScriptableObject storing a list of audio clips.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Clip List Asset", "ScriptableObject storing a list of audio clips.", null, "Game Dev")]
     public class AudioClipListValueAsset : SerializedValueListAsset<AudioClip>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip Value From Asset", "Reads an audio clip from an AudioClipValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Clip Value From Asset", "Reads an audio clip from an AudioClipValueAsset.", null, "Game Dev")]
     public class AudioClipValueFromAsset :
         ValueFromAsset<AudioClip, AudioClipValueAsset>, ISettableAudioClipValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip List From Asset", "Reads audio clips from an AudioClipListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Clip List From Asset", "Reads audio clips from an AudioClipListValueAsset.", null, "Game Dev")]
     public class AudioClipListValueFromAsset :
         ValueFromAsset<IReadOnlyList<AudioClip>, AudioClipListValueAsset>
     {

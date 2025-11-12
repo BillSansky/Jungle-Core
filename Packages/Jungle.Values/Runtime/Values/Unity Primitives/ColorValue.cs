@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color Value", "Stores a Color value locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("Color Value", "Stores a Color value locally on the owner.", null, "Unity Types", true)]
     public class ColorValue : LocalValue<Color>, ISettableColorValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color Member Value", "Returns a Color value from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("Color Member Value", "Returns a Color value from a component field, property, or method.", null, "Unity Types")]
     public class ColorClassMembersValue : ClassMembersValue<Color>, IColorValue
     {
     }

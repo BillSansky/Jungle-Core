@@ -10,7 +10,7 @@ namespace Jungle.Values.UnityTypes
     /// Computes a normalized direction vector from a camera to a world position.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera Ray Direction To Position", "Computes a normalized direction vector from a camera to a world position.", null, "Values/Unity Types")]
+    [JungleClassInfo("Camera Ray Direction To Position", "Computes a normalized direction vector from a camera to a world position.", null, "Unity Types")]
     public class CameraRayDirectionToPositionValue : IVector3Value
     {
         /// <summary>

@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody Value", "Stores a rigidbody component directly on the owner.", null, "Values/Game Dev", true)]
+    [JungleClassInfo("Rigidbody Value", "Stores a rigidbody component directly on the owner.", null, "Game Dev", true)]
     public class RigidbodyValue : LocalValue<Rigidbody>, ISettableRigidbodyValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody Member Value", "Returns a rigidbody component from a component field, property, or method.", null, "Values/Game Dev")]
+    [JungleClassInfo("Rigidbody Member Value", "Returns a rigidbody component from a component field, property, or method.", null, "Game Dev")]
     public class RigidbodyClassMembersValue : ClassMembersValue<Rigidbody>, IRigidbodyValue
     {
     }

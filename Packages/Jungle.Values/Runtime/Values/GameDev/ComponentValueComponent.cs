@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a component reference.
     /// </summary>
-    [JungleClassInfo("Component Value Component", "Component exposing a component reference.", null, "Values/Game Dev")]
+    [JungleClassInfo("Component Value Component", "Component exposing a component reference.", null, "Game Dev")]
     public class ComponentValueComponent : ValueComponent<Component>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of component references.
     /// </summary>
 
-    [JungleClassInfo("Component List Component", "Component exposing a list of component references.", null, "Values/Game Dev")]
+    [JungleClassInfo("Component List Component", "Component exposing a list of component references.", null, "Game Dev")]
     public class ComponentListValueComponent : SerializedValueListComponent<Component>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Component Value From Component", "Reads a component reference from a ComponentValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Component Value From Component", "Reads a component reference from a ComponentValueComponent.", null, "Game Dev")]
     public class ComponentValueFromComponent : ValueFromComponent<Component, ComponentValueComponent>, ISettableComponentValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Component List From Component", "Reads component references from a ComponentListValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Component List From Component", "Reads component references from a ComponentListValueComponent.", null, "Game Dev")]
     public class ComponentListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Component>, ComponentListValueComponent>
     {

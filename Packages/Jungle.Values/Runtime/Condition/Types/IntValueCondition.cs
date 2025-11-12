@@ -9,7 +9,7 @@ namespace Jungle.Conditions
     /// Evaluates an int value against a comparison.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Int Value Condition", "Evaluates an int value against a comparison.", null, "Values")]
+    [JungleClassInfo("Int Value Condition", "Evaluates an int value against a comparison.", null, "Comparisons")]
     public class IntValueCondition : Condition
     {
         /// <summary>

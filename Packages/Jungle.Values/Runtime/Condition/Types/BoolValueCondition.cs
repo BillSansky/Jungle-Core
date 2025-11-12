@@ -9,7 +9,7 @@ namespace Jungle.Conditions
     /// Evaluates a bool value against an expected value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Bool Value Condition", "Evaluates a bool value against an expected value.", null, "Values")]
+    [JungleClassInfo("Bool Value Condition", "Evaluates a bool value against an expected value.", null, "Comparisons")]
     public class BoolValueCondition : Condition
     {
         [SerializeField]

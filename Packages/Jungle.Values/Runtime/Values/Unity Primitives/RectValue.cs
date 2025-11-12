@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect Value", "Stores a Rect area locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("Rect Value", "Stores a Rect area locally on the owner.", null, "Unity Types", true)]
     public class RectValue : LocalValue<Rect>, ISettableRectValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect Member Value", "Returns a Rect area from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("Rect Member Value", "Returns a Rect area from a component field, property, or method.", null, "Unity Types")]
     public class RectClassMembersValue : ClassMembersValue<Rect>, IRectValue
     {
     }

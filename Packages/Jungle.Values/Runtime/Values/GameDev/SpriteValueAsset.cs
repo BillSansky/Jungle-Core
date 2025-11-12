@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a sprite asset.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Sprite value", fileName = "SpriteValue")]
-    [JungleClassInfo("Sprite Value Asset", "ScriptableObject storing a sprite asset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite Value Asset", "ScriptableObject storing a sprite asset.", null, "Game Dev")]
     public class SpriteValueAsset : ValueAsset<Sprite>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Sprite list value", fileName = "SpriteListValue")]
-    [JungleClassInfo("Sprite List Asset", "ScriptableObject storing a list of sprites.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite List Asset", "ScriptableObject storing a list of sprites.", null, "Game Dev")]
     public class SpriteListValueAsset : SerializedValueListAsset<Sprite>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite Value From Asset", "Reads a sprite asset from a SpriteValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite Value From Asset", "Reads a sprite asset from a SpriteValueAsset.", null, "Game Dev")]
     public class SpriteValueFromAsset : ValueFromAsset<Sprite, SpriteValueAsset>, ISettableSpriteValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite List From Asset", "Reads sprites from a SpriteListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite List From Asset", "Reads sprites from a SpriteListValueAsset.", null, "Game Dev")]
     public class SpriteListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Sprite>, SpriteListValueAsset>
     {
