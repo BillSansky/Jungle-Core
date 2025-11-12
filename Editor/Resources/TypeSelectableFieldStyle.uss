@@ -129,37 +129,25 @@
 .tsf__button-group {
     flex-direction: row;
     align-items: center;
-    margin-left: 4px;
-    background-color: var(--unity-colors-window-background);
-    
+    margin-left: 0;
+    padding-left: 0;
+    background-color: transparent;
 }
 
 /* Buttons */
 .tsf__button {
-    width: 20px;
+    width: 19px;
     height: 18px;
-    margin: 0 1px;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0.4);
-    border-radius: 3px;
-    background-color: rgba(255, 255, 255, 0.12);
-    color: rgb(210, 210, 210);
-    -unity-text-align: middle-center;
-    font-size: 12px;
+    margin: 0;
+    padding: 0;
     justify-content: center;
     align-items: center;
-    padding: 0;
+    -unity-text-align: middle-center;
+    font-size: 12px;
 }
 
-.tsf__button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(0, 0, 0, 0.5);
-    color: rgb(240, 240, 240);
-}
-
-.tsf__button:active {
-    background-color: rgba(255, 255, 255, 0.25);
-    border-color: rgba(0, 0, 0, 0.6);
+.tsf__button.unity-object-field__selector {
+    border-radius: 2px;
 }
 
 .tsf__button-target-icon {
