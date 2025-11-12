@@ -53,36 +53,10 @@ public class TypePickerDropdown : AdvancedDropdown
             .OrderBy(t => t.FullName)
             .ToList();
 
-        // Group by JungleInfo.Category if present; otherwise by namespace
-        var groups = types.GroupBy(t =>
-        {
-            var m = GetMeta(t);
-            return string.IsNullOrEmpty(m.Category) ? (t.Namespace ?? "Global") : m.Category;
-        }).OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+        var categoryTree = BuildCategoryTree(types);
 
-        foreach (var group in groups)
-        {
-            var groupItem = new AdvancedDropdownItem(group.Key);
-            root.AddChild(groupItem);
-
-            foreach (var t in group.OrderBy(t => GetMeta(t).Display, StringComparer.OrdinalIgnoreCase))
-            {
-                var meta = GetMeta(t);
-
-                // Show description inline (tooltips don’t show in AdvancedDropdown)
-                var label = string.IsNullOrEmpty(meta.Description)
-                    ? meta.Display
-                    : $"{meta.Display} — {meta.Description}";
-
-                // Optional: keep it compact to avoid clipping (tweak maxLen if needed)
-                label = TruncateSingleLine(label, 96);
-
-                var item = new TypeItem(label, t);
-                if (meta.Icon != null) item.icon = meta.Icon;
-
-                groupItem.AddChild(item);
-            }
-        }
+        AddTypesToDropdown(root, categoryTree.Types);
+        BuildDropdownFromNode(root, categoryTree);
 
         return root;
     }
@@ -103,6 +77,53 @@ public class TypePickerDropdown : AdvancedDropdown
         public TypeItem(string name, Type type) : base(name)
         {
             Type = type;
+        }
+    }
+
+    private static void AddTypesToDropdown(AdvancedDropdownItem parent, IEnumerable<Type> types)
+    {
+        var orderedTypes = types
+            .OrderBy(t => GetMeta(t).Display, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var type in orderedTypes)
+        {
+            var meta = GetMeta(type);
+
+            var label = string.IsNullOrEmpty(meta.Description)
+                ? meta.Display
+                : $"{meta.Display} — {meta.Description}";
+
+            label = TruncateSingleLine(label, 96);
+
+            var item = new TypeItem(label, type);
+            if (meta.Icon != null) item.icon = meta.Icon;
+
+            parent.AddChild(item);
+        }
+    }
+
+    private static void BuildDropdownFromNode(AdvancedDropdownItem parent, CategoryNode node)
+    {
+        var orderedChildren = node.Children.Values
+            .OrderBy(child => child.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var child in orderedChildren)
+        {
+            if (!child.HasContent)
+            {
+                continue;
+            }
+
+            var groupItem = new AdvancedDropdownItem(child.Name);
+            AddTypesToDropdown(groupItem, child.Types);
+            BuildDropdownFromNode(groupItem, child);
+
+            if (groupItem.children.Count > 0)
+            {
+                parent.AddChild(groupItem);
+            }
         }
     }
 
@@ -140,5 +161,66 @@ public class TypePickerDropdown : AdvancedDropdown
     {
         if (string.IsNullOrEmpty(s) || s.Length <= maxChars) return s;
         return s.Substring(0, Math.Max(0, maxChars - 1)) + "…";
+    }
+
+    private static CategoryNode BuildCategoryTree(IEnumerable<Type> types)
+    {
+        var root = new CategoryNode(null);
+
+        foreach (var type in types)
+        {
+            var meta = GetMeta(type);
+            var categoryPath = string.IsNullOrWhiteSpace(meta.Category)
+                ? (type.Namespace ?? "Global")
+                : meta.Category;
+
+            var segments = categoryPath
+                .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(segment => segment.Trim())
+                .Where(segment => !string.IsNullOrEmpty(segment))
+                .ToList();
+
+            if (segments.Count == 0)
+            {
+                segments.Add("General");
+            }
+
+            var current = root;
+            foreach (var segment in segments)
+            {
+                current = current.GetOrAddChild(segment);
+            }
+
+            current.Types.Add(type);
+        }
+
+        return root;
+    }
+
+    private sealed class CategoryNode
+    {
+        public string Name { get; }
+        public Dictionary<string, CategoryNode> Children { get; }
+        public List<Type> Types { get; }
+
+        public bool HasContent => Types.Count > 0 || Children.Count > 0;
+
+        public CategoryNode(string name)
+        {
+            Name = name;
+            Children = new Dictionary<string, CategoryNode>(StringComparer.OrdinalIgnoreCase);
+            Types = new List<Type>();
+        }
+
+        public CategoryNode GetOrAddChild(string name)
+        {
+            if (!Children.TryGetValue(name, out var child))
+            {
+                child = new CategoryNode(name);
+                Children[name] = child;
+            }
+
+            return child;
+        }
     }
 }
