@@ -14,7 +14,7 @@ namespace Jungle.Actions
         "Transform State Restore Action",
         "Restores stored transform information using the shared state recorder.",
         "d_Rigidbody Icon",
-        "Actions/State")]
+        "Actions/Transform")]
     public class TransformStateRestoreAction : IImmediateAction
     {
         private enum TransformStateType

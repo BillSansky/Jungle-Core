@@ -12,7 +12,7 @@ namespace Jungle.Actions
         "Transform Rotation Store Action",
         "Captures the world rotation of the target transforms.",
         "d_RotateTool Icon",
-        "Actions/State")]
+        "Actions/Transform")]
     public class TransformRotationStoreAction : TransformStateStoreActionBase<TransformRotationState>
     {
     }

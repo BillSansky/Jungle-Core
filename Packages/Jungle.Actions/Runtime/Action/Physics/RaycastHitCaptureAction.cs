@@ -15,7 +15,7 @@ namespace Jungle.Actions
         "Raycast Hit Capture",
         "Casts a physics ray and stores the resulting hit information in collision hit and collider values.",
         null,
-        "Actions/State")]
+        "Actions/Physics")]
     public class RaycastHitCaptureAction : IImmediateAction
     {
         [SerializeReference]

@@ -11,7 +11,7 @@ namespace Jungle.Actions
         "Parent Setter Action",
         "Sets the parent of targets when the action executes.",
         "d_UnityEditor.HierarchyWindow",
-        "Actions/State")]
+        "Actions/GameObject")]
     /// <summary>
     /// Implements the parent setter state action action.
     /// </summary>

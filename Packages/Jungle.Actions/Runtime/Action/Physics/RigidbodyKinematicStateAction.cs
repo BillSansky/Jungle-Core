@@ -9,7 +9,7 @@ namespace Jungle.Actions
     /// Adjusts the kinematic state of rigidbodies when the action executes.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Rigidbody Kinematic Action", "Adjusts the kinematic state of rigidbodies when the action executes.", null, "Actions/State")]
+    [JungleClassInfo("Rigidbody Kinematic Action", "Adjusts the kinematic state of rigidbodies when the action executes.", null, "Actions/Physics")]
     public class RigidbodyKinematicStateAction : IImmediateAction
     {
         /// <summary>

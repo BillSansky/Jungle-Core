@@ -21,7 +21,7 @@ namespace Jungle.Actions
     /// </summary>
     
     [Serializable]
-    [JungleClassInfo("Collider State Action", "Enables, disables, or toggles colliders when the action executes.", null, "Actions/State")]
+    [JungleClassInfo("Collider State Action", "Enables, disables, or toggles colliders when the action executes.", null, "Actions/Physics")]
     public class ColliderStateStateAction : IImmediateAction
     {
         [SerializeReference][JungleClassSelection] private IColliderValue targetColliders;

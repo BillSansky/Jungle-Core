@@ -12,7 +12,7 @@ namespace Jungle.Actions
         "Transform Scale Store Action",
         "Captures the local scale of the target transforms.",
         "d_ScaleTool Icon",
-        "Actions/State")]
+        "Actions/Transform")]
     public class TransformScaleStoreAction : TransformStateStoreActionBase<TransformScaleState>
     {
     }
