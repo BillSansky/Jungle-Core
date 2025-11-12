@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a Bounds value.
     /// </summary>
-    [JungleClassInfo("Bounds Value Component", "Component exposing a Bounds value.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds Value Component", "Component exposing a Bounds value.", null, "Unity Types")]
     public class BoundsValueComponent : ValueComponent<Bounds>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of Bounds values.
     /// </summary>
 
-    [JungleClassInfo("Bounds List Component", "Component exposing a list of Bounds values.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds List Component", "Component exposing a list of Bounds values.", null, "Unity Types")]
     public class BoundsListValueComponent : SerializedValueListComponent<Bounds>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds Value From Component", "Reads a Bounds value from a BoundsValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds Value From Component", "Reads a Bounds value from a BoundsValueComponent.", null, "Unity Types")]
     public class BoundsValueFromComponent : ValueFromComponent<Bounds, BoundsValueComponent>, ISettableBoundsValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds List From Component", "Reads Bounds values from a BoundsListValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds List From Component", "Reads Bounds values from a BoundsListValueComponent.", null, "Unity Types")]
     public class BoundsListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Bounds>, BoundsListValueComponent>
     {

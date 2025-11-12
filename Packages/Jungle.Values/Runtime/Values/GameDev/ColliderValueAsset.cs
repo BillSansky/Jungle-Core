@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a collider component.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Collider value", fileName = "ColliderLocalValue")]
-    [JungleClassInfo("Collider Value Asset", "ScriptableObject storing a collider component.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider Value Asset", "ScriptableObject storing a collider component.", null, "Game Dev")]
     public class ColliderValueAsset : ValueAsset<Collider>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Collider list value", fileName = "ColliderListValue")]
-    [JungleClassInfo("Collider List Asset", "ScriptableObject storing a list of colliders.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider List Asset", "ScriptableObject storing a list of colliders.", null, "Game Dev")]
     public class ColliderListValueAsset : SerializedValueListAsset<Collider>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider Value From Asset", "Reads a collider component from a ColliderValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider Value From Asset", "Reads a collider component from a ColliderValueAsset.", null, "Game Dev")]
     public class ColliderValueFromAsset :
         ValueFromAsset<Collider, ColliderValueAsset>, ISettableColliderValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider List From Asset", "Reads colliders from a ColliderListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider List From Asset", "Reads colliders from a ColliderListValueAsset.", null, "Game Dev")]
     public class ColliderListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Collider>, ColliderListValueAsset>
     {

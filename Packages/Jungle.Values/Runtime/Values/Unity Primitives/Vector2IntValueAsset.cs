@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a 2D integer vector.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Vector2Int value", fileName = "Vector2IntValue")]
-    [JungleClassInfo("Vector2Int Value Asset", "ScriptableObject storing a 2D integer vector.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int Value Asset", "ScriptableObject storing a 2D integer vector.", null, "Unity Types")]
     public class Vector2IntValueAsset : ValueAsset<Vector2Int>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Vector2Int list value", fileName = "Vector2IntListValue")]
-    [JungleClassInfo("Vector2Int List Asset", "ScriptableObject storing a list of 2D integer vectors.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int List Asset", "ScriptableObject storing a list of 2D integer vectors.", null, "Unity Types")]
     public class Vector2IntListValueAsset : SerializedValueListAsset<Vector2Int>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2Int Value From Asset", "Reads a 2D integer vector from a Vector2IntValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int Value From Asset", "Reads a 2D integer vector from a Vector2IntValueAsset.", null, "Unity Types")]
     public class Vector2IntValueFromAsset :
         ValueFromAsset<Vector2Int, Vector2IntValueAsset>, ISettableVector2IntValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2Int List From Asset", "Reads 2D integer vectors from a Vector2IntListValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int List From Asset", "Reads 2D integer vectors from a Vector2IntListValueAsset.", null, "Unity Types")]
     public class Vector2IntListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Vector2Int>, Vector2IntListValueAsset>
     {

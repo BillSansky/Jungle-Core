@@ -8,7 +8,7 @@ namespace Jungle.Values
     /// Exposes items from a serialized array on the owner.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Local Array Value", "Exposes items from a serialized array on the owner.", null, "Values/Core", true)]
+    [JungleClassInfo("Local Array Value", "Exposes items from a serialized array on the owner.", null, "Core", true)]
     public class LocalArrayValue<T> : IValueSableValue<T>
     {
         private T[] values;

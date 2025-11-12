@@ -9,7 +9,7 @@ namespace Jungle.Values.Primitives
     /// ScriptableObject storing a text string.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/String value", fileName = "StringValue")]
-    [JungleClassInfo("String Value Asset", "ScriptableObject storing a text string.", null, "Values/Primitives")]
+    [JungleClassInfo("String Value Asset", "ScriptableObject storing a text string.", null, "Primitives")]
     public class StringValueAsset : ValueAsset<string>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/String list value", fileName = "StringListValue")]
-    [JungleClassInfo("String List Asset", "ScriptableObject storing a list of text strings.", null, "Values/Primitives")]
+    [JungleClassInfo("String List Asset", "ScriptableObject storing a list of text strings.", null, "Primitives")]
     public class StringListValueAsset : SerializedValueListAsset<string>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("String Value From Asset", "Reads a text string from a StringValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("String Value From Asset", "Reads a text string from a StringValueAsset.", null, "Primitives")]
     public class StringValueFromAsset : ValueFromAsset<string, StringValueAsset>, ISettableStringValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("String List From Asset", "Reads text strings from a StringListValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("String List From Asset", "Reads text strings from a StringListValueAsset.", null, "Primitives")]
     public class StringListValueFromAsset : ValueFromAsset<IReadOnlyList<string>, StringListValueAsset>
     {
     }

@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector3 Value", "Stores a 3D vector locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("Vector3 Value", "Stores a 3D vector locally on the owner.", null, "Unity Types", true)]
     public class Vector3Value : LocalValue<Vector3>, ISettableVector3Value
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector3 Member Value", "Returns a 3D vector from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector3 Member Value", "Returns a 3D vector from a component field, property, or method.", null, "Unity Types")]
     public class Vector3ClassMembersValue : ClassMembersValue<Vector3>, IVector3Value
     {
     }

@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a sprite asset.
     /// </summary>
-    [JungleClassInfo("Sprite Value Component", "Component exposing a sprite asset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite Value Component", "Component exposing a sprite asset.", null, "Game Dev")]
     public class SpriteValueComponent : ValueComponent<Sprite>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of sprites.
     /// </summary>
 
-    [JungleClassInfo("Sprite List Component", "Component exposing a list of sprites.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite List Component", "Component exposing a list of sprites.", null, "Game Dev")]
     public class SpriteListValueComponent : SerializedValueListComponent<Sprite>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite Value From Component", "Reads a sprite asset from a SpriteValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite Value From Component", "Reads a sprite asset from a SpriteValueComponent.", null, "Game Dev")]
     public class SpriteValueFromComponent :
         ValueFromComponent<Sprite, SpriteValueComponent>, ISettableSpriteValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite List From Component", "Reads sprites from a SpriteListValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite List From Component", "Reads sprites from a SpriteListValueComponent.", null, "Game Dev")]
     public class SpriteListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Sprite>, SpriteListValueComponent>
     {

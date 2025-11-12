@@ -9,7 +9,7 @@ namespace Jungle.Values.Primitives
     /// ScriptableObject storing a floating-point number.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Float value", fileName = "FloatValue")]
-    [JungleClassInfo("Float Value Asset", "ScriptableObject storing a floating-point number.", null, "Values/Primitives")]
+    [JungleClassInfo("Float Value Asset", "ScriptableObject storing a floating-point number.", null, "Primitives")]
     public class FloatValueAsset : ValueAsset<float>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Float list value", fileName = "FloatListValue")]
-    [JungleClassInfo("Float List Asset", "ScriptableObject storing a list of floating-point numbers.", null, "Values/Primitives")]
+    [JungleClassInfo("Float List Asset", "ScriptableObject storing a list of floating-point numbers.", null, "Primitives")]
     public class FloatListValueAsset : SerializedValueListAsset<float>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Float Value From Asset", "Reads a floating-point number from a FloatValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Float Value From Asset", "Reads a floating-point number from a FloatValueAsset.", null, "Primitives")]
     public class FloatValueFromAsset : ValueFromAsset<float, FloatValueAsset>, ISettableFloatValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Float List From Asset", "Reads floating-point numbers from a FloatListValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Float List From Asset", "Reads floating-point numbers from a FloatListValueAsset.", null, "Primitives")]
     public class FloatListValueFromAsset : ValueFromAsset<IReadOnlyList<float>, FloatListValueAsset>
     {
     }

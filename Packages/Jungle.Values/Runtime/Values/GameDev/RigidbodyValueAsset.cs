@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a rigidbody component.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Rigidbody value", fileName = "RigidbodyValue")]
-    [JungleClassInfo("Rigidbody Value Asset", "ScriptableObject storing a rigidbody component.", null, "Values/Game Dev")]
+    [JungleClassInfo("Rigidbody Value Asset", "ScriptableObject storing a rigidbody component.", null, "Game Dev")]
     public class RigidbodyValueAsset : ValueAsset<Rigidbody>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Rigidbody list value", fileName = "RigidbodyListValue")]
-    [JungleClassInfo("Rigidbody List Asset", "ScriptableObject storing a list of rigidbodies.", null, "Values/Game Dev")]
+    [JungleClassInfo("Rigidbody List Asset", "ScriptableObject storing a list of rigidbodies.", null, "Game Dev")]
     public class RigidbodyListValueAsset : SerializedValueListAsset<Rigidbody>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody Value From Asset", "Reads a rigidbody component from a RigidbodyValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Rigidbody Value From Asset", "Reads a rigidbody component from a RigidbodyValueAsset.", null, "Game Dev")]
     public class RigidbodyValueFromAsset :
         ValueFromAsset<Rigidbody, RigidbodyValueAsset>, ISettableRigidbodyValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody List From Asset", "Reads rigidbodies from a RigidbodyListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Rigidbody List From Asset", "Reads rigidbodies from a RigidbodyListValueAsset.", null, "Game Dev")]
     public class RigidbodyListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Rigidbody>, RigidbodyListValueAsset>
     {

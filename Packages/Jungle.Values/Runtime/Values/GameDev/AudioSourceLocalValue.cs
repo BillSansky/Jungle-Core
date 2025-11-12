@@ -20,7 +20,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Source Value", "Stores an audio source component directly on the owner.", null, "Values/Game Dev", true)]
+    [JungleClassInfo("Audio Source Value", "Stores an audio source component directly on the owner.", null, "Game Dev", true)]
     public class AudioSourceLocalValue : LocalValue<AudioSource>, ISettableAudioSourceValue
     {
         /// <summary>
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Source Member Value", "Returns an audio source component from a component field, property, or method.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Source Member Value", "Returns an audio source component from a component field, property, or method.", null, "Game Dev")]
     public class AudioSourceClassMembersValue : ClassMembersValue<AudioSource>, IAudioSourceValue
     {
        

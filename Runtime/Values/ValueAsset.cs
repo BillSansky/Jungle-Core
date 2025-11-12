@@ -8,7 +8,7 @@ namespace Jungle.Values
     /// Base class for ScriptableObject assets that expose a value of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
-    [JungleClassInfo("Value Asset Base", "Base ScriptableObject for exposing runtime values.", null, "Values/Core")]
+    [JungleClassInfo("Value Asset Base", "Base ScriptableObject for exposing runtime values.", null, "Core")]
     public abstract class ValueAssetBase<T> : ScriptableObject, ISettableValue<T>
     {
         /// <inheritdoc />
@@ -29,7 +29,7 @@ namespace Jungle.Values
     /// Asset base class for values represented by a single element.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the asset.</typeparam>
-    [JungleClassInfo("Value Asset", "ScriptableObject storing a single value instance.", null, "Values/Core")]
+    [JungleClassInfo("Value Asset", "ScriptableObject storing a single value instance.", null, "Core")]
     public abstract class ValueAsset<T> : ValueAssetBase<T>
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace Jungle.Values
     /// Asset base class for values represented by a list of elements.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
-    [JungleClassInfo("Value List Asset", "ScriptableObject storing a list of values.", null, "Values/Core")]
+    [JungleClassInfo("Value List Asset", "ScriptableObject storing a list of values.", null, "Core")]
     public abstract class ValueListAsset<TElement> : ValueAssetBase<IReadOnlyList<TElement>>
     {
         /// <summary>
@@ -93,7 +93,7 @@ namespace Jungle.Values
     /// Asset base class for list values stored as a serialized <see cref="List{T}"/>.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
-    [JungleClassInfo("Serialized Value List Asset", "Value list asset backed by a serialized List.", null, "Values/Core")]
+    [JungleClassInfo("Serialized Value List Asset", "Value list asset backed by a serialized List.", null, "Core")]
     public abstract class SerializedValueListAsset<TElement> : ValueListAsset<TElement>
     {
         [SerializeField]

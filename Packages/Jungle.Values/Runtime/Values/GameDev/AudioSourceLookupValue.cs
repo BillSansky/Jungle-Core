@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// Retrieves an AudioSource component from a GameObject using a lookup strategy.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Audio Source Lookup Value", "Retrieves an AudioSource component from a GameObject using a lookup strategy (on object, in children, or in parent).", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Source Lookup Value", "Retrieves an AudioSource component from a GameObject using a lookup strategy (on object, in children, or in parent).", null, "Game Dev")]
     public class AudioSourceLookupValue : BaseComponentLookupValue<AudioSource, IAudioSourceValue>, IAudioSourceValue
     {
     }

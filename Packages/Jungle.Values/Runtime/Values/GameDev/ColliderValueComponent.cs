@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a collider component.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Collider Value Component", "Component exposing a collider component.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider Value Component", "Component exposing a collider component.", null, "Game Dev")]
     public class ColliderValueComponent : ValueComponent<Collider>
     {
         [SerializeField]
@@ -35,7 +35,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of colliders.
     /// </summary>
 
-    [JungleClassInfo("Collider List Component", "Component exposing a list of colliders.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider List Component", "Component exposing a list of colliders.", null, "Game Dev")]
     public class ColliderListValueComponent : SerializedValueListComponent<Collider>
     {
     }
@@ -44,7 +44,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider Value From Component", "Reads a collider component from a ColliderValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider Value From Component", "Reads a collider component from a ColliderValueComponent.", null, "Game Dev")]
     public class ColliderValueFromComponent :
         ValueFromComponent<Collider, ColliderValueComponent>, ISettableColliderValue
     {
@@ -54,7 +54,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider List From Component", "Reads colliders from a ColliderListValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collider List From Component", "Reads colliders from a ColliderListValueComponent.", null, "Game Dev")]
     public class ColliderListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Collider>, ColliderListValueComponent>
     {

@@ -10,7 +10,7 @@ namespace Jungle.Values
     /// ScriptableObject storing a renderer component.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity", fileName = "RendererValueAsset")]
-    [JungleClassInfo("Renderer Value Asset", "ScriptableObject storing a renderer component.", null, "Values/Game Dev")]
+    [JungleClassInfo("Renderer Value Asset", "ScriptableObject storing a renderer component.", null, "Game Dev")]
     public class RendererValueAsset : ValueAsset<Renderer>
     {
         [SerializeField]
@@ -37,7 +37,7 @@ namespace Jungle.Values
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Renderer list value", fileName = "RendererListValueAsset")]
-    [JungleClassInfo("Renderer List Asset", "ScriptableObject storing a list of renderers.", null, "Values/Game Dev")]
+    [JungleClassInfo("Renderer List Asset", "ScriptableObject storing a list of renderers.", null, "Game Dev")]
     public class RendererListValueAsset : SerializedValueListAsset<Renderer>
     {
     }
@@ -46,7 +46,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer Value From Asset", "Reads a renderer component from a RendererValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Renderer Value From Asset", "Reads a renderer component from a RendererValueAsset.", null, "Game Dev")]
     public class RendererValueFromAsset : ValueFromAsset<Renderer, RendererValueAsset>, ISettableRendererValue
     {
     }
@@ -55,7 +55,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer List From Asset", "Reads renderers from a RendererListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Renderer List From Asset", "Reads renderers from a RendererListValueAsset.", null, "Game Dev")]
     public class RendererListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Renderer>, RendererListValueAsset>
     {

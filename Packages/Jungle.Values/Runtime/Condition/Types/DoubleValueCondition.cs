@@ -9,7 +9,7 @@ namespace Jungle.Conditions
     /// Evaluates a double value against a comparison.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Double Value Condition", "Evaluates a double value against a comparison.", null, "Values")]
+    [JungleClassInfo("Double Value Condition", "Evaluates a double value against a comparison.", null, "Comparisons")]
     public class DoubleValueCondition : Condition
     {
         /// <summary>

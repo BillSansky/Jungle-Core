@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds Value", "Stores a Bounds value locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("Bounds Value", "Stores a Bounds value locally on the owner.", null, "Unity Types", true)]
     public class BoundsValue : LocalValue<Bounds>, ISettableBoundsValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bounds Member Value", "Returns a Bounds value from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("Bounds Member Value", "Returns a Bounds value from a component field, property, or method.", null, "Unity Types")]
     public class BoundsClassMembersValue : ClassMembersValue<Bounds>, IBoundsValue
     {
     }

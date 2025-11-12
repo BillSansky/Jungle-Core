@@ -9,7 +9,7 @@ namespace Jungle.Values.Primitives
     /// ScriptableObject storing a 64-bit integer.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Long value", fileName = "LongValue")]
-    [JungleClassInfo("Long Value Asset", "ScriptableObject storing a 64-bit integer.", null, "Values/Primitives")]
+    [JungleClassInfo("Long Value Asset", "ScriptableObject storing a 64-bit integer.", null, "Primitives")]
     public class LongValueAsset : ValueAsset<long>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Long list value", fileName = "LongListValue")]
-    [JungleClassInfo("Long List Asset", "ScriptableObject storing a list of 64-bit integers.", null, "Values/Primitives")]
+    [JungleClassInfo("Long List Asset", "ScriptableObject storing a list of 64-bit integers.", null, "Primitives")]
     public class LongListValueAsset : SerializedValueListAsset<long>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long Value From Asset", "Reads a 64-bit integer from a LongValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Long Value From Asset", "Reads a 64-bit integer from a LongValueAsset.", null, "Primitives")]
     public class LongValueFromAsset : ValueFromAsset<long, LongValueAsset>, ISettableLongValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long List From Asset", "Reads 64-bit integers from a LongListValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Long List From Asset", "Reads 64-bit integers from a LongListValueAsset.", null, "Primitives")]
     public class LongListValueFromAsset : ValueFromAsset<IReadOnlyList<long>, LongListValueAsset>
     {
     }

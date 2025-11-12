@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Quaternion Value", "Stores a rotation quaternion locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("Quaternion Value", "Stores a rotation quaternion locally on the owner.", null, "Unity Types", true)]
     public class QuaternionValue : LocalValue<Quaternion>, ISettableQuaternionValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Quaternion Member Value", "Returns a rotation quaternion from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("Quaternion Member Value", "Returns a rotation quaternion from a component field, property, or method.", null, "Unity Types")]
     public class QuaternionClassMembersValue : ClassMembersValue<Quaternion>, IQuaternionValue
     {
     }

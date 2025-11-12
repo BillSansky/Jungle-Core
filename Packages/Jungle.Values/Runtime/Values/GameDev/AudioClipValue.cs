@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip Value", "Stores an audio clip directly on the owner.", null, "Values/Game Dev", true)]
+    [JungleClassInfo("Audio Clip Value", "Stores an audio clip directly on the owner.", null, "Game Dev", true)]
     public class AudioClipValue : LocalValue<AudioClip>, ISettableAudioClipValue
     {
         /// <summary>
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip Member Value", "Returns an audio clip from a component field, property, or method.", null, "Values/Game Dev")]
+    [JungleClassInfo("Audio Clip Member Value", "Returns an audio clip from a component field, property, or method.", null, "Game Dev")]
     public class AudioClipClassMembersValue : ClassMembersValue<AudioClip>, IAudioClipValue
     {
     }

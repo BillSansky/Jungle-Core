@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing an animation clip.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AnimationClip value", fileName = "AnimationClipValue")]
-    [JungleClassInfo("Animation Clip Value Asset", "ScriptableObject storing an animation clip.", null, "Values/Game Dev")]
+    [JungleClassInfo("Animation Clip Value Asset", "ScriptableObject storing an animation clip.", null, "Game Dev")]
     public class AnimationClipValueAsset : ValueAsset<AnimationClip>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/AnimationClip list value", fileName = "AnimationClipListValue")]
-    [JungleClassInfo("Animation Clip List Asset", "ScriptableObject storing a list of animation clips.", null, "Values/Game Dev")]
+    [JungleClassInfo("Animation Clip List Asset", "ScriptableObject storing a list of animation clips.", null, "Game Dev")]
     public class AnimationClipListValueAsset : SerializedValueListAsset<AnimationClip>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip Value From Asset", "Reads an animation clip from an AnimationClipValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Animation Clip Value From Asset", "Reads an animation clip from an AnimationClipValueAsset.", null, "Game Dev")]
     public class AnimationClipValueFromAsset :
         ValueFromAsset<AnimationClip, AnimationClipValueAsset>, ISettableAnimationClipValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip List From Asset", "Reads animation clips from an AnimationClipListValueAsset.", null, "Values/Game Dev")]
+    [JungleClassInfo("Animation Clip List From Asset", "Reads animation clips from an AnimationClipListValueAsset.", null, "Game Dev")]
     public class AnimationClipListValueFromAsset :
         ValueFromAsset<IReadOnlyList<AnimationClip>, AnimationClipListValueAsset>
     {

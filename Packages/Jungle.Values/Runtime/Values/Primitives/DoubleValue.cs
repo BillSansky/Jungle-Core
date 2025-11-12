@@ -18,7 +18,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Double Value", "Stores a double-precision number directly on the owner.", null, "Values/Primitives", true)]
+    [JungleClassInfo("Double Value", "Stores a double-precision number directly on the owner.", null, "Primitives", true)]
     public class DoubleValue : LocalValue<double>, ISettableDoubleValue
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Double Member Value", "Returns a double-precision number from a component field, property, or method.", null, "Values/Primitives")]
+    [JungleClassInfo("Double Member Value", "Returns a double-precision number from a component field, property, or method.", null, "Primitives")]
     public class DoubleClassMembersValue : ClassMembersValue<double>, IDoubleValue
     {
     }

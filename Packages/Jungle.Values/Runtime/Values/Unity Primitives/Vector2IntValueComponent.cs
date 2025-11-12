@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a 2D integer vector.
     /// </summary>
-    [JungleClassInfo("Vector2Int Value Component", "Component exposing a 2D integer vector.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int Value Component", "Component exposing a 2D integer vector.", null, "Unity Types")]
     public class Vector2IntValueComponent : ValueComponent<Vector2Int>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of 2D integer vectors.
     /// </summary>
 
-    [JungleClassInfo("Vector2Int List Component", "Component exposing a list of 2D integer vectors.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int List Component", "Component exposing a list of 2D integer vectors.", null, "Unity Types")]
     public class Vector2IntListValueComponent : SerializedValueListComponent<Vector2Int>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2Int Value From Component", "Reads a 2D integer vector from a Vector2IntValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int Value From Component", "Reads a 2D integer vector from a Vector2IntValueComponent.", null, "Unity Types")]
     public class Vector2IntValueFromComponent :
         ValueFromComponent<Vector2Int, Vector2IntValueComponent>, ISettableVector2IntValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2Int List From Component", "Reads 2D integer vectors from a Vector2IntListValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("Vector2Int List From Component", "Reads 2D integer vectors from a Vector2IntListValueComponent.", null, "Unity Types")]
     public class Vector2IntListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Vector2Int>, Vector2IntListValueComponent>
     {

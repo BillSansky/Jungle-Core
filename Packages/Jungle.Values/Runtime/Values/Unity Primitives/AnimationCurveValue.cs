@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve Value", "Stores a animation curve locally on the owner.", null, "Values/Unity Types", true)]
+    [JungleClassInfo("AnimationCurve Value", "Stores a animation curve locally on the owner.", null, "Unity Types", true)]
     public class AnimationCurveValue : LocalValue<AnimationCurve>, ISettableAnimationCurveValue
     {
         /// <summary>
@@ -48,7 +48,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve Member Value", "Returns a animation curve from a component field, property, or method.", null, "Values/Unity Types")]
+    [JungleClassInfo("AnimationCurve Member Value", "Returns a animation curve from a component field, property, or method.", null, "Unity Types")]
     public class AnimationCurveClassMembersValue : ClassMembersValue<AnimationCurve>, IAnimationCurveValue
     {
     }

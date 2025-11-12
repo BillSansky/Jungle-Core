@@ -15,7 +15,7 @@ namespace Jungle.Values.GameDev
     /// Stores raycast hit information directly on the owner.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Collision Hit Value", "Stores raycast hit information directly on the owner.", null, "Values/Game Dev", true)]
+    [JungleClassInfo("Collision Hit Value", "Stores raycast hit information directly on the owner.", null, "Game Dev", true)]
     public class CollisionHitLocalValue : LocalValue<RaycastHit>, ICollisionHitValue
     {
         /// <summary>
@@ -44,7 +44,7 @@ namespace Jungle.Values.GameDev
     /// Returns raycast hit information from a component field, property, or method.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Collision Hit Member Value", "Returns raycast hit information from a component field, property, or method.", null, "Values/Game Dev")]
+    [JungleClassInfo("Collision Hit Member Value", "Returns raycast hit information from a component field, property, or method.", null, "Game Dev")]
     public class CollisionHitClassMembersValue : ClassMembersValue<RaycastHit>, ICollisionHitValue
     {
     }

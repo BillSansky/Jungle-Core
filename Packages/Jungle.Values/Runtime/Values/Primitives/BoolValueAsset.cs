@@ -9,7 +9,7 @@ namespace Jungle.Values.Primitives
     /// ScriptableObject storing a boolean flag.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool value", fileName = "BoolValue")]
-    [JungleClassInfo("Bool Value Asset", "ScriptableObject storing a boolean flag.", null, "Values/Primitives")]
+    [JungleClassInfo("Bool Value Asset", "ScriptableObject storing a boolean flag.", null, "Primitives")]
     public class BoolValueAsset : ValueAsset<bool>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Bool list value", fileName = "BoolListValue")]
-    [JungleClassInfo("Bool List Asset", "ScriptableObject storing a list of boolean flags.", null, "Values/Primitives")]
+    [JungleClassInfo("Bool List Asset", "ScriptableObject storing a list of boolean flags.", null, "Primitives")]
     public class BoolListValueAsset : SerializedValueListAsset<bool>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool Value From Asset", "Reads a boolean flag from a BoolValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Bool Value From Asset", "Reads a boolean flag from a BoolValueAsset.", null, "Primitives")]
     public class BoolValueFromAsset : ValueFromAsset<bool, BoolValueAsset>, ISettableBoolValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool List From Asset", "Reads boolean flags from a BoolListValueAsset.", null, "Values/Primitives")]
+    [JungleClassInfo("Bool List From Asset", "Reads boolean flags from a BoolListValueAsset.", null, "Primitives")]
     public class BoolListValueFromAsset : ValueFromAsset<IReadOnlyList<bool>, BoolListValueAsset>
     {
     }

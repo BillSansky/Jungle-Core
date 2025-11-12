@@ -24,7 +24,7 @@ namespace Jungle.Values.GameDev
         "Stored Component State Value",
         "Returns the recorded state for a component captured by the ObjectStateRecorder.",
         null,
-        "Values/Game Dev",
+        "Game Dev",
         true)]
     public class StoredComponentStateValue<TState> : IStoredComponentStateValue<TState>
         where TState : class, ISaveState

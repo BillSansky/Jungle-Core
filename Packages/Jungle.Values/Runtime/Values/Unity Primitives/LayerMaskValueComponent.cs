@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a LayerMask value.
     /// </summary>
-    [JungleClassInfo("Layer Mask Value Component", "Component exposing a LayerMask value.", null, "Values/Game Dev")]
+    [JungleClassInfo("Layer Mask Value Component", "Component exposing a LayerMask value.", null, "Game Dev")]
     public class LayerMaskValueComponent : ValueComponent<LayerMask>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of LayerMask values.
     /// </summary>
 
-    [JungleClassInfo("Layer Mask List Component", "Component exposing a list of LayerMask values.", null, "Values/Game Dev")]
+    [JungleClassInfo("Layer Mask List Component", "Component exposing a list of LayerMask values.", null, "Game Dev")]
     public class LayerMaskListValueComponent : SerializedValueListComponent<LayerMask>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask Value From Component", "Reads a LayerMask value from a LayerMaskValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Layer Mask Value From Component", "Reads a LayerMask value from a LayerMaskValueComponent.", null, "Game Dev")]
     public class LayerMaskValueFromComponent :
         ValueFromComponent<LayerMask, LayerMaskValueComponent>, ISettableLayerMaskValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask List From Component", "Reads LayerMask values from a LayerMaskListValueComponent.", null, "Values/Game Dev")]
+    [JungleClassInfo("Layer Mask List From Component", "Reads LayerMask values from a LayerMaskListValueComponent.", null, "Game Dev")]
     public class LayerMaskListValueFromComponent :
         ValueFromComponent<IReadOnlyList<LayerMask>, LayerMaskListValueComponent>
     {

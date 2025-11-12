@@ -10,7 +10,7 @@ namespace Jungle.Values.UnityTypes
     /// Reads the hit position from a collision hit value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Collision Hit Position", "Reads the hit position from a collision hit value.", null, "Values/Unity Types")]
+    [JungleClassInfo("Collision Hit Position", "Reads the hit position from a collision hit value.", null, "Unity Types")]
     public class CollisionHitPositionValue : IVector3Value
     {
         [SerializeReference]
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// Reads the hit normal from a collision hit value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Collision Hit Normal", "Reads the hit normal from a collision hit value.", null, "Values/Unity Types")]
+    [JungleClassInfo("Collision Hit Normal", "Reads the hit normal from a collision hit value.", null, "Unity Types")]
     public class CollisionHitNormalValue : IVector3Value
     {
         [SerializeReference]

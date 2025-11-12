@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a gradient.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient value", fileName = "GradientValue")]
-    [JungleClassInfo("Gradient Value Asset", "ScriptableObject storing a gradient.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient Value Asset", "ScriptableObject storing a gradient.", null, "Unity Types")]
     public class GradientValueAsset : ValueAsset<Gradient>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Gradient list value", fileName = "GradientListValue")]
-    [JungleClassInfo("Gradient List Asset", "ScriptableObject storing a list of gradients.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient List Asset", "ScriptableObject storing a list of gradients.", null, "Unity Types")]
     public class GradientListValueAsset : SerializedValueListAsset<Gradient>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient Value From Asset", "Reads a gradient from a GradientValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient Value From Asset", "Reads a gradient from a GradientValueAsset.", null, "Unity Types")]
     public class GradientValueFromAsset : ValueFromAsset<Gradient, GradientValueAsset>, ISettableGradientValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient List From Asset", "Reads gradients from a GradientListValueAsset.", null, "Values/Unity Types")]
+    [JungleClassInfo("Gradient List From Asset", "Reads gradients from a GradientListValueAsset.", null, "Unity Types")]
     public class GradientListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Gradient>, GradientListValueAsset>
     {

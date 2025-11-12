@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite Value", "Stores a sprite asset directly on the owner.", null, "Values/Game Dev", true)]
+    [JungleClassInfo("Sprite Value", "Stores a sprite asset directly on the owner.", null, "Game Dev", true)]
     public class SpriteValue : LocalValue<Sprite>, ISettableSpriteValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Sprite Member Value", "Returns a sprite asset from a component field, property, or method.", null, "Values/Game Dev")]
+    [JungleClassInfo("Sprite Member Value", "Returns a sprite asset from a component field, property, or method.", null, "Game Dev")]
     public class SpriteClassMembersValue : ClassMembersValue<Sprite>, ISpriteValue
     {
     }

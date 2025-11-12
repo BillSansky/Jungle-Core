@@ -9,7 +9,7 @@ namespace Jungle.Conditions
     /// Evaluates a float value against a comparison.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Float Value Condition", "Evaluates a float value against a comparison.", null, "Values")]
+    [JungleClassInfo("Float Value Condition", "Evaluates a float value against a comparison.", null, "Comparisons")]
     public class FloatValueCondition : Condition
     {
         /// <summary>

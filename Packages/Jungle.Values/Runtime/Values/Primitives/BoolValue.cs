@@ -18,7 +18,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool Value", "Stores a boolean value directly on the owner.", null, "Values/Primitives", true)]
+    [JungleClassInfo("Bool Value", "Stores a boolean value directly on the owner.", null, "Primitives", true)]
     public class BoolValue : LocalValue<bool>, ISettableBoolValue
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool Member Value", "Returns a boolean from a component field, property, or method.", null, "Values/Primitives")] 
+    [JungleClassInfo("Bool Member Value", "Returns a boolean from a component field, property, or method.", null, "Primitives")] 
     public class BoolClassMembersValue : ClassMembersValue<bool>, IBoolValue
     {
     }

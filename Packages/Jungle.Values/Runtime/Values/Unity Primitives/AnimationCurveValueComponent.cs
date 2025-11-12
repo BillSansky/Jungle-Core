@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a animation curve.
     /// </summary>
-    [JungleClassInfo("AnimationCurve Value Component", "Component exposing a animation curve.", null, "Values/Unity Types")]
+    [JungleClassInfo("AnimationCurve Value Component", "Component exposing a animation curve.", null, "Unity Types")]
     public class AnimationCurveValueComponent : ValueComponent<AnimationCurve>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of animation curves.
     /// </summary>
 
-    [JungleClassInfo("AnimationCurve List Component", "Component exposing a list of animation curves.", null, "Values/Unity Types")]
+    [JungleClassInfo("AnimationCurve List Component", "Component exposing a list of animation curves.", null, "Unity Types")]
     public class AnimationCurveListValueComponent : SerializedValueListComponent<AnimationCurve>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve Value From Component", "Reads a animation curve from a AnimationCurveValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("AnimationCurve Value From Component", "Reads a animation curve from a AnimationCurveValueComponent.", null, "Unity Types")]
     public class AnimationCurveValueFromComponent :
         ValueFromComponent<AnimationCurve, AnimationCurveValueComponent>, ISettableAnimationCurveValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve List From Component", "Reads animation curves from a AnimationCurveListValueComponent.", null, "Values/Unity Types")]
+    [JungleClassInfo("AnimationCurve List From Component", "Reads animation curves from a AnimationCurveListValueComponent.", null, "Unity Types")]
     public class AnimationCurveListValueFromComponent :
         ValueFromComponent<IReadOnlyList<AnimationCurve>, AnimationCurveListValueComponent>
     {
