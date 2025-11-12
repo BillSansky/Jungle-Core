@@ -7,12 +7,17 @@ namespace Jungle.Physics
     /// Represents the Unity physics layer collision matrix.
     /// </summary>
     [Serializable]
-    public class CollisionLayerMatrix
+    public class CollisionLayerMatrix : ISerializationCallbackReceiver
     {
         public const int LayerCount = 32;
 
         [SerializeField]
-        private bool[] collisions = CreateDefaultCollisions();
+        private bool[] collisions;
+
+        public CollisionLayerMatrix()
+        {
+            collisions = CreateDefaultCollisions();
+        }
 
         /// <summary>
         /// Creates a collision matrix based on the current Unity physics configuration.
@@ -73,6 +78,16 @@ namespace Jungle.Physics
                     Physics.IgnoreLayerCollision(layerA, layerB, !collides);
                 }
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            EnsureArray();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            EnsureArray();
         }
 
         private static bool[] CreateDefaultCollisions()
