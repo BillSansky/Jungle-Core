@@ -33,18 +33,8 @@ namespace Jungle.Editor
 
             // Calculate window size based on categorized content
             float totalHeight = 60f; // Title and padding
-            var categorizedTypes = window.GroupTypesByCategory(window.classTypes);
-            
-            foreach (var category in categorizedTypes)
-            {
-                totalHeight += 30f; // Category header height
-                foreach (var classType in category.Value)
-                {
-                    var classInfo = window.GetClassInfo(classType);
-                    totalHeight += window.CalculateItemHeight(classInfo.description) + 8f;
-                }
-                totalHeight += 10f; // Category spacing
-            }
+            var categoryTree = window.BuildCategoryTree(window.classTypes);
+            totalHeight += window.CalculateTreeHeight(categoryTree, false);
 
             float maxHeight = Screen.height * 0.6f;
             totalHeight = Mathf.Min(totalHeight, maxHeight);
@@ -133,22 +123,24 @@ namespace Jungle.Editor
                 return;
             }
 
-            // Group types by category and add them to the UI
-            var categorizedTypes = GroupTypesByCategory(classTypes);
-            foreach (var category in categorizedTypes.OrderBy(kvp => kvp.Key))
+            // Group types by category path and add them to the UI
+            var categoryTree = BuildCategoryTree(classTypes);
+
+            var rootTypes = categoryTree.Types
+                .OrderBy(t => EditorUtils.FormatActionTypeName(t), StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            foreach (var classType in rootTypes)
             {
-                CreateCategoryHeader(category.Key);
-                foreach (var classType in category.Value.OrderBy(t => t.Name))
-                {
-                    CreateClassItem(classType);
-                }
-                
-                // Add spacing between categories (except for the last one)
-                if (category.Key != categorizedTypes.Keys.Last())
-                {
-                    CreateCategorySpacing();
-                }
+                CreateClassItem(classType, 0);
             }
+
+            if (rootTypes.Count > 0 && categoryTree.Children.Count > 0)
+            {
+                CreateCategorySpacing(0);
+            }
+
+            AddCategoryChildrenToUI(categoryTree, 0);
            
 
             // Handle escape key to close popup
@@ -182,7 +174,7 @@ namespace Jungle.Editor
             classTypes = null;
         }
 
-        private void CreateClassItem(Type classType)
+        private void CreateClassItem(Type classType, int indentLevel)
         {
             var displayName = EditorUtils.FormatActionTypeName(classType);
             var classInfo = GetClassInfo(classType);
@@ -241,6 +233,10 @@ namespace Jungle.Editor
                     evt.StopPropagation();
                 }
             });
+
+            // Apply indentation
+            var indentation = 16f + indentLevel * 14f;
+            itemElement.style.marginLeft = indentation;
 
             // Add the entire item element (including separator) to content container
             contentContainer.Add(itemElement);
@@ -398,27 +394,38 @@ namespace Jungle.Editor
             return "class-icon-default";
         }
         
-        private Dictionary<string, List<Type>> GroupTypesByCategory(List<Type> types)
+        private CategoryNode BuildCategoryTree(IEnumerable<Type> types)
         {
-            var categorizedTypes = new Dictionary<string, List<Type>>();
+            var root = new CategoryNode(null);
 
             foreach (var type in types)
             {
                 var classInfo = GetClassInfo(type);
-                var category = classInfo.category;
+                var categoryPath = string.IsNullOrWhiteSpace(classInfo.category) ? "General" : classInfo.category;
+                var segments = categoryPath
+                    .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(segment => segment.Trim())
+                    .Where(segment => !string.IsNullOrEmpty(segment))
+                    .ToList();
 
-                if (!categorizedTypes.ContainsKey(category))
+                if (segments.Count == 0)
                 {
-                    categorizedTypes[category] = new List<Type>();
+                    segments.Add("General");
                 }
 
-                categorizedTypes[category].Add(type);
+                var currentNode = root;
+                foreach (var segment in segments)
+                {
+                    currentNode = currentNode.GetOrAddChild(segment);
+                }
+
+                currentNode.Types.Add(type);
             }
 
-            return categorizedTypes;
+            return root;
         }
 
-        private void CreateCategoryHeader(string categoryName)
+        private void CreateCategoryHeader(string categoryName, int depth)
         {
             var categoryHeader = new Label(categoryName);
             categoryHeader.AddToClassList("category-header");
@@ -427,16 +434,109 @@ namespace Jungle.Editor
             categoryHeader.style.color = new Color(0.8f, 0.8f, 0.8f, 1f);
             categoryHeader.style.marginTop = 8f;
             categoryHeader.style.marginBottom = 4f;
-            categoryHeader.style.marginLeft = 8f;
-            
+            categoryHeader.style.marginLeft = 8f + depth * 14f;
+
             contentContainer.Add(categoryHeader);
         }
 
-        private void CreateCategorySpacing()
+        private void CreateCategorySpacing(int depth)
         {
             var spacer = new VisualElement();
             spacer.style.height = 10f;
+            spacer.style.marginLeft = 8f + depth * 14f;
             contentContainer.Add(spacer);
+        }
+
+        private void AddCategoryChildrenToUI(CategoryNode parentNode, int depth)
+        {
+            var orderedChildren = parentNode.Children.Values
+                .OrderBy(child => child.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            for (int index = 0; index < orderedChildren.Count; index++)
+            {
+                var child = orderedChildren[index];
+                AddCategoryNodeToUI(child, depth);
+
+                if (index < orderedChildren.Count - 1)
+                {
+                    CreateCategorySpacing(depth);
+                }
+            }
+        }
+
+        private void AddCategoryNodeToUI(CategoryNode node, int depth)
+        {
+            CreateCategoryHeader(node.Name, depth);
+
+            var sortedTypes = node.Types
+                .OrderBy(type => EditorUtils.FormatActionTypeName(type), StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            foreach (var classType in sortedTypes)
+            {
+                CreateClassItem(classType, depth + 1);
+            }
+
+            AddCategoryChildrenToUI(node, depth + 1);
+        }
+
+        private float CalculateTreeHeight(CategoryNode node, bool includeHeader)
+        {
+            float height = 0f;
+
+            if (includeHeader)
+            {
+                height += 30f;
+            }
+
+            foreach (var type in node.Types)
+            {
+                var classInfo = GetClassInfo(type);
+                height += CalculateItemHeight(classInfo.description) + 8f;
+            }
+
+            var orderedChildren = node.Children.Values
+                .OrderBy(child => child.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            for (int index = 0; index < orderedChildren.Count; index++)
+            {
+                var child = orderedChildren[index];
+                height += CalculateTreeHeight(child, true);
+
+                if (index < orderedChildren.Count - 1)
+                {
+                    height += 10f;
+                }
+            }
+
+            return height;
+        }
+
+        private sealed class CategoryNode
+        {
+            public string Name { get; }
+            public Dictionary<string, CategoryNode> Children { get; }
+            public List<Type> Types { get; }
+
+            public CategoryNode(string name)
+            {
+                Name = name;
+                Children = new Dictionary<string, CategoryNode>(StringComparer.OrdinalIgnoreCase);
+                Types = new List<Type>();
+            }
+
+            public CategoryNode GetOrAddChild(string name)
+            {
+                if (!Children.TryGetValue(name, out var child))
+                {
+                    child = new CategoryNode(name);
+                    Children[name] = child;
+                }
+
+                return child;
+            }
         }
     }
 }
