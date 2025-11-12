@@ -430,6 +430,7 @@ namespace Jungle.Editor
             {
                 var mixedLabel = new Label("—");
                 mixedLabel.AddToClassList("tsf__mixed-value");
+                AttachCopyContextMenu(mixedLabel, () => "—");
                 content.Add(mixedLabel);
                 expandToggle.style.display = DisplayStyle.None;
                 underRowHost.style.display = DisplayStyle.None;
@@ -453,6 +454,7 @@ namespace Jungle.Editor
 
                     var none = new Label("None");
                     none.AddToClassList("tsf__empty-value");
+                    AttachCopyContextMenu(none, () => "None");
                     content.Add(none);
                     return;
                 }
@@ -480,6 +482,7 @@ namespace Jungle.Editor
                     var typeNice = GetManagedRefNiceName(prop);
                     var summary = new Label(typeNice);
                     summary.AddToClassList("tsf__type-summary");
+                    AttachCopyContextMenu(summary, () => typeNice);
                     content.Add(summary);
 
                     // Details (children) go under the row
@@ -500,8 +503,25 @@ namespace Jungle.Editor
                     allowSceneObjects = true
                 };
                 of.BindProperty(prop);
+                AttachCopyContextMenu(of, () =>
+                {
+                    var reference = prop.objectReferenceValue;
+                    return reference != null ? reference.name : "None";
+                });
                 content.Add(of);
             }
+        }
+
+        private static void AttachCopyContextMenu(VisualElement element, Func<string> getValue)
+        {
+            element.RegisterCallback<ContextualMenuPopulateEvent>(evt =>
+            {
+                string value = getValue?.Invoke();
+                bool hasText = !string.IsNullOrEmpty(value);
+                evt.menu.AppendAction("Copy Value", _ => EditorGUIUtility.systemCopyBuffer = value, hasText
+                    ? DropdownMenuAction.Status.Normal
+                    : DropdownMenuAction.Status.Disabled);
+            });
         }
 
         private static string GetManagedRefNiceName(SerializedProperty p)
