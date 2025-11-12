@@ -397,6 +397,7 @@ namespace Jungle.Editor
         private CategoryNode BuildCategoryTree(IEnumerable<Type> types)
         {
             var root = new CategoryNode(null);
+            var categoryEntries = new List<(Type type, List<string> segments)>();
 
             foreach (var type in types)
             {
@@ -413,16 +414,71 @@ namespace Jungle.Editor
                     segments.Add("General");
                 }
 
+                categoryEntries.Add((type, segments));
+            }
+
+            int sharedPrefixLength = GetSharedCategoryPrefixLength(categoryEntries.Select(entry => entry.segments).ToList());
+            bool shouldTrimSharedPrefix = sharedPrefixLength > 0 &&
+                                          categoryEntries.Any(entry => entry.segments.Count > sharedPrefixLength);
+
+            foreach (var entry in categoryEntries)
+            {
+                var segments = shouldTrimSharedPrefix
+                    ? entry.segments.Skip(sharedPrefixLength).Where(segment => !string.IsNullOrEmpty(segment)).ToList()
+                    : entry.segments;
+
+                if (segments.Count == 0)
+                {
+                    segments.Add("General");
+                }
+
                 var currentNode = root;
                 foreach (var segment in segments)
                 {
                     currentNode = currentNode.GetOrAddChild(segment);
                 }
 
-                currentNode.Types.Add(type);
+                currentNode.Types.Add(entry.type);
             }
 
             return root;
+        }
+
+        private static int GetSharedCategoryPrefixLength(IReadOnlyList<List<string>> categoryPaths)
+        {
+            if (categoryPaths == null || categoryPaths.Count == 0)
+            {
+                return 0;
+            }
+
+            int prefixLength = 0;
+            while (true)
+            {
+                string candidate = null;
+
+                for (int pathIndex = 0; pathIndex < categoryPaths.Count; pathIndex++)
+                {
+                    var path = categoryPaths[pathIndex];
+                    if (path.Count <= prefixLength)
+                    {
+                        return prefixLength;
+                    }
+
+                    var segment = path[prefixLength];
+                    if (candidate == null)
+                    {
+                        candidate = segment;
+                        continue;
+                    }
+
+                    if (!string.Equals(candidate, segment, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return prefixLength;
+                    }
+                }
+
+                prefixLength++;
+            }
         }
 
         private void CreateCategoryHeader(string categoryName, int depth)

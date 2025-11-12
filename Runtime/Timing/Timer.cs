@@ -1,5 +1,6 @@
 using System;
 using Jungle.Actions;
+using Jungle.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +9,11 @@ namespace Jungle.Timing
     /// <summary>
     /// Runs a countdown and raises UnityEvents when it starts and completes.
     /// </summary>
+    [JungleClassInfo(
+        "Timer Action",
+        "Runs a configurable countdown while raising UnityEvents on start and completion.",
+        null,
+        "Actions/Timing")]
     public class Timer : MonoBehaviour, IProcessAction
     {
         [SerializeField]
