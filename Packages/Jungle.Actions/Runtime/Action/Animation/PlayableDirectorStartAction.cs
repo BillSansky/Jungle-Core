@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "Playable Director StartProcess Action",
         "Starts a PlayableDirector when the action begins and optionally stops it on stop.",
         "d_AnimationClip",
-        "Actions/State")]
+        "Actions/Animation")]
     /// <summary>
     /// Implements the playable director start action action.
     /// </summary>

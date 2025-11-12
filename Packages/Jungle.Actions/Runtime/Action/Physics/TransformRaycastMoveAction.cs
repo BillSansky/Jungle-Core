@@ -12,7 +12,7 @@ namespace Jungle.Actions
         "Move Transform To Raycast",
         "Casts a ray from a camera and moves the target transform to the hit position or a fallback distance.",
         "d_SceneViewOrtho",
-        "Actions/State")]
+        "Actions/Physics")]
     public class TransformRaycastMoveAction : IImmediateAction
     {
         [SerializeReference]

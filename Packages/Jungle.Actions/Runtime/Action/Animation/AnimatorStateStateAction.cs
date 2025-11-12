@@ -10,7 +10,7 @@ namespace Jungle.Actions
         "Animator State Action",
         "Plays a specific animator state when the action executes.",
         "d_AnimationClip",
-        "Actions/State")]
+        "Actions/Animation")]
     /// <summary>
     /// Implements the animator state state action action.
     /// </summary>

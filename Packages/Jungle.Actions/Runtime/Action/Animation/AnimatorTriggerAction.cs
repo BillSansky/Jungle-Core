@@ -8,7 +8,7 @@ namespace Jungle.Actions
     /// <summary>
     /// Fires an animator trigger when the action starts and optionally resets it on stop.
     /// </summary>
-    [JungleClassInfo("Animator Trigger Action", "Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip", "Actions/State")]
+    [JungleClassInfo("Animator Trigger Action", "Fires an animator trigger when the action starts and optionally resets it on stop.", "d_AnimationClip", "Actions/Animation")]
     [Serializable]
     public class AnimatorTriggerAction : IImmediateAction
     {

@@ -9,7 +9,7 @@ namespace Jungle.Actions
     /// <summary>
     /// Invokes UnityEvents when actions start, stop, or on one-shot.
     /// </summary>
-    [JungleClassInfo("Unity Event Action", "Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon", "Actions/State")]
+    [JungleClassInfo("Unity Event Action", "Invokes UnityEvents when actions start, stop, or on one-shot.", "d_UnityEvent Icon", "Actions/Events")]
     [Serializable]
     public class UnityEventAction : IImmediateAction
     {

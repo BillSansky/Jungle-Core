@@ -12,7 +12,7 @@ namespace Jungle.Actions
         "Transform Position Store Action",
         "Captures the world position of the target transforms.",
         "d_GridAxis Icon",
-        "Actions/State")]
+        "Actions/Transform")]
     public class TransformPositionStoreAction : TransformStateStoreActionBase<TransformPositionState>
     {
     }
