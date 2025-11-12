@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jungle.Attributes;
-using Jungle.Editor; 
+using Jungle.Editor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -120,7 +119,7 @@ public class TypePickerDropdown : AdvancedDropdown
             AddTypesToDropdown(groupItem, child.Types);
             BuildDropdownFromNode(groupItem, child);
 
-            if (groupItem.children.Count > 0)
+            if (groupItem.children.Any())
             {
                 parent.AddChild(groupItem);
             }
@@ -156,7 +155,7 @@ public class TypePickerDropdown : AdvancedDropdown
         MetaCache[t] = m;
         return m;
     }
-    
+
     private static string TruncateSingleLine(string s, int maxChars)
     {
         if (string.IsNullOrEmpty(s) || s.Length <= maxChars) return s;

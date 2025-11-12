@@ -64,7 +64,7 @@ namespace Jungle.Actions
             float rayDistance = Mathf.Max(0f, maxDistance);
             LayerMask layerMask = layerMaskProvider.Value();
 
-            bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, rayDistance, layerMask);
+            bool hasHit = UnityEngine.Physics.Raycast(origin, direction, out RaycastHit hit, rayDistance, layerMask);
             Vector3 targetPosition = hasHit ? hit.point : origin + direction * Mathf.Max(0f, distanceWhenNoHit);
 
             foreach (Transform transform in targetTransform.Values)

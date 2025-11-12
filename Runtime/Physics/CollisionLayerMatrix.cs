@@ -29,7 +29,7 @@ namespace Jungle.Physics
             {
                 for (int layerB = layerA; layerB < LayerCount; layerB++)
                 {
-                    bool collides = !Physics.GetIgnoreLayerCollision(layerA, layerB);
+                    bool collides = !UnityEngine.Physics.GetIgnoreLayerCollision(layerA, layerB);
                     matrix.Set(layerA, layerB, collides);
                 }
             }
@@ -75,7 +75,7 @@ namespace Jungle.Physics
                 for (int layerB = layerA; layerB < LayerCount; layerB++)
                 {
                     bool collides = Get(layerA, layerB);
-                    Physics.IgnoreLayerCollision(layerA, layerB, !collides);
+                    UnityEngine.Physics.IgnoreLayerCollision(layerA, layerB, !collides);
                 }
             }
         }

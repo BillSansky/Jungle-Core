@@ -81,7 +81,7 @@ namespace Jungle.Values.UnityTypes
             direction.Normalize();
             float rayDistance = Mathf.Max(0f, maxDistance);
 
-            bool hasHit = Physics.Raycast(rayValue.origin, direction, out RaycastHit hit, rayDistance, mask);
+            bool hasHit = UnityEngine.Physics.Raycast(rayValue.origin, direction, out RaycastHit hit, rayDistance, mask);
             if (hasHit)
             {
                 return hit.point;

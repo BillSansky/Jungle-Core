@@ -78,7 +78,7 @@ namespace Jungle.Actions
             float distance = Mathf.Max(0f, maxDistance);
             LayerMask layerMask = rayLayerMask.Value();
 
-            bool hasHit = Physics.Raycast(origin, direction, out RaycastHit hit, distance, layerMask);
+            bool hasHit = UnityEngine.Physics.Raycast(origin, direction, out RaycastHit hit, distance, layerMask);
 
             AssignHitResults(hasHit, hit);
         }
