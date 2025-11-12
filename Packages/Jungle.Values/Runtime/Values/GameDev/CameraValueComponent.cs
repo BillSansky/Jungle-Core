@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a camera component.
     /// </summary>
-    [JungleClassInfo("Camera Value Component", "Component exposing a camera component.", null, "Game Dev")]
+    [JungleClassInfo("Camera Value Component", "Component exposing a camera component.", null, "Values/Game Dev")]
     public class CameraValueComponent : ValueComponent<Camera>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a list of camera components.
     /// </summary>
-    [JungleClassInfo("Camera List Component", "Component exposing a list of camera components.", null, "Game Dev")]
+    [JungleClassInfo("Camera List Component", "Component exposing a list of camera components.", null, "Values/Game Dev")]
     public class CameraListValueComponent : SerializedValueListComponent<Camera>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// Reads a camera component from a CameraValueComponent.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera Value From Component", "Reads a camera component from a CameraValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Camera Value From Component", "Reads a camera component from a CameraValueComponent.", null, "Values/Game Dev")]
     public class CameraValueFromComponent : ValueFromComponent<Camera, CameraValueComponent>, ISettableCameraValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.GameDev
     /// Reads camera components from a CameraListValueComponent.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera List From Component", "Reads camera components from a CameraListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Camera List From Component", "Reads camera components from a CameraListValueComponent.", null, "Values/Game Dev")]
     public class CameraListValueFromComponent : ValueFromComponent<IReadOnlyList<Camera>, CameraListValueComponent>
     {
     }

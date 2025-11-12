@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a rotation quaternion.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Quaternion value", fileName = "QuaternionValue")]
-    [JungleClassInfo("Quaternion Value Asset", "ScriptableObject storing a rotation quaternion.", null, "Unity Types")]
+    [JungleClassInfo("Quaternion Value Asset", "ScriptableObject storing a rotation quaternion.", null, "Values/Unity Primitives")]
     public class QuaternionValueAsset : ValueAsset<Quaternion>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Quaternion list value", fileName = "QuaternionListValue")]
-    [JungleClassInfo("Quaternion List Asset", "ScriptableObject storing a list of quaternions.", null, "Unity Types")]
+    [JungleClassInfo("Quaternion List Asset", "ScriptableObject storing a list of quaternions.", null, "Values/Unity Primitives")]
     public class QuaternionListValueAsset : SerializedValueListAsset<Quaternion>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Quaternion Value From Asset", "Reads a rotation quaternion from a QuaternionValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("Quaternion Value From Asset", "Reads a rotation quaternion from a QuaternionValueAsset.", null, "Values/Unity Primitives")]
     public class QuaternionValueFromAsset : ValueFromAsset<Quaternion, QuaternionValueAsset>, ISettableQuaternionValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Quaternion List From Asset", "Reads quaternions from a QuaternionListValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("Quaternion List From Asset", "Reads quaternions from a QuaternionListValueAsset.", null, "Values/Unity Primitives")]
     public class QuaternionListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Quaternion>, QuaternionListValueAsset>
     {

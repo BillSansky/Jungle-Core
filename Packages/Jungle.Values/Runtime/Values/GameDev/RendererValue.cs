@@ -19,7 +19,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer Value", "Stores a renderer component directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Renderer Value", "Stores a renderer component directly on the owner.", null, "Values/Game Dev", true)]
     public class RendererValue : LocalValue<Renderer>, ISettableRendererValue
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer Member Value", "Returns a renderer component from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Renderer Member Value", "Returns a renderer component from a component field, property, or method.", null, "Values/Game Dev")]
     public class RendererClassMembersValue : ClassMembersValue<Renderer>, IRendererValue
     {
     }

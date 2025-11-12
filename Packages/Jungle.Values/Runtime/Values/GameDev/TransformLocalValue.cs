@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform Value", "Stores a transform component directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Transform Value", "Stores a transform component directly on the owner.", null, "Values/Game Dev", true)]
     public class TransformLocalValue : LocalValue<Transform>, ISettableTransformValue
     {
         /// <summary>
@@ -49,7 +49,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform Member Value", "Returns a transform component from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Transform Member Value", "Returns a transform component from a component field, property, or method.", null, "Values/Game Dev")]
     public class TransformClassMembersValue : ClassMembersValue<Transform>, ITransformValue
     {
     }

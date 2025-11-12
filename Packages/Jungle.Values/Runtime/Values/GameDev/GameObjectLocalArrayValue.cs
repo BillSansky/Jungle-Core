@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// Provides GameObject references from a serialized array.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("GameObject Array Value", "Provides GameObject references from a serialized array.", null, "Game Dev", true)]
+    [JungleClassInfo("GameObject Array Value", "Provides GameObject references from a serialized array.", null, "Values/Game Dev", true)]
     public class GameObjectLocalArrayValue : LocalArrayValue<GameObject>, IGameObjectValue
     {
     }

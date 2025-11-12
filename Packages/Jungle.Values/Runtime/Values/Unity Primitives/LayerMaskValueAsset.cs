@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a LayerMask value.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/LayerMask value", fileName = "LayerMaskValue")]
-    [JungleClassInfo("Layer Mask Value Asset", "ScriptableObject storing a LayerMask value.", null, "Game Dev")]
+    [JungleClassInfo("Layer Mask Value Asset", "ScriptableObject storing a LayerMask value.", null, "Values/Game Dev")]
     public class LayerMaskValueAsset : ValueAsset<LayerMask>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/LayerMask list value", fileName = "LayerMaskListValue")]
-    [JungleClassInfo("Layer Mask List Asset", "ScriptableObject storing a list of LayerMask values.", null, "Game Dev")]
+    [JungleClassInfo("Layer Mask List Asset", "ScriptableObject storing a list of LayerMask values.", null, "Values/Game Dev")]
     public class LayerMaskListValueAsset : SerializedValueListAsset<LayerMask>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask Value From Asset", "Reads a LayerMask value from a LayerMaskValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Layer Mask Value From Asset", "Reads a LayerMask value from a LayerMaskValueAsset.", null, "Values/Game Dev")]
     public class LayerMaskValueFromAsset :
         ValueFromAsset<LayerMask, LayerMaskValueAsset>, ISettableLayerMaskValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask List From Asset", "Reads LayerMask values from a LayerMaskListValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Layer Mask List From Asset", "Reads LayerMask values from a LayerMaskListValueAsset.", null, "Values/Game Dev")]
     public class LayerMaskListValueFromAsset :
         ValueFromAsset<IReadOnlyList<LayerMask>, LayerMaskListValueAsset>
     {

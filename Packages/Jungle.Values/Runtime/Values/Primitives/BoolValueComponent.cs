@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
     /// <summary>
     /// Component exposing a boolean flag.
     /// </summary>
-    [JungleClassInfo("Bool Value Component", "Component exposing a boolean flag.", null, "Primitives")]
+    [JungleClassInfo("Bool Value Component", "Component exposing a boolean flag.", null, "Values/Primitives")]
     public class BoolValueComponent : ValueComponent<bool>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.Primitives
     /// Component exposing a list of boolean flags.
     /// </summary>
 
-    [JungleClassInfo("Bool List Component", "Component exposing a list of boolean flags.", null, "Primitives")]
+    [JungleClassInfo("Bool List Component", "Component exposing a list of boolean flags.", null, "Values/Primitives")]
     public class BoolListValueComponent : SerializedValueListComponent<bool>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool Value From Component", "Reads a boolean flag from a BoolValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Bool Value From Component", "Reads a boolean flag from a BoolValueComponent.", null, "Values/Primitives")]
     public class BoolValueFromComponent : ValueFromComponent<bool, BoolValueComponent>, ISettableBoolValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Bool List From Component", "Reads boolean flags from a BoolListValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Bool List From Component", "Reads boolean flags from a BoolListValueComponent.", null, "Values/Primitives")]
     public class BoolListValueFromComponent : ValueFromComponent<IReadOnlyList<bool>, BoolListValueComponent>
     {
     }

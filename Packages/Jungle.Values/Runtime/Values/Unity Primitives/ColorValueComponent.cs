@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a Color value.
     /// </summary>
-    [JungleClassInfo("Color Value Component", "Component exposing a Color value.", null, "Unity Types")]
+    [JungleClassInfo("Color Value Component", "Component exposing a Color value.", null, "Values/Unity Primitives")]
     public class ColorValueComponent : ValueComponent<Color>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of colors.
     /// </summary>
 
-    [JungleClassInfo("Color List Component", "Component exposing a list of colors.", null, "Unity Types")]
+    [JungleClassInfo("Color List Component", "Component exposing a list of colors.", null, "Values/Unity Primitives")]
     public class ColorListValueComponent : SerializedValueListComponent<Color>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color Value From Component", "Reads a Color value from a ColorValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Color Value From Component", "Reads a Color value from a ColorValueComponent.", null, "Values/Unity Primitives")]
     public class ColorValueFromComponent : ValueFromComponent<Color, ColorValueComponent>, ISettableColorValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Color List From Component", "Reads colors from a ColorListValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Color List From Component", "Reads colors from a ColorListValueComponent.", null, "Values/Unity Primitives")]
     public class ColorListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Color>, ColorListValueComponent>
     {

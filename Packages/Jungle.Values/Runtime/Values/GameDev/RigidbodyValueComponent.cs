@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a rigidbody component.
     /// </summary>
-    [JungleClassInfo("Rigidbody Value Component", "Component exposing a rigidbody component.", null, "Game Dev")]
+    [JungleClassInfo("Rigidbody Value Component", "Component exposing a rigidbody component.", null, "Values/Game Dev")]
     public class RigidbodyValueComponent : ValueComponent<Rigidbody>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of rigidbodies.
     /// </summary>
 
-    [JungleClassInfo("Rigidbody List Component", "Component exposing a list of rigidbodies.", null, "Game Dev")]
+    [JungleClassInfo("Rigidbody List Component", "Component exposing a list of rigidbodies.", null, "Values/Game Dev")]
     public class RigidbodyListValueComponent : SerializedValueListComponent<Rigidbody>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody Value From Component", "Reads a rigidbody component from a RigidbodyValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Rigidbody Value From Component", "Reads a rigidbody component from a RigidbodyValueComponent.", null, "Values/Game Dev")]
     public class RigidbodyValueFromComponent :
         ValueFromComponent<Rigidbody, RigidbodyValueComponent>, ISettableRigidbodyValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rigidbody List From Component", "Reads rigidbodies from a RigidbodyListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Rigidbody List From Component", "Reads rigidbodies from a RigidbodyListValueComponent.", null, "Values/Game Dev")]
     public class RigidbodyListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Rigidbody>, RigidbodyListValueComponent>
     {

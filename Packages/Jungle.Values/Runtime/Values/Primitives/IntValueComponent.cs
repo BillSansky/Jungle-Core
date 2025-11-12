@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
     /// <summary>
     /// Component exposing a integer number.
     /// </summary>
-    [JungleClassInfo("Int Value Component", "Component exposing a integer number.", null, "Primitives")]
+    [JungleClassInfo("Int Value Component", "Component exposing a integer number.", null, "Values/Primitives")]
     public class IntValueComponent : ValueComponent<int>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.Primitives
     /// Component exposing a list of integer numbers.
     /// </summary>
 
-    [JungleClassInfo("Int List Component", "Component exposing a list of integer numbers.", null, "Primitives")]
+    [JungleClassInfo("Int List Component", "Component exposing a list of integer numbers.", null, "Values/Primitives")]
     public class IntListValueComponent : SerializedValueListComponent<int>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int Value From Component", "Reads a integer number from a IntValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Int Value From Component", "Reads a integer number from a IntValueComponent.", null, "Values/Primitives")]
     public class IntValueFromComponent : ValueFromComponent<int, IntValueComponent>, ISettableIntValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int List From Component", "Reads integer numbers from a IntListValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Int List From Component", "Reads integer numbers from a IntListValueComponent.", null, "Values/Primitives")]
     public class IntListValueFromComponent : ValueFromComponent<IReadOnlyList<int>, IntListValueComponent>
     {
     }

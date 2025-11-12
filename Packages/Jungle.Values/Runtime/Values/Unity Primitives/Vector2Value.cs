@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2 Value", "Stores a 2D vector locally on the owner.", null, "Unity Types", true)]
+    [JungleClassInfo("Vector2 Value", "Stores a 2D vector locally on the owner.", null, "Values/Unity Primitives", true)]
     public class Vector2Value : LocalValue<Vector2>, ISettableVector2Value
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector2 Member Value", "Returns a 2D vector from a component field, property, or method.", null, "Unity Types")]
+    [JungleClassInfo("Vector2 Member Value", "Returns a 2D vector from a component field, property, or method.", null, "Values/Unity Primitives")]
     public class Vector2ClassMembersValue : ClassMembersValue<Vector2>, IVector2Value
     {
     }

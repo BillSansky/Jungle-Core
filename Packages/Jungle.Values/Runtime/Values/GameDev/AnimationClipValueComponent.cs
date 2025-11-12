@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing an animation clip.
     /// </summary>
-    [JungleClassInfo("Animation Clip Value Component", "Component exposing an animation clip.", null, "Game Dev")]
+    [JungleClassInfo("Animation Clip Value Component", "Component exposing an animation clip.", null, "Values/Game Dev")]
     public class AnimationClipValueComponent : ValueComponent<AnimationClip>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of animation clips.
     /// </summary>
 
-    [JungleClassInfo("Animation Clip List Component", "Component exposing a list of animation clips.", null, "Game Dev")]
+    [JungleClassInfo("Animation Clip List Component", "Component exposing a list of animation clips.", null, "Values/Game Dev")]
     public class AnimationClipListValueComponent : SerializedValueListComponent<AnimationClip>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip Value From Component", "Reads an animation clip from an AnimationClipValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Animation Clip Value From Component", "Reads an animation clip from an AnimationClipValueComponent.", null, "Values/Game Dev")]
     public class AnimationClipValueFromComponent :
         ValueFromComponent<AnimationClip, AnimationClipValueComponent>, ISettableAnimationClipValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip List From Component", "Reads animation clips from an AnimationClipListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Animation Clip List From Component", "Reads animation clips from an AnimationClipListValueComponent.", null, "Values/Game Dev")]
     public class AnimationClipListValueFromComponent :
         ValueFromComponent<IReadOnlyList<AnimationClip>, AnimationClipListValueComponent>
     {

@@ -14,7 +14,7 @@ namespace Jungle.Values.UnityTypes
         "Ray Drag Target",
         "Casts a ray and returns the hit position or a fallback point along the ray for drag interactions.",
         null,
-        "Unity Types")]
+        "Values/Unity Primitives")]
     public class RayHitPosition : IVector3Value
     {
         /// <summary>

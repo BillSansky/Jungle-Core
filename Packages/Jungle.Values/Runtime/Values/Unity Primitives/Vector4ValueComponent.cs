@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a 4D vector.
     /// </summary>
-    [JungleClassInfo("Vector4 Value Component", "Component exposing a 4D vector.", null, "Unity Types")]
+    [JungleClassInfo("Vector4 Value Component", "Component exposing a 4D vector.", null, "Values/Unity Primitives")]
     public class Vector4ValueComponent : ValueComponent<Vector4>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of 4D vectors.
     /// </summary>
 
-    [JungleClassInfo("Vector4 List Component", "Component exposing a list of 4D vectors.", null, "Unity Types")]
+    [JungleClassInfo("Vector4 List Component", "Component exposing a list of 4D vectors.", null, "Values/Unity Primitives")]
     public class Vector4ListValueComponent : SerializedValueListComponent<Vector4>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector4 Value From Component", "Reads a 4D vector from a Vector4ValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Vector4 Value From Component", "Reads a 4D vector from a Vector4ValueComponent.", null, "Values/Unity Primitives")]
     public class Vector4ValueFromComponent : ValueFromComponent<Vector4, Vector4ValueComponent>, ISettableVector4Value
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Vector4 List From Component", "Reads 4D vectors from a Vector4ListValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Vector4 List From Component", "Reads 4D vectors from a Vector4ListValueComponent.", null, "Values/Unity Primitives")]
     public class Vector4ListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Vector4>, Vector4ListValueComponent>
     {

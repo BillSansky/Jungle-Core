@@ -25,7 +25,7 @@ namespace Jungle.Values.UnityTypes
     /// Stores a <see cref="Ray"/> locally on the owner.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Ray Value", "Stores a ray locally on the owner.", null, "Unity Types", true)]
+    [JungleClassInfo("Ray Value", "Stores a ray locally on the owner.", null, "Values/Unity Primitives", true)]
     public class RayValue : LocalValue<Ray>, ISettableRayValue
     {
         /// <summary>
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// Creates a <see cref="Ray"/> from a camera using a screen position.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Ray From Camera", "Creates a ray from a camera using a screen position.", null, "Unity Types")]
+    [JungleClassInfo("Ray From Camera", "Creates a ray from a camera using a screen position.", null, "Values/Unity Primitives")]
     public class RayFromCameraValue : IRayValue
     {
         /// <summary>
@@ -100,7 +100,7 @@ namespace Jungle.Values.UnityTypes
     /// Creates a <see cref="Ray"/> from an origin and direction.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Ray From Origin And Direction", "Creates a ray using an origin and direction.", null, "Unity Types")]
+    [JungleClassInfo("Ray From Origin And Direction", "Creates a ray using an origin and direction.", null, "Values/Unity Primitives")]
     public class RayFromOriginDirectionValue : IRayValue
     {
         /// <summary>

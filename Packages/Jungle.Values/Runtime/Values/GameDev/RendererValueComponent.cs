@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// <summary>
     /// Component exposing a renderer component.
     /// </summary>
-    [JungleClassInfo("Renderer Value Component", "Component exposing a renderer component.", null, "Game Dev")]
+    [JungleClassInfo("Renderer Value Component", "Component exposing a renderer component.", null, "Values/Game Dev")]
     public class RendererValueComponent : ValueComponent<Renderer>
     {
         [SerializeField]
@@ -35,7 +35,7 @@ namespace Jungle.Values
     /// Component exposing a list of renderers.
     /// </summary>
 
-    [JungleClassInfo("Renderer List Component", "Component exposing a list of renderers.", null, "Game Dev")]
+    [JungleClassInfo("Renderer List Component", "Component exposing a list of renderers.", null, "Values/Game Dev")]
     public class RendererListValueComponent : SerializedValueListComponent<Renderer>
     {
     }
@@ -44,7 +44,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer Value From Component", "Reads a renderer component from a RendererValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Renderer Value From Component", "Reads a renderer component from a RendererValueComponent.", null, "Values/Game Dev")]
     public class RendererValueFromComponent : ValueFromComponent<Renderer, RendererValueComponent>, ISettableRendererValue
     {
     }
@@ -53,7 +53,7 @@ namespace Jungle.Values
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Renderer List From Component", "Reads renderers from a RendererListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Renderer List From Component", "Reads renderers from a RendererListValueComponent.", null, "Values/Game Dev")]
     public class RendererListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Renderer>, RendererListValueComponent>
     {

@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask Value", "Stores a LayerMask value directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Layer Mask Value", "Stores a LayerMask value directly on the owner.", null, "Values/Game Dev", true)]
     public class LayerMaskValue : LocalValue<LayerMask>, ISettableLayerMaskValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Layer Mask Member Value", "Returns a LayerMask value from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Layer Mask Member Value", "Returns a LayerMask value from a component field, property, or method.", null, "Values/Game Dev")]
     public class LayerMaskClassMembersValue : ClassMembersValue<LayerMask>, ILayerMaskValue
     {
     }

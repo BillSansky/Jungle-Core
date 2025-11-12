@@ -10,7 +10,7 @@ namespace Jungle.Values.UnityTypes
     /// Reads the world position from a referenced transform value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Position From Transform", "Reads the world position from a referenced transform value.", null, "Unity Types")]
+    [JungleClassInfo("Position From Transform", "Reads the world position from a referenced transform value.", null, "Values/Unity Primitives")]
     public class PositionFromTransformValue : IVector3Value
     {
         /// <summary>

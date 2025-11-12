@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a animation curve.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/AnimationCurve value", fileName = "AnimationCurveValue")]
-    [JungleClassInfo("AnimationCurve Value Asset", "ScriptableObject storing a animation curve.", null, "Unity Types")]
+    [JungleClassInfo("AnimationCurve Value Asset", "ScriptableObject storing a animation curve.", null, "Values/Unity Primitives")]
     public class AnimationCurveValueAsset : ValueAsset<AnimationCurve>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/AnimationCurve list value", fileName = "AnimationCurveListValue")]
-    [JungleClassInfo("AnimationCurve List Asset", "ScriptableObject storing a list of animation curves.", null, "Unity Types")]
+    [JungleClassInfo("AnimationCurve List Asset", "ScriptableObject storing a list of animation curves.", null, "Values/Unity Primitives")]
     public class AnimationCurveListValueAsset : SerializedValueListAsset<AnimationCurve>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve Value From Asset", "Reads a animation curve from a AnimationCurveValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("AnimationCurve Value From Asset", "Reads a animation curve from a AnimationCurveValueAsset.", null, "Values/Unity Primitives")]
     public class AnimationCurveValueFromAsset :
         ValueFromAsset<AnimationCurve, AnimationCurveValueAsset>, ISettableAnimationCurveValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("AnimationCurve List From Asset", "Reads animation curves from a AnimationCurveListValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("AnimationCurve List From Asset", "Reads animation curves from a AnimationCurveListValueAsset.", null, "Values/Unity Primitives")]
     public class AnimationCurveListValueFromAsset :
         ValueFromAsset<IReadOnlyList<AnimationCurve>, AnimationCurveListValueAsset>
     {

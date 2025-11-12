@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// Stores a camera component directly on the owner.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera Value", "Stores a camera component directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Camera Value", "Stores a camera component directly on the owner.", null, "Values/Game Dev", true)]
     public class CameraValue : LocalValue<Camera>, ISettableCameraValue
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jungle.Values.GameDev
     /// Returns a camera component from a component field, property, or method.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera Member Value", "Returns a camera component from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Camera Member Value", "Returns a camera component from a component field, property, or method.", null, "Values/Game Dev")]
     public class CameraClassMembersValue : ClassMembersValue<Camera>, ICameraValue
     {
     }

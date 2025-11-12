@@ -9,7 +9,7 @@ namespace Jungle.Values
     /// Provides renderer references from a serialized array.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Renderer Array Value", "Provides renderer references from a serialized array.", null, "Game Dev", true)]
+    [JungleClassInfo("Renderer Array Value", "Provides renderer references from a serialized array.", null, "Values/Game Dev", true)]
     public class RendererLocalArrayValue : LocalArrayValue<Renderer>, IRendererValue
     {
     }
