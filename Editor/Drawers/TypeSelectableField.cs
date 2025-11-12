@@ -90,6 +90,7 @@ namespace Jungle.Editor
             btnPickOrSwap = new Button(OnPickOrSwapClicked) { text = "+" };
             btnPickOrSwap.tooltip = "Pick or change the type";
             btnPickOrSwap.AddToClassList("tsf__button");
+            btnPickOrSwap.AddToClassList("unity-object-field__selector");
             btnPickOrSwap.RegisterCallback<ClickEvent>(evt => evt.StopPropagation());
             targetIcon = new VisualElement();
             targetIcon.AddToClassList("tsf__button-target-icon");
