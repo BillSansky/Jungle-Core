@@ -10,7 +10,7 @@ namespace Jungle.Values.UnityTypes
     /// Reads the local scale from a referenced transform value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Scale From Transform", "Reads the local scale from a referenced transform value.", null, "Unity Types")]
+    [JungleClassInfo("Scale From Transform", "Reads the local scale from a referenced transform value.", null, "Values/Unity Primitives")]
     public class ScaleFromTransformValue : IVector3Value
     {
         /// <summary>

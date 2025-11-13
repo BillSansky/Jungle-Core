@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider Value", "Stores a collider component directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Collider Value", "Stores a collider component directly on the owner.", null, "Values/Game Dev", true)]
     public class ColliderLocalValue : LocalValue<Collider>, ISettableColliderValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Collider Member Value", "Returns a collider component from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Collider Member Value", "Returns a collider component from a component field, property, or method.", null, "Values/Game Dev")]
     public class ColliderClassMembersValue : ClassMembersValue<Collider>, IColliderValue
     {
     }

@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// <summary>
     /// Component exposing a Rect area.
     /// </summary>
-    [JungleClassInfo("Rect Value Component", "Component exposing a Rect area.", null, "Unity Types")]
+    [JungleClassInfo("Rect Value Component", "Component exposing a Rect area.", null, "Values/Unity Primitives")]
     public class RectValueComponent : ValueComponent<Rect>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.UnityTypes
     /// Component exposing a list of rectangles.
     /// </summary>
 
-    [JungleClassInfo("Rect List Component", "Component exposing a list of rectangles.", null, "Unity Types")]
+    [JungleClassInfo("Rect List Component", "Component exposing a list of rectangles.", null, "Values/Unity Primitives")]
     public class RectListValueComponent : SerializedValueListComponent<Rect>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect Value From Component", "Reads a Rect area from a RectValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Rect Value From Component", "Reads a Rect area from a RectValueComponent.", null, "Values/Unity Primitives")]
     public class RectValueFromComponent : ValueFromComponent<Rect, RectValueComponent>, ISettableRectValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect List From Component", "Reads rectangles from a RectListValueComponent.", null, "Unity Types")]
+    [JungleClassInfo("Rect List From Component", "Reads rectangles from a RectListValueComponent.", null, "Values/Unity Primitives")]
     public class RectListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Rect>, RectListValueComponent>
     {

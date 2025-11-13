@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
     /// <summary>
     /// Component exposing a 64-bit integer.
     /// </summary>
-    [JungleClassInfo("Long Value Component", "Component exposing a 64-bit integer.", null, "Primitives")]
+    [JungleClassInfo("Long Value Component", "Component exposing a 64-bit integer.", null, "Values/Primitives")]
     public class LongValueComponent : ValueComponent<long>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.Primitives
     /// Component exposing a list of 64-bit integers.
     /// </summary>
 
-    [JungleClassInfo("Long List Component", "Component exposing a list of 64-bit integers.", null, "Primitives")]
+    [JungleClassInfo("Long List Component", "Component exposing a list of 64-bit integers.", null, "Values/Primitives")]
     public class LongListValueComponent : SerializedValueListComponent<long>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long Value From Component", "Reads a 64-bit integer from a LongValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Long Value From Component", "Reads a 64-bit integer from a LongValueComponent.", null, "Values/Primitives")]
     public class LongValueFromComponent : ValueFromComponent<long, LongValueComponent>, ISettableLongValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Long List From Component", "Reads 64-bit integers from a LongListValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Long List From Component", "Reads 64-bit integers from a LongListValueComponent.", null, "Values/Primitives")]
     public class LongListValueFromComponent : ValueFromComponent<IReadOnlyList<long>, LongListValueComponent>
     {
     }

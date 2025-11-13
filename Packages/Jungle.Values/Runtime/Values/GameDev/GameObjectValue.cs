@@ -20,7 +20,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("GameObject Value", "Stores a GameObject reference directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("GameObject Value", "Stores a GameObject reference directly on the owner.", null, "Values/Game Dev", true)]
     public class GameObjectValue : LocalValue<GameObject>, ISettableGameObjectValue
     {
         /// <summary>
@@ -41,7 +41,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("GameObject Member Value", "Returns a GameObject reference from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("GameObject Member Value", "Returns a GameObject reference from a component field, property, or method.", null, "Values/Game Dev")]
     public class GameObjectClassMembersValue : ClassMembersValue<GameObject>, IGameObjectValue
     {
         /// <summary>

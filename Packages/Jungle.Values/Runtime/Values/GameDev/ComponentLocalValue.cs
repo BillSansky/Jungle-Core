@@ -18,7 +18,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Component Value", "Stores a component reference directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Component Value", "Stores a component reference directly on the owner.", null, "Values/Game Dev", true)]
     public class ComponentLocalValue : LocalValue<Component>, ISettableComponentValue
     {
         /// <summary>

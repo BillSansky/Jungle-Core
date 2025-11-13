@@ -19,7 +19,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient Value", "Stores a gradient locally on the owner.", null, "Unity Types", true)]
+    [JungleClassInfo("Gradient Value", "Stores a gradient locally on the owner.", null, "Values/Unity Primitives", true)]
     public class GradientValue : LocalValue<Gradient>, ISettableGradientValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Gradient Member Value", "Returns a gradient from a component field, property, or method.", null, "Unity Types")]
+    [JungleClassInfo("Gradient Member Value", "Returns a gradient from a component field, property, or method.", null, "Values/Unity Primitives")]
     public class GradientClassMembersValue : ClassMembersValue<Gradient>, IGradientValue
     {
     }

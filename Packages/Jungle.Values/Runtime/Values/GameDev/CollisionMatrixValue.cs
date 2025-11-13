@@ -10,7 +10,7 @@ namespace Jungle.Values.GameDev
     }
 
     [Serializable]
-    [JungleClassInfo("Collision Matrix Value", "Stores a physics collision matrix directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Collision Matrix Value", "Stores a physics collision matrix directly on the owner.", null, "Values/Game Dev", true)]
     public class CollisionMatrixValue : LocalValue<CollisionLayerMatrix>, ICollisionMatrixValue
     {
         public CollisionMatrixValue()

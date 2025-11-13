@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a transform component.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Transform value", fileName = "TransformLocalValue")]
-    [JungleClassInfo("Transform Value Asset", "ScriptableObject storing a transform component.", null, "Game Dev")]
+    [JungleClassInfo("Transform Value Asset", "ScriptableObject storing a transform component.", null, "Values/Game Dev")]
     public class TransformValueAsset : ValueAsset<Transform>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Transform list value", fileName = "TransformListValue")]
-    [JungleClassInfo("Transform List Asset", "ScriptableObject storing a list of transforms.", null, "Game Dev")]
+    [JungleClassInfo("Transform List Asset", "ScriptableObject storing a list of transforms.", null, "Values/Game Dev")]
     public class TransformListValueAsset : SerializedValueListAsset<Transform>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform Value From Asset", "Reads a transform component from a TransformValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Transform Value From Asset", "Reads a transform component from a TransformValueAsset.", null, "Values/Game Dev")]
     public class TransformValueFromAsset :
         ValueFromAsset<Transform, TransformValueAsset>, ISettableTransformValue
     {
@@ -55,7 +55,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform List From Asset", "Reads transforms from a TransformListValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Transform List From Asset", "Reads transforms from a TransformListValueAsset.", null, "Values/Game Dev")]
     public class TransformListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Transform>, TransformListValueAsset>
     {

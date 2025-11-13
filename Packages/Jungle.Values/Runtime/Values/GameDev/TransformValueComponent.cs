@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing a transform component.
     /// </summary>
-    [JungleClassInfo("Transform Value Component", "Component exposing a transform component.", null, "Game Dev")]
+    [JungleClassInfo("Transform Value Component", "Component exposing a transform component.", null, "Values/Game Dev")]
     public class TransformValueComponent : ValueComponent<Transform>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of transforms.
     /// </summary>
 
-    [JungleClassInfo("Transform List Component", "Component exposing a list of transforms.", null, "Game Dev")]
+    [JungleClassInfo("Transform List Component", "Component exposing a list of transforms.", null, "Values/Game Dev")]
     public class TransformListValueComponent : SerializedValueListComponent<Transform>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform Value From Component", "Reads a transform component from a TransformValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Transform Value From Component", "Reads a transform component from a TransformValueComponent.", null, "Values/Game Dev")]
     public class TransformValueFromComponent :
         ValueFromComponent<Transform, TransformValueComponent>, ISettableTransformValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Transform List From Component", "Reads transforms from a TransformListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Transform List From Component", "Reads transforms from a TransformListValueComponent.", null, "Values/Game Dev")]
     public class TransformListValueFromComponent :
         ValueFromComponent<IReadOnlyList<Transform>, TransformListValueComponent>
     {

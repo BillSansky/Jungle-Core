@@ -19,7 +19,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip Value", "Stores an animation clip directly on the owner.", null, "Game Dev", true)]
+    [JungleClassInfo("Animation Clip Value", "Stores an animation clip directly on the owner.", null, "Values/Game Dev", true)]
     public class AnimationClipValue : LocalValue<AnimationClip>, ISettableAnimationClipValue
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Animation Clip Member Value", "Returns an animation clip from a component field, property, or method.", null, "Game Dev")]
+    [JungleClassInfo("Animation Clip Member Value", "Returns an animation clip from a component field, property, or method.", null, "Values/Game Dev")]
     public class AnimationClipClassMembersValue : ClassMembersValue<AnimationClip>, IAnimationClipValue
     {
     }

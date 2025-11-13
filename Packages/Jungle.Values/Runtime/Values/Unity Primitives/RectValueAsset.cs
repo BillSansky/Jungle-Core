@@ -9,7 +9,7 @@ namespace Jungle.Values.UnityTypes
     /// ScriptableObject storing a Rect area.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Rect value", fileName = "RectValue")]
-    [JungleClassInfo("Rect Value Asset", "ScriptableObject storing a Rect area.", null, "Unity Types")]
+    [JungleClassInfo("Rect Value Asset", "ScriptableObject storing a Rect area.", null, "Values/Unity Primitives")]
     public class RectValueAsset : ValueAsset<Rect>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Unity/Rect list value", fileName = "RectListValue")]
-    [JungleClassInfo("Rect List Asset", "ScriptableObject storing a list of rectangles.", null, "Unity Types")]
+    [JungleClassInfo("Rect List Asset", "ScriptableObject storing a list of rectangles.", null, "Values/Unity Primitives")]
     public class RectListValueAsset : SerializedValueListAsset<Rect>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect Value From Asset", "Reads a Rect area from a RectValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("Rect Value From Asset", "Reads a Rect area from a RectValueAsset.", null, "Values/Unity Primitives")]
     public class RectValueFromAsset : ValueFromAsset<Rect, RectValueAsset>, ISettableRectValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.UnityTypes
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Rect List From Asset", "Reads rectangles from a RectListValueAsset.", null, "Unity Types")]
+    [JungleClassInfo("Rect List From Asset", "Reads rectangles from a RectListValueAsset.", null, "Values/Unity Primitives")]
     public class RectListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Rect>, RectListValueAsset>
     {

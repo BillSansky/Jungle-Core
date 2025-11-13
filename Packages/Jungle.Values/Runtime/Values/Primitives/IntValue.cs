@@ -18,7 +18,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int Value", "Stores an integer number directly on the owner.", null, "Primitives", true)]
+    [JungleClassInfo("Int Value", "Stores an integer number directly on the owner.", null, "Values/Primitives", true)]
     public class IntValue : LocalValue<int>, ISettableIntValue
     {
         /// <summary>
@@ -40,7 +40,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int Member Value", "Returns an integer number from a component field, property, or method.", null, "Primitives")]
+    [JungleClassInfo("Int Member Value", "Returns an integer number from a component field, property, or method.", null, "Values/Primitives")]
     public class IntClassMembersValue : ClassMembersValue<int>, IIntValue
     {
     }

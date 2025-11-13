@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a component reference.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Ref value", fileName = "ComponentValueAsset")]
-    [JungleClassInfo("Component Value Asset", "ScriptableObject storing a component reference.", null, "Game Dev")]
+    [JungleClassInfo("Component Value Asset", "ScriptableObject storing a component reference.", null, "Values/Game Dev")]
     public class ComponentValueAsset : ValueAsset<Component>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Ref list value", fileName = "ComponentListValueAsset")]
-    [JungleClassInfo("Component List Asset", "ScriptableObject storing a list of component references.", null, "Game Dev")]
+    [JungleClassInfo("Component List Asset", "ScriptableObject storing a list of component references.", null, "Values/Game Dev")]
     public class ComponentListValueAsset : SerializedValueListAsset<Component>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Component Value From Asset", "Reads a component reference from a ComponentValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Component Value From Asset", "Reads a component reference from a ComponentValueAsset.", null, "Values/Game Dev")]
     public class ComponentValueFromAsset : ValueFromAsset<Component, ComponentValueAsset>, ISettableComponentValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Component List From Asset", "Reads component references from a ComponentListValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Component List From Asset", "Reads component references from a ComponentListValueAsset.", null, "Values/Game Dev")]
     public class ComponentListValueFromAsset :
         ValueFromAsset<IReadOnlyList<Component>, ComponentListValueAsset>
     {

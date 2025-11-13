@@ -9,7 +9,7 @@ namespace Jungle.Values.Primitives
     /// ScriptableObject storing a integer number.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int value", fileName = "IntValue")]
-    [JungleClassInfo("Int Value Asset", "ScriptableObject storing a integer number.", null, "Primitives")]
+    [JungleClassInfo("Int Value Asset", "ScriptableObject storing a integer number.", null, "Values/Primitives")]
     public class IntValueAsset : ValueAsset<int>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [CreateAssetMenu(menuName = "Jungle/Values/Primitives/Int list value", fileName = "IntListValue")]
-    [JungleClassInfo("Int List Asset", "ScriptableObject storing a list of integer numbers.", null, "Primitives")]
+    [JungleClassInfo("Int List Asset", "ScriptableObject storing a list of integer numbers.", null, "Values/Primitives")]
     public class IntListValueAsset : SerializedValueListAsset<int>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int Value From Asset", "Reads a integer number from a IntValueAsset.", null, "Primitives")]
+    [JungleClassInfo("Int Value From Asset", "Reads a integer number from a IntValueAsset.", null, "Values/Primitives")]
     public class IntValueFromAsset : ValueFromAsset<int, IntValueAsset>, ISettableIntValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Int List From Asset", "Reads integer numbers from a IntListValueAsset.", null, "Primitives")]
+    [JungleClassInfo("Int List From Asset", "Reads integer numbers from a IntListValueAsset.", null, "Values/Primitives")]
     public class IntListValueFromAsset : ValueFromAsset<IReadOnlyList<int>, IntListValueAsset>
     {
     }

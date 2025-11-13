@@ -15,7 +15,7 @@ namespace Jungle.Values
     /// Invokes a component member to produce a value.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Class Member Value", "Invokes a component member to produce a value.", null, "Core")]
+    [JungleClassInfo("Class Member Value", "Invokes a component member to produce a value.", null, "Values/Core")]
     public class ClassMembersValue<T> : IValue<T>
     {
         [SerializeReference] protected IComponentValue component= new ComponentLocalValue();

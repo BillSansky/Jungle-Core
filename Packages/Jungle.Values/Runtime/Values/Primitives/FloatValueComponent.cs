@@ -8,7 +8,7 @@ namespace Jungle.Values.Primitives
     /// <summary>
     /// Component exposing a floating-point number.
     /// </summary>
-    [JungleClassInfo("Float Value Component", "Component exposing a floating-point number.", null, "Primitives")]
+    [JungleClassInfo("Float Value Component", "Component exposing a floating-point number.", null, "Values/Primitives")]
     public class FloatValueComponent : ValueComponent<float>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.Primitives
     /// Component exposing a list of floating-point numbers.
     /// </summary>
 
-    [JungleClassInfo("Float List Component", "Component exposing a list of floating-point numbers.", null, "Primitives")]
+    [JungleClassInfo("Float List Component", "Component exposing a list of floating-point numbers.", null, "Values/Primitives")]
     public class FloatListValueComponent : SerializedValueListComponent<float>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Float Value From Component", "Reads a floating-point number from a FloatValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Float Value From Component", "Reads a floating-point number from a FloatValueComponent.", null, "Values/Primitives")]
     public class FloatValueFromComponent : ValueFromComponent<float, FloatValueComponent>, ISettableFloatValue
     {
     }
@@ -52,7 +52,7 @@ namespace Jungle.Values.Primitives
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Float List From Component", "Reads floating-point numbers from a FloatListValueComponent.", null, "Primitives")]
+    [JungleClassInfo("Float List From Component", "Reads floating-point numbers from a FloatListValueComponent.", null, "Values/Primitives")]
     public class FloatListValueFromComponent : ValueFromComponent<IReadOnlyList<float>, FloatListValueComponent>
     {
     }

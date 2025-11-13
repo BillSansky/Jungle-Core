@@ -8,7 +8,7 @@ namespace Jungle.Values.GameDev
     /// <summary>
     /// Component exposing an audio clip.
     /// </summary>
-    [JungleClassInfo("Audio Clip Value Component", "Component exposing an audio clip.", null, "Game Dev")]
+    [JungleClassInfo("Audio Clip Value Component", "Component exposing an audio clip.", null, "Values/Game Dev")]
     public class AudioClipValueComponent : ValueComponent<AudioClip>
     {
         [SerializeField]
@@ -34,7 +34,7 @@ namespace Jungle.Values.GameDev
     /// Component exposing a list of audio clips.
     /// </summary>
 
-    [JungleClassInfo("Audio Clip List Component", "Component exposing a list of audio clips.", null, "Game Dev")]
+    [JungleClassInfo("Audio Clip List Component", "Component exposing a list of audio clips.", null, "Values/Game Dev")]
     public class AudioClipListValueComponent : SerializedValueListComponent<AudioClip>
     {
     }
@@ -43,7 +43,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip Value From Component", "Reads an audio clip from an AudioClipValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Audio Clip Value From Component", "Reads an audio clip from an AudioClipValueComponent.", null, "Values/Game Dev")]
     public class AudioClipValueFromComponent :
         ValueFromComponent<AudioClip, AudioClipValueComponent>, ISettableAudioClipValue
     {
@@ -53,7 +53,7 @@ namespace Jungle.Values.GameDev
     /// </summary>
 
     [Serializable]
-    [JungleClassInfo("Audio Clip List From Component", "Reads audio clips from an AudioClipListValueComponent.", null, "Game Dev")]
+    [JungleClassInfo("Audio Clip List From Component", "Reads audio clips from an AudioClipListValueComponent.", null, "Values/Game Dev")]
     public class AudioClipListValueFromComponent :
         ValueFromComponent<IReadOnlyList<AudioClip>, AudioClipListValueComponent>
     {

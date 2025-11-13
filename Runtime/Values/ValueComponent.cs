@@ -8,7 +8,7 @@ namespace Jungle.Values
     /// Base class for <see cref="MonoBehaviour"/> components that expose a value of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
-    [JungleClassInfo("Value Component Base", "Base MonoBehaviour for exposing runtime values.", null, "Core")]
+    [JungleClassInfo("Value Component Base", "Base MonoBehaviour for exposing runtime values.", null, "Values/Core")]
     public abstract class ValueComponentBase<T> : MonoBehaviour, ISettableValue<T>
     {
         /// <inheritdoc />
@@ -29,7 +29,7 @@ namespace Jungle.Values
     /// Ref base class for values represented by a single element.
     /// </summary>
     /// <typeparam name="T">Type of the value provided by the component.</typeparam>
-    [JungleClassInfo("Value Component", "MonoBehaviour storing a single runtime value.", null, "Core")]
+    [JungleClassInfo("Value Component", "MonoBehaviour storing a single runtime value.", null, "Values/Core")]
     public abstract class ValueComponent<T> : ValueComponentBase<T>
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace Jungle.Values
     /// Ref base class for values represented by a list of elements.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
-    [JungleClassInfo("Value List Component", "MonoBehaviour exposing a list of values.", null, "Core")]
+    [JungleClassInfo("Value List Component", "MonoBehaviour exposing a list of values.", null, "Values/Core")]
     public abstract class ValueListComponent<TElement> : ValueComponentBase<IReadOnlyList<TElement>>
     {
         /// <summary>
@@ -93,7 +93,7 @@ namespace Jungle.Values
     /// Ref base class for list values stored as a serialized <see cref="List{T}"/>.
     /// </summary>
     /// <typeparam name="TElement">Type of the elements contained in the list.</typeparam>
-    [JungleClassInfo("Serialized Value List Component", "Value list component backed by a serialized List.", null, "Core")]
+    [JungleClassInfo("Serialized Value List Component", "Value list component backed by a serialized List.", null, "Values/Core")]
     public abstract class SerializedValueListComponent<TElement> : ValueListComponent<TElement>
     {
         [SerializeField]

@@ -8,7 +8,7 @@ namespace Jungle.Values.UnityTypes
     /// Provides access to the current mouse position in screen coordinates.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Mouse Position", "Provides the current mouse position in screen coordinates.", null, "Unity Types")]
+    [JungleClassInfo("Mouse Position", "Provides the current mouse position in screen coordinates.", null, "Values/Unity Primitives")]
     public class MousePositionValue : IVector3Value
     {
         /// <inheritdoc />

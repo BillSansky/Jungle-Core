@@ -9,7 +9,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a camera component.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Camera value", fileName = "CameraValue")]
-    [JungleClassInfo("Camera Value Asset", "ScriptableObject storing a camera component.", null, "Game Dev")]
+    [JungleClassInfo("Camera Value Asset", "ScriptableObject storing a camera component.", null, "Values/Game Dev")]
     public class CameraValueAsset : ValueAsset<Camera>
     {
         [SerializeField]
@@ -36,7 +36,7 @@ namespace Jungle.Values.GameDev
     /// ScriptableObject storing a list of camera components.
     /// </summary>
     [CreateAssetMenu(menuName = "Jungle/Values/GameDev/Camera list value", fileName = "CameraListValue")]
-    [JungleClassInfo("Camera List Asset", "ScriptableObject storing a list of camera components.", null, "Game Dev")]
+    [JungleClassInfo("Camera List Asset", "ScriptableObject storing a list of camera components.", null, "Values/Game Dev")]
     public class CameraListValueAsset : SerializedValueListAsset<Camera>
     {
     }
@@ -45,7 +45,7 @@ namespace Jungle.Values.GameDev
     /// Reads a camera component from a CameraValueAsset.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera Value From Asset", "Reads a camera component from a CameraValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Camera Value From Asset", "Reads a camera component from a CameraValueAsset.", null, "Values/Game Dev")]
     public class CameraValueFromAsset : ValueFromAsset<Camera, CameraValueAsset>, ISettableCameraValue
     {
     }
@@ -54,7 +54,7 @@ namespace Jungle.Values.GameDev
     /// Reads camera components from a CameraListValueAsset.
     /// </summary>
     [Serializable]
-    [JungleClassInfo("Camera List From Asset", "Reads camera components from a CameraListValueAsset.", null, "Game Dev")]
+    [JungleClassInfo("Camera List From Asset", "Reads camera components from a CameraListValueAsset.", null, "Values/Game Dev")]
     public class CameraListValueFromAsset : ValueFromAsset<IReadOnlyList<Camera>, CameraListValueAsset>
     {
     }
