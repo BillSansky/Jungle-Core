@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jungle.Attributes;
+using UnityEngine;
 
 namespace Jungle.Values
 {
@@ -11,13 +12,14 @@ namespace Jungle.Values
     [JungleClassInfo("Local Array Value", "Exposes items from a serialized array on the owner.", null, "Values/Core", true)]
     public class LocalArrayValue<T> : IValueSableValue<T>
     {
-        private T[] values;
+        [SerializeField]
+        private T[] values = Array.Empty<T>();
         /// <summary>
         /// Gets the value produced by this provider.
         /// </summary>
         public T Value()
         {
-            return values[0];
+            return values.Length > 0 ? values[0] : default;
         }
         public void SetValue(T value)
         {
