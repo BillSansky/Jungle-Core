@@ -198,7 +198,6 @@ namespace Jungle.Timing
             if (isWaitingForFrame)
             {
                 isWaitingForFrame = false;
-                Complete();
                 return;
             }
 
