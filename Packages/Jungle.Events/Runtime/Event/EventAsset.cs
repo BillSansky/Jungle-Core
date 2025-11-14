@@ -49,10 +49,10 @@ namespace Jungle.Events
         }
 
         /// <summary>
-        /// Creates an <see cref="ICallback"/> that completes when this event asset is raised.
+        /// Creates an <see cref="IEventMonitor"/> that completes when this event asset is raised.
         /// </summary>
-        /// <returns>A callback instance that can wait for the event.</returns>
-        public ICallback CreateCallback()
+        /// <returns>An event monitor instance that can wait for the event.</returns>
+        public IEventMonitor CreateCallback()
         {
             return new EventAssetCallback(this);
         }

@@ -12,7 +12,7 @@ namespace Jungle.Events
     /// Executes registered callback actions after a configurable delay.
     /// </summary>
     [Serializable]
-    public sealed class TimeCallback : ICallback
+    public sealed class TimeCallback : IEventMonitor
     {
         [SerializeReference]
         [JungleClassSelection(typeof(IFloatValue))]
@@ -44,18 +44,35 @@ namespace Jungle.Events
             }
 
             callbackActions.Remove(callbackAction);
+
+            if (callbackActions.Count == 0)
+            {
+                EndMonitoring();
+            }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
-            if (routine != null)
+            if (callbackActions.Count == 0)
             {
-                CoroutineRunner.StopManagedCoroutine(routine);
-                routine = null;
+                return;
             }
 
+            EndMonitoring();
             routine = CoroutineRunner.StartManagedCoroutine(WaitRoutine());
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            if (routine == null)
+            {
+                return;
+            }
+
+            CoroutineRunner.StopManagedCoroutine(routine);
+            routine = null;
         }
 
         private IEnumerator WaitRoutine()
