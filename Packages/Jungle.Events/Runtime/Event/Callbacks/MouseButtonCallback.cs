@@ -10,7 +10,7 @@ namespace Jungle.Events
     /// Waits for a mouse button interaction before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class MouseButtonCallback : ICallback
+    public sealed class MouseButtonCallback : IEventMonitor
     {
         [SerializeField]
         [Tooltip("Index of the mouse button to monitor. 0 = Left, 1 = Right, 2 = Middle.")]
@@ -42,20 +42,37 @@ namespace Jungle.Events
             }
 
             callbackActions.Remove(callbackAction);
+
+            if (callbackActions.Count == 0)
+            {
+                EndMonitoring();
+            }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
-            EnsureValidButtonIndex();
-
-            if (routine != null)
+            if (callbackActions.Count == 0)
             {
-                CoroutineRunner.StopManagedCoroutine(routine);
-                routine = null;
+                return;
             }
 
+            EnsureValidButtonIndex();
+
+            EndMonitoring();
             routine = CoroutineRunner.StartManagedCoroutine(WaitForMouse());
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            if (routine == null)
+            {
+                return;
+            }
+
+            CoroutineRunner.StopManagedCoroutine(routine);
+            routine = null;
         }
 
         private IEnumerator WaitForMouse()

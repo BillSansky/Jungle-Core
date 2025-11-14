@@ -8,7 +8,7 @@ namespace Jungle.Events
     /// Waits until a <see cref="EventAsset"/> raises before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class EventAssetCallback : ICallback
+    public sealed class EventAssetCallback : IEventMonitor
     {
         [SerializeField]
         private EventAsset eventAsset;
@@ -61,14 +61,14 @@ namespace Jungle.Events
 
             callbackActions.Remove(callbackAction);
 
-            if (callbackActions.Count == 0 && isListening)
+            if (callbackActions.Count == 0)
             {
-                StopListening();
+                EndMonitoring();
             }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
             EnsureEventAssetAssigned();
 
@@ -79,6 +79,12 @@ namespace Jungle.Events
 
             eventAsset.Register(OnEventRaised);
             isListening = true;
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            StopListening();
         }
 
         private void NotifyCallbackActions()

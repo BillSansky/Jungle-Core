@@ -11,7 +11,7 @@ namespace Jungle.Events
     /// before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class MonoBehaviourEventCallback : ICallback
+    public sealed class MonoBehaviourEventCallback : IEventMonitor
     {
         [SerializeField]
         private MonoBehaviour eventSource;
@@ -47,12 +47,12 @@ namespace Jungle.Events
 
             if (callbackActions.Count == 0)
             {
-                StopListening();
+                EndMonitoring();
             }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
             if (callbackActions.Count == 0)
             {
@@ -76,6 +76,12 @@ namespace Jungle.Events
             unityEvent.AddListener(relayAction);
             activeUnityEvent = unityEvent;
             isListening = true;
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            StopListening();
         }
 
         private UnityEvent ResolveUnityEvent()

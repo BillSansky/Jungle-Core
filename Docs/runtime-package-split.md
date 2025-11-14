@@ -2,8 +2,8 @@
 
 ## Current runtime packages
 - `Packages/Jungle.Core` now contains the shared abstractions that other runtime modules depend on, including the action
-  interfaces, callback contracts, and shared timing utilities.【F:Packages/Jungle.Core/Runtime/Action/IProcessAction.cs†L1-L48】
-【F:Packages/Jungle.Core/Runtime/Event/ICallback.cs†L1-L25】【F:Packages/Jungle.Core/Runtime/Timing/Timer.cs†L1-L150】
+  interfaces, event monitor contracts, and shared timing utilities.【F:Packages/Jungle.Core/Runtime/Action/IProcessAction.cs†L1-L48】
+【F:Runtime/Event/IEventMonitor.cs†L1-L33】【F:Packages/Jungle.Core/Runtime/Timing/Timer.cs†L1-L150】
 - `Packages/Jungle.Actions` houses all built-in action behaviours and references only the foundational core and utility
   assemblies that provide coroutine infrastructure.【F:Packages/Jungle.Actions/Runtime/Action/Implementations/Immediate Actions/ImmediateStateAction.cs†L1-L71】
 【F:Packages/Jungle.Actions/Runtime/Jungle.Actions.asmdef†L1-L41】
