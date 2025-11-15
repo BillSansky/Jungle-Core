@@ -20,7 +20,7 @@ namespace Jungle.Events
     /// Waits for a Unity Input Manager button interaction before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class InputButtonCallback : ICallback
+    public sealed class InputButtonCallback : IEventMonitor
     {
         [SerializeField]
         private string buttonName = "Jump";
@@ -69,20 +69,37 @@ namespace Jungle.Events
             }
 
             callbackActions.Remove(callbackAction);
+
+            if (callbackActions.Count == 0)
+            {
+                EndMonitoring();
+            }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
-            EnsureButtonConfigured();
-
-            if (routine != null)
+            if (callbackActions.Count == 0)
             {
-                CoroutineRunner.StopManagedCoroutine(routine);
-                routine = null;
+                return;
             }
 
+            EnsureButtonConfigured();
+
+            EndMonitoring();
             routine = CoroutineRunner.StartManagedCoroutine(WaitForInput());
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            if (routine == null)
+            {
+                return;
+            }
+
+            CoroutineRunner.StopManagedCoroutine(routine);
+            routine = null;
         }
 
         private IEnumerator WaitForInput()

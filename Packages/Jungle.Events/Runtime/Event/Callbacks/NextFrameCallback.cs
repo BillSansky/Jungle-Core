@@ -10,9 +10,10 @@ namespace Jungle.Events
     /// Triggers callback actions after waiting for a single rendered frame.
     /// </summary>
     [Serializable]
-    public sealed class NextFrameCallback : ICallback
+    public sealed class NextFrameCallback : IEventMonitor
     {
         private readonly List<Action> callbackActions = new();
+        private Coroutine routine;
 
         /// <inheritdoc />
         public void Attach(Action callbackAction)
@@ -34,18 +35,42 @@ namespace Jungle.Events
             }
 
             callbackActions.Remove(callbackAction);
+
+            if (callbackActions.Count == 0)
+            {
+                EndMonitoring();
+            }
         }
 
         /// <inheritdoc />
-        public void Invoke()
+        public void StartMonitoring()
         {
-            CoroutineRunner.StartManagedCoroutine(WaitForFrame());
+            if (callbackActions.Count == 0)
+            {
+                return;
+            }
+
+            EndMonitoring();
+            routine = CoroutineRunner.StartManagedCoroutine(WaitForFrame());
+        }
+
+        /// <inheritdoc />
+        public void EndMonitoring()
+        {
+            if (routine == null)
+            {
+                return;
+            }
+
+            CoroutineRunner.StopManagedCoroutine(routine);
+            routine = null;
         }
 
         private IEnumerator WaitForFrame()
         {
             yield return null;
             NotifyCallbackActions();
+            routine = null;
         }
 
         private void NotifyCallbackActions()

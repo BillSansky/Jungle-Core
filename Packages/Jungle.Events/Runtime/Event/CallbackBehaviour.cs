@@ -15,7 +15,7 @@ namespace Jungle.Events
     }
 
     /// <summary>
-    /// Base component capable of executing a configurable <see cref="ICallback"/> and relaying the
+    /// Base component capable of executing a configurable <see cref="IEventMonitor"/> and relaying the
     /// notification to serialized <see cref="IImmediateAction"/> instances and a <see cref="UnityEvent"/>.
     /// </summary>
     [AddComponentMenu("Jungle/Events/Callback Behaviour")]
@@ -25,8 +25,8 @@ namespace Jungle.Events
         private RegistrationTiming registrationTiming = RegistrationTiming.OnEnable;
 
         [SerializeReference]
-        [JungleClassSelection(typeof(ICallback))]
-        private ICallback callback;
+        [JungleClassSelection(typeof(IEventMonitor))]
+        private IEventMonitor eventMonitor;
 
       
 
@@ -39,6 +39,7 @@ namespace Jungle.Events
 
         private bool isSubscribed;
         private Action callbackRelayAction;
+        private EventMonitorSubscription monitorSubscription;
 
         private void Awake()
         {
@@ -71,7 +72,8 @@ namespace Jungle.Events
                 return;
             }
 
-            callback.Detach(callbackRelayAction);
+            monitorSubscription?.Dispose();
+            monitorSubscription = null;
             isSubscribed = false;
         }
 
@@ -87,7 +89,7 @@ namespace Jungle.Events
                 callbackRelayAction = OnCallbackTriggered;
             }
 
-            callback.Attach(callbackRelayAction);
+            monitorSubscription = EventMonitorUtilities.Subscribe(eventMonitor, callbackRelayAction);
             isSubscribed = true;
         }
 
