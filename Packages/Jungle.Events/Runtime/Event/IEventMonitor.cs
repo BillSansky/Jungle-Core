@@ -11,25 +11,15 @@ namespace Jungle.Events
     public interface IEventMonitor
     {
         /// <summary>
-        /// Registers a callback action that will be invoked when the monitor signals completion.
+        /// Begins observing the monitored condition and prepares it to signal the provided callback.
+        /// Implementations should replace any previously supplied callback and be idempotent to allow
+        /// multiple start requests.
         /// </summary>
-        /// <param name="callbackAction">Callback action to register.</param>
-        void Attach(Action callbackAction);
+        /// <param name="callbackAction">Callback action to invoke when the monitor signals completion.</param>
+        void StartMonitoring(Action callbackAction);
 
         /// <summary>
-        /// Removes a callback action previously added via <see cref="Attach"/>.
-        /// </summary>
-        /// <param name="callbackAction">Callback action to remove.</param>
-        void Detach(Action callbackAction);
-
-        /// <summary>
-        /// Begins observing the monitored condition and prepares it to signal subscribers.
-        /// Implementations should be idempotent to allow multiple start requests.
-        /// </summary>
-        void StartMonitoring();
-
-        /// <summary>
-        /// Stops observing the monitored condition and releases any resources in use.
+        /// Stops observing the monitored condition, releases any resources in use, and removes the current callback.
         /// Implementations should be idempotent to allow multiple stop requests.
         /// </summary>
         void EndMonitoring();

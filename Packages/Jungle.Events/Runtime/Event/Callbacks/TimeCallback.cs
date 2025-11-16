@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Jungle.Attributes;
 using Jungle.Utils;
 using Jungle.Values.Primitives;
@@ -21,45 +20,19 @@ namespace Jungle.Events
         [SerializeField]
         private bool useUnscaledTime;
 
-        private readonly List<Action> callbackActions = new();
+        private Action callbackAction;
         private Coroutine routine;
 
         /// <inheritdoc />
-        public void Attach(Action callbackAction)
+        public void StartMonitoring(Action callbackAction)
         {
             if (callbackAction == null)
             {
                 throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Add(callbackAction);
-        }
-
-        /// <inheritdoc />
-        public void Detach(Action callbackAction)
-        {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Remove(callbackAction);
-
-            if (callbackActions.Count == 0)
-            {
-                EndMonitoring();
-            }
-        }
-
-        /// <inheritdoc />
-        public void StartMonitoring()
-        {
-            if (callbackActions.Count == 0)
-            {
-                return;
             }
 
             EndMonitoring();
+            this.callbackAction = callbackAction;
             routine = CoroutineRunner.StartManagedCoroutine(WaitRoutine());
         }
 
@@ -68,11 +41,13 @@ namespace Jungle.Events
         {
             if (routine == null)
             {
+                callbackAction = null;
                 return;
             }
 
             CoroutineRunner.StopManagedCoroutine(routine);
             routine = null;
+            callbackAction = null;
         }
 
         private IEnumerator WaitRoutine()
@@ -88,16 +63,15 @@ namespace Jungle.Events
                 yield return new WaitForSeconds(waitDuration);
             }
 
-            NotifyCallbackActions();
+            NotifyCallbackAction();
             routine = null;
         }
 
-        private void NotifyCallbackActions()
+        private void NotifyCallbackAction()
         {
-            for (var index = 0; index < callbackActions.Count; index++)
-            {
-                callbackActions[index].Invoke();
-            }
+            var action = callbackAction;
+            callbackAction = null;
+            action?.Invoke();
         }
     }
 }
