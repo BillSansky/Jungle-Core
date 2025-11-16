@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jungle.Events
@@ -13,7 +12,7 @@ namespace Jungle.Events
         [SerializeField]
         private EventAsset eventAsset;
 
-        private readonly List<Action> callbackActions = new();
+        private Action callbackAction;
         private bool isListening;
 
         /// <summary>
@@ -41,42 +40,17 @@ namespace Jungle.Events
         }
 
         /// <inheritdoc />
-        public void Attach(Action callbackAction)
-        {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Add(callbackAction);
-        }
-
-        /// <inheritdoc />
-        public void Detach(Action callbackAction)
-        {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Remove(callbackAction);
-
-            if (callbackActions.Count == 0)
-            {
-                EndMonitoring();
-            }
-        }
-
-        /// <inheritdoc />
-        public void StartMonitoring()
+        public void StartMonitoring(Action callbackAction)
         {
             EnsureEventAssetAssigned();
 
-            if (isListening || callbackActions.Count == 0)
+            if (callbackAction == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(callbackAction));
             }
 
+            StopListening();
+            this.callbackAction = callbackAction;
             eventAsset.Register(OnEventRaised);
             isListening = true;
         }
@@ -85,14 +59,7 @@ namespace Jungle.Events
         public void EndMonitoring()
         {
             StopListening();
-        }
-
-        private void NotifyCallbackActions()
-        {
-            for (var index = 0; index < callbackActions.Count; index++)
-            {
-                callbackActions[index].Invoke();
-            }
+            callbackAction = null;
         }
 
         private void EnsureEventAssetAssigned()
@@ -119,8 +86,10 @@ namespace Jungle.Events
 
         private void OnEventRaised()
         {
-            NotifyCallbackActions();
+            var action = callbackAction;
+            callbackAction = null;
             StopListening();
+            action?.Invoke();
         }
     }
 }

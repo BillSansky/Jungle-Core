@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,50 +18,24 @@ namespace Jungle.Events
         [SerializeField]
         private string unityEventName;
 
-        private readonly List<Action> callbackActions = new();
+        private Action callbackAction;
         private UnityEvent activeUnityEvent;
         private UnityAction relayAction;
         private bool isListening;
 
         /// <inheritdoc />
-        public void Attach(Action callbackAction)
+        public void StartMonitoring(Action callbackAction)
         {
             if (callbackAction == null)
             {
                 throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Add(callbackAction);
-        }
-
-        /// <inheritdoc />
-        public void Detach(Action callbackAction)
-        {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Remove(callbackAction);
-
-            if (callbackActions.Count == 0)
-            {
-                EndMonitoring();
-            }
-        }
-
-        /// <inheritdoc />
-        public void StartMonitoring()
-        {
-            if (callbackActions.Count == 0)
-            {
-                return;
             }
 
             var unityEvent = ResolveUnityEvent();
 
             if (isListening && activeUnityEvent == unityEvent)
             {
+                this.callbackAction = callbackAction;
                 return;
             }
 
@@ -73,6 +46,7 @@ namespace Jungle.Events
 
             StopListening();
 
+            this.callbackAction = callbackAction;
             unityEvent.AddListener(relayAction);
             activeUnityEvent = unityEvent;
             isListening = true;
@@ -82,6 +56,7 @@ namespace Jungle.Events
         public void EndMonitoring()
         {
             StopListening();
+            callbackAction = null;
         }
 
         private UnityEvent ResolveUnityEvent()
@@ -164,16 +139,10 @@ namespace Jungle.Events
 
         private void OnUnityEventRaised()
         {
-            NotifyCallbackActions();
+            var action = callbackAction;
+            callbackAction = null;
             StopListening();
-        }
-
-        private void NotifyCallbackActions()
-        {
-            for (var index = 0; index < callbackActions.Count; index++)
-            {
-                callbackActions[index].Invoke();
-            }
+            action?.Invoke();
         }
     }
 }

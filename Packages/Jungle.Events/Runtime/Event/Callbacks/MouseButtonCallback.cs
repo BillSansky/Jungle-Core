@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Jungle.Utils;
 using UnityEngine;
 
@@ -19,47 +18,21 @@ namespace Jungle.Events
         [SerializeField]
         private InputInteraction interaction = InputInteraction.ButtonDown;
 
-        private readonly List<Action> callbackActions = new();
+        private Action callbackAction;
         private Coroutine routine;
 
         /// <inheritdoc />
-        public void Attach(Action callbackAction)
+        public void StartMonitoring(Action callbackAction)
         {
             if (callbackAction == null)
             {
                 throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Add(callbackAction);
-        }
-
-        /// <inheritdoc />
-        public void Detach(Action callbackAction)
-        {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            callbackActions.Remove(callbackAction);
-
-            if (callbackActions.Count == 0)
-            {
-                EndMonitoring();
-            }
-        }
-
-        /// <inheritdoc />
-        public void StartMonitoring()
-        {
-            if (callbackActions.Count == 0)
-            {
-                return;
             }
 
             EnsureValidButtonIndex();
 
             EndMonitoring();
+            this.callbackAction = callbackAction;
             routine = CoroutineRunner.StartManagedCoroutine(WaitForMouse());
         }
 
@@ -68,11 +41,13 @@ namespace Jungle.Events
         {
             if (routine == null)
             {
+                callbackAction = null;
                 return;
             }
 
             CoroutineRunner.StopManagedCoroutine(routine);
             routine = null;
+            callbackAction = null;
         }
 
         private IEnumerator WaitForMouse()
@@ -83,7 +58,7 @@ namespace Jungle.Events
 
                 if (IsTriggered())
                 {
-                    NotifyCallbackActions();
+                    NotifyCallbackAction();
                     routine = null;
                     yield break;
                 }
@@ -110,12 +85,11 @@ namespace Jungle.Events
             }
         }
 
-        private void NotifyCallbackActions()
+        private void NotifyCallbackAction()
         {
-            for (var index = 0; index < callbackActions.Count; index++)
-            {
-                callbackActions[index].Invoke();
-            }
+            var action = callbackAction;
+            callbackAction = null;
+            action?.Invoke();
         }
     }
 }
