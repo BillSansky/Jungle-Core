@@ -39,7 +39,6 @@ namespace Jungle.Events
 
         private bool isSubscribed;
         private Action callbackRelayAction;
-        private EventMonitorSubscription monitorSubscription;
 
         private void Awake()
         {
@@ -72,8 +71,7 @@ namespace Jungle.Events
                 return;
             }
 
-            monitorSubscription?.Dispose();
-            monitorSubscription = null;
+            eventMonitor.EndMonitoring();
             isSubscribed = false;
         }
 
@@ -89,7 +87,7 @@ namespace Jungle.Events
                 callbackRelayAction = OnCallbackTriggered;
             }
 
-            monitorSubscription = EventMonitorUtilities.Subscribe(eventMonitor, callbackRelayAction);
+            EventMonitorUtilities.StartMonitoring(eventMonitor, callbackRelayAction);
             isSubscribed = true;
         }
 
