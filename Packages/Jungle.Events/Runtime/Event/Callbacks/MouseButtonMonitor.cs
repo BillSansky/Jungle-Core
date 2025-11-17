@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Jungle.Attributes;
 using Jungle.Utils;
 using UnityEngine;
 
@@ -18,8 +19,20 @@ namespace Jungle.Events
         [SerializeField]
         private InputInteraction interaction = InputInteraction.ButtonDown;
 
-        private Action callbackAction;
+        [SerializeReference]
+        [JungleClassSelection(typeof(IMonitorCondition))]
+        private IMonitorCondition monitorCondition = new NeverStopMonitorCondition();
+
+        private readonly MonitorConditionEvaluator monitorConditionEvaluator = new();
+        private Action monitoredCallback;
         private Coroutine routine;
+
+        /// <inheritdoc />
+        public IMonitorCondition MonitorCondition
+        {
+            get => monitorCondition;
+            set => monitorCondition = value ?? new NeverStopMonitorCondition();
+        }
 
         /// <inheritdoc />
         public void StartMonitoring(Action callbackAction)
@@ -32,22 +45,22 @@ namespace Jungle.Events
             EnsureValidButtonIndex();
 
             EndMonitoring();
-            this.callbackAction = callbackAction;
+            monitoredCallback = monitorConditionEvaluator.CreateMonitoredCallback(callbackAction, EndMonitoring,
+                monitorCondition);
             routine = CoroutineRunner.StartManagedCoroutine(WaitForMouse());
         }
 
         /// <inheritdoc />
         public void EndMonitoring()
         {
-            if (routine == null)
+            if (routine != null)
             {
-                callbackAction = null;
-                return;
+                CoroutineRunner.StopManagedCoroutine(routine);
+                routine = null;
             }
 
-            CoroutineRunner.StopManagedCoroutine(routine);
-            routine = null;
-            callbackAction = null;
+            monitorConditionEvaluator.Reset();
+            monitoredCallback = null;
         }
 
         private IEnumerator WaitForMouse()
@@ -85,7 +98,7 @@ namespace Jungle.Events
 
         private void NotifyCallbackAction()
         {
-            callbackAction?.Invoke();
+            monitoredCallback?.Invoke();
         }
     }
 }

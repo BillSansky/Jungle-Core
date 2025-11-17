@@ -25,12 +25,24 @@ namespace Jungle.Events
         [SerializeField]
         private ActivationState targetState = ActivationState.Active;
 
-        private Action callbackAction;
+        [SerializeReference]
+        [JungleClassSelection(typeof(IMonitorCondition))]
+        private IMonitorCondition monitorCondition = new NeverStopMonitorCondition();
+
+        private readonly MonitorConditionEvaluator monitorConditionEvaluator = new();
+        private Action monitoredCallback;
         private GameObject monitoredObject;
         private GameObjectActivationRelay relay;
         private Action<bool> relayHandler;
         private bool relayInjected;
         private bool isMonitoring;
+
+        /// <inheritdoc />
+        public IMonitorCondition MonitorCondition
+        {
+            get => monitorCondition;
+            set => monitorCondition = value ?? new NeverStopMonitorCondition();
+        }
 
         /// <inheritdoc />
         public void StartMonitoring(Action callbackAction)
@@ -43,14 +55,16 @@ namespace Jungle.Events
 
             if (isMonitoring && monitoredObject == target)
             {
-                this.callbackAction = callbackAction;
+                monitoredCallback = monitorConditionEvaluator.CreateMonitoredCallback(callbackAction, EndMonitoring,
+                    monitorCondition);
                 EvaluateCurrentState();
                 return;
             }
 
             StopMonitoringInternal();
 
-            this.callbackAction = callbackAction;
+            monitoredCallback = monitorConditionEvaluator.CreateMonitoredCallback(callbackAction, EndMonitoring,
+                monitorCondition);
             monitoredObject = target;
             relay = AcquireRelay(target, out relayInjected);
 
@@ -68,7 +82,6 @@ namespace Jungle.Events
         public void EndMonitoring()
         {
             StopMonitoringInternal();
-            callbackAction = null;
         }
 
         private void StopMonitoringInternal()
@@ -92,6 +105,8 @@ namespace Jungle.Events
             monitoredObject = null;
             relayInjected = false;
             isMonitoring = false;
+            monitorConditionEvaluator.Reset();
+            monitoredCallback = null;
         }
 
         private void EvaluateCurrentState()
@@ -125,7 +140,7 @@ namespace Jungle.Events
 
         private void NotifyCallback()
         {
-            callbackAction?.Invoke();
+            monitoredCallback?.Invoke();
         }
 
         private static GameObjectActivationRelay AcquireRelay(GameObject target, out bool created)
