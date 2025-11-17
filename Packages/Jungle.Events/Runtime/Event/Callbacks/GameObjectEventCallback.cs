@@ -125,10 +125,7 @@ namespace Jungle.Events
 
         private void NotifyCallback()
         {
-            var action = callbackAction;
-            callbackAction = null;
-            StopMonitoringInternal();
-            action?.Invoke();
+            callbackAction?.Invoke();
         }
 
         private static GameObjectActivationRelay AcquireRelay(GameObject target, out bool created)

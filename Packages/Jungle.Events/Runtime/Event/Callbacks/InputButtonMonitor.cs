@@ -80,8 +80,6 @@ namespace Jungle.Events
                 if (IsTriggered())
                 {
                     NotifyCallbackAction();
-                    routine = null;
-                    yield break;
                 }
             }
         }
@@ -99,9 +97,7 @@ namespace Jungle.Events
         
         private void NotifyCallbackAction()
         {
-            var action = callbackAction;
-            callbackAction = null;
-            action?.Invoke();
+            callbackAction?.Invoke();
         }
     }
 }
