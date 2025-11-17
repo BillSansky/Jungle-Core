@@ -27,7 +27,6 @@ namespace Jungle.Events
         [SerializeReference]
         [JungleClassSelection(typeof(IEventMonitor))]
         private IEventMonitor eventMonitor;
-
       
 
         [SerializeReference]
@@ -87,7 +86,7 @@ namespace Jungle.Events
                 callbackRelayAction = OnCallbackTriggered;
             }
 
-            EventMonitorUtilities.StartMonitoring(eventMonitor, callbackRelayAction);
+            eventMonitor.StartMonitoring(callbackRelayAction);
             isSubscribed = true;
         }
 

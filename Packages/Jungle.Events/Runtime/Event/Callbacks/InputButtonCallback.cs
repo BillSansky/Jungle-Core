@@ -21,11 +21,9 @@ namespace Jungle.Events
     [Serializable]
     public sealed class InputButtonCallback : IEventMonitor
     {
-        [SerializeField]
-        private string buttonName = "Jump";
+        [SerializeField] private string buttonName = "Jump";
 
-        [SerializeField]
-        private InputInteraction interaction = InputInteraction.ButtonDown;
+        [SerializeField] private InputInteraction interaction = InputInteraction.ButtonDown;
 
         private Action callbackAction;
         private Coroutine routine;
@@ -51,12 +49,8 @@ namespace Jungle.Events
         /// <inheritdoc />
         public void StartMonitoring(Action callbackAction)
         {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
-
-            EnsureButtonConfigured();
+            Debug.Assert(string.IsNullOrWhiteSpace(buttonName),
+                $"{nameof(InputButtonCallback)} requires a valid Input Manager button name.");
 
             EndMonitoring();
             this.callbackAction = callbackAction;
@@ -102,16 +96,7 @@ namespace Jungle.Events
                 _ => false
             };
         }
-
-        private void EnsureButtonConfigured()
-        {
-            if (string.IsNullOrWhiteSpace(buttonName))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(InputButtonCallback)} requires a valid Input Manager button name.");
-            }
-        }
-
+        
         private void NotifyCallbackAction()
         {
             var action = callbackAction;
