@@ -1,4 +1,5 @@
 using System;
+using Jungle.Attributes;
 using UnityEngine;
 
 namespace Jungle.Events
@@ -12,8 +13,20 @@ namespace Jungle.Events
         [SerializeField]
         private EventAsset eventAsset;
 
-        private Action callbackAction;
+        [SerializeReference]
+        [JungleClassSelection(typeof(IMonitorCondition))]
+        private IMonitorCondition monitorCondition = new NeverStopMonitorCondition();
+
+        private readonly MonitorConditionEvaluator monitorConditionEvaluator = new();
+        private Action monitoredCallback;
         private bool isListening;
+
+        /// <inheritdoc />
+        public IMonitorCondition MonitorCondition
+        {
+            get => monitorCondition;
+            set => monitorCondition = value ?? new NeverStopMonitorCondition();
+        }
         
 
         /// <inheritdoc />
@@ -21,7 +34,8 @@ namespace Jungle.Events
         {
             
             StopListening();
-            this.callbackAction = callbackAction;
+            monitoredCallback = monitorConditionEvaluator.CreateMonitoredCallback(callbackAction, EndMonitoring,
+                monitorCondition);
             eventAsset.Register(OnEventRaised);
             isListening = true;
         }
@@ -30,7 +44,8 @@ namespace Jungle.Events
         public void EndMonitoring()
         {
             StopListening();
-            callbackAction = null;
+            monitorConditionEvaluator.Reset();
+            monitoredCallback = null;
         }
 
         private void StopListening()
@@ -47,7 +62,7 @@ namespace Jungle.Events
 
         private void OnEventRaised()
         {
-            callbackAction.Invoke();
+            monitoredCallback?.Invoke();
         }
     }
 }

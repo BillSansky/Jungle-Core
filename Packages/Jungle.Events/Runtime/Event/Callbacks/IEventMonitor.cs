@@ -11,6 +11,11 @@ namespace Jungle.Events
     public interface IEventMonitor
     {
         /// <summary>
+        /// Configurable condition that determines when the monitor should stop automatically.
+        /// </summary>
+        IMonitorCondition MonitorCondition { get; set; }
+
+        /// <summary>
         /// Begins observing the monitored condition and prepares it to signal the provided callback.
         /// Implementations should replace any previously supplied callback and be idempotent to allow
         /// multiple start requests.

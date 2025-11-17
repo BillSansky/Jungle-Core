@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Jungle.Attributes;
 using Jungle.Utils;
 using UnityEngine;
 
@@ -25,8 +26,20 @@ namespace Jungle.Events
 
         [SerializeField] private InputInteraction interaction = InputInteraction.ButtonDown;
 
-        private Action callbackAction;
+        [SerializeReference]
+        [JungleClassSelection(typeof(IMonitorCondition))]
+        private IMonitorCondition monitorCondition = new NeverStopMonitorCondition();
+
+        private readonly MonitorConditionEvaluator monitorConditionEvaluator = new();
+        private Action monitoredCallback;
         private Coroutine routine;
+
+        /// <inheritdoc />
+        public IMonitorCondition MonitorCondition
+        {
+            get => monitorCondition;
+            set => monitorCondition = value ?? new NeverStopMonitorCondition();
+        }
 
         /// <summary>
         /// Name of the button configured in the Unity Input Manager.
@@ -53,22 +66,22 @@ namespace Jungle.Events
                 $"{nameof(InputButtonMonitor)} requires a valid Input Manager button name.");
 
             EndMonitoring();
-            this.callbackAction = callbackAction;
+            monitoredCallback = monitorConditionEvaluator.CreateMonitoredCallback(callbackAction, EndMonitoring,
+                monitorCondition);
             routine = CoroutineRunner.StartManagedCoroutine(WaitForInput());
         }
 
         /// <inheritdoc />
         public void EndMonitoring()
         {
-            if (routine == null)
+            if (routine != null)
             {
-                callbackAction = null;
-                return;
+                CoroutineRunner.StopManagedCoroutine(routine);
+                routine = null;
             }
 
-            CoroutineRunner.StopManagedCoroutine(routine);
-            routine = null;
-            callbackAction = null;
+            monitorConditionEvaluator.Reset();
+            monitoredCallback = null;
         }
 
         private IEnumerator WaitForInput()
@@ -97,7 +110,7 @@ namespace Jungle.Events
         
         private void NotifyCallbackAction()
         {
-            callbackAction?.Invoke();
+            monitoredCallback?.Invoke();
         }
     }
 }
