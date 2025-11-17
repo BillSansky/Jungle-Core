@@ -26,10 +26,6 @@ namespace Jungle.Events
         /// <inheritdoc />
         public void StartMonitoring(Action callbackAction)
         {
-            if (callbackAction == null)
-            {
-                throw new ArgumentNullException(nameof(callbackAction));
-            }
 
             EndMonitoring();
             this.callbackAction = callbackAction;
@@ -69,9 +65,7 @@ namespace Jungle.Events
 
         private void NotifyCallbackAction()
         {
-            var action = callbackAction;
-            callbackAction = null;
-            action?.Invoke();
+            callbackAction.Invoke();
         }
     }
 }

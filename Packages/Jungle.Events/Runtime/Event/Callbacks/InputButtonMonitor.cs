@@ -19,7 +19,7 @@ namespace Jungle.Events
     /// Waits for a Unity Input Manager button interaction before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class InputButtonCallback : IEventMonitor
+    public sealed class InputButtonMonitor : IEventMonitor
     {
         [SerializeField] private string buttonName = "Jump";
 
@@ -50,7 +50,7 @@ namespace Jungle.Events
         public void StartMonitoring(Action callbackAction)
         {
             Debug.Assert(string.IsNullOrWhiteSpace(buttonName),
-                $"{nameof(InputButtonCallback)} requires a valid Input Manager button name.");
+                $"{nameof(InputButtonMonitor)} requires a valid Input Manager button name.");
 
             EndMonitoring();
             this.callbackAction = callbackAction;

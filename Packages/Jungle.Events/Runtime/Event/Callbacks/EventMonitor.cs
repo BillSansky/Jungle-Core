@@ -7,7 +7,7 @@ namespace Jungle.Events
     /// Waits until a <see cref="EventAsset"/> raises before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class EventAssetCallback : IEventMonitor
+    public sealed class EventMonitor : IEventMonitor
     {
         [SerializeField]
         private EventAsset eventAsset;

@@ -50,9 +50,7 @@ namespace Jungle.Events
 
         private void NotifyCallbackAction()
         {
-            var action = callbackAction;
-            callbackAction = null;
-            action?.Invoke();
+            callbackAction.Invoke();
         }
     }
 }

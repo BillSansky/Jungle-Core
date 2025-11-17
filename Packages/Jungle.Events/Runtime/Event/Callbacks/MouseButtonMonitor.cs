@@ -9,7 +9,7 @@ namespace Jungle.Events
     /// Waits for a mouse button interaction before notifying callback actions.
     /// </summary>
     [Serializable]
-    public sealed class MouseButtonCallback : IEventMonitor
+    public sealed class MouseButtonMonitor : IEventMonitor
     {
         [SerializeField]
         [Tooltip("Index of the mouse button to monitor. 0 = Left, 1 = Right, 2 = Middle.")]
@@ -81,7 +81,7 @@ namespace Jungle.Events
             if (mouseButtonIndex < 0 || mouseButtonIndex > 6)
             {
                 throw new InvalidOperationException(
-                    $"{nameof(MouseButtonCallback)} expects a button index between 0 and 6. Value {mouseButtonIndex} is outside the supported range.");
+                    $"{nameof(MouseButtonMonitor)} expects a button index between 0 and 6. Value {mouseButtonIndex} is outside the supported range.");
             }
         }
 

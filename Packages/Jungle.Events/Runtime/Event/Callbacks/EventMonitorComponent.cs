@@ -19,7 +19,7 @@ namespace Jungle.Events
     /// notification to serialized <see cref="IImmediateAction"/> instances and a <see cref="UnityEvent"/>.
     /// </summary>
     [AddComponentMenu("Jungle/Events/Callback Behaviour")]
-    public class CallbackBehaviour : MonoBehaviour
+    public class EventMonitorComponent : MonoBehaviour
     {
         [SerializeField]
         private RegistrationTiming registrationTiming = RegistrationTiming.OnEnable;
